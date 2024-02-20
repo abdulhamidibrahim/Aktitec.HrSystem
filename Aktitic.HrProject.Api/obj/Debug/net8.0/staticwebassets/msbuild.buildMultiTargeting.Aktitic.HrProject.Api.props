@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Aktitic.HrProject.Api.props" />
+</Project>

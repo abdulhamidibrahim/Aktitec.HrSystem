@@ -1,0 +1,29 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamid/abdulhamid.jpg",
+      "PackagePath": "staticwebassets/uploads/employees/abdulhamid/abdulhamid.jpg"
+    },
+    {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ahmed/ahmed.png",
+      "PackagePath": "staticwebassets/uploads/employees/ahmed/ahmed.png"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Aktitic.HrProject.Api.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.Aktitic.HrProject.Api.props",
+      "PackagePath": "build\\Aktitic.HrProject.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.Aktitic.HrProject.Api.props",
+      "PackagePath": "buildMultiTargeting\\Aktitic.HrProject.Api.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.Aktitic.HrProject.Api.props",
+      "PackagePath": "buildTransitive\\Aktitic.HrProject.Api.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

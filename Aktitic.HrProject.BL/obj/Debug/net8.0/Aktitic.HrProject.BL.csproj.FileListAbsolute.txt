@@ -1,0 +1,15 @@
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/bin/Debug/net8.0/Aktitic.HrProject.BL.deps.json
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/bin/Debug/net8.0/Aktitic.HrProject.BL.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/bin/Debug/net8.0/Aktitic.HrProject.BL.pdb
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/bin/Debug/net8.0/Aktitic.HrProject.DAL.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/bin/Debug/net8.0/Aktitic.HrProject.DAL.pdb
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.csproj.AssemblyReference.cache
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.GeneratedMSBuildEditorConfig.editorconfig
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.AssemblyInfoInputs.cache
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.AssemblyInfo.cs
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.csproj.CoreCompileInputs.cache
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.csproj.CopyComplete
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/refint/Aktitic.HrProject.BL.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.pdb
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/ref/Aktitic.HrProject.BL.dll

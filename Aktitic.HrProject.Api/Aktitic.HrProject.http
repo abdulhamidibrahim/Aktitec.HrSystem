@@ -1,0 +1,6 @@
+@Aktitic.HrProject_HostAddress = http://localhost:5137
+
+GET {{Aktitic.HrProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

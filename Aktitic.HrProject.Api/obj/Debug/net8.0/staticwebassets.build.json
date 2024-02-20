@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "Hash": "7wFfIfusnW9kiVbykHWJSVQHlGGr+FQvfIVHtnzQF0w=",
+  "Source": "Aktitic.HrProject.Api",
+  "BasePath": "_content/Aktitic.HrProject.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "Aktitic.HrProject.Api/wwwroot",
+      "Source": "Aktitic.HrProject.Api",
+      "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
+      "BasePath": "_content/Aktitic.HrProject.Api",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamid/abdulhamid.jpg",
+      "SourceId": "Aktitic.HrProject.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
+      "BasePath": "_content/Aktitic.HrProject.Api",
+      "RelativePath": "uploads/employees/abdulhamid/abdulhamid.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/employees/abdulhamid/abdulhamid.jpg"
+    },
+    {
+      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ahmed/ahmed.png",
+      "SourceId": "Aktitic.HrProject.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
+      "BasePath": "_content/Aktitic.HrProject.Api",
+      "RelativePath": "uploads/employees/ahmed/ahmed.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/employees/ahmed/ahmed.png"
+    }
+  ]
+}
