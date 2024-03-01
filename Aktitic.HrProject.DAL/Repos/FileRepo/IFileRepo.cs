@@ -5,5 +5,5 @@ namespace Aktitic.HrProject.DAL.Repos;
 
 public interface IFileRepo :IGenericRepo<File>
 {
-    Task<File?> GetByEmployeeId(int employeeId);
+    // Task<UserFile?> GetByEmployeeId(int employeeId);
 }

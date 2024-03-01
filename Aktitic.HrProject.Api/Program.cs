@@ -1,9 +1,11 @@
 using System.Text;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.BL.AutoMapper;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,9 +49,11 @@ builder.Services.AddSwaggerGen(options =>
 
 //add connection string
 builder.Services.AddDbContext<HrManagementDbContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
-        option => option.CommandTimeout(300)));
-
+        option => option.CommandTimeout(300));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
@@ -57,7 +61,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
     .AddDefaultTokenProviders();
 
 
-builder.Services.AddIdentityCore<Employee>()
+builder.Services.AddIdentityCore<Employee>()    
     .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<HrManagementDbContext>()
     .AddDefaultTokenProviders();
@@ -79,6 +83,31 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+});
+
+// builder.Services.AddAuthorization(options =>
+// {
+//     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+//     options.AddPolicy("User", policy => policy.RequireRole("User"));
+// });
+
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Auto Mapper Configurations
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new AutoMapperProfiles());
+});
+
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 
 #region resolving dependencies
@@ -122,9 +151,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
-app.UseRouting();
+// app.UseRouting();
 
 app.UseStaticFiles();
 

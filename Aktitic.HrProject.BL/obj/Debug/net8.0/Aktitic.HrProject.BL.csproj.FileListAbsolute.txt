@@ -13,3 +13,4 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/refint/Aktitic.HrProject.BL.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.pdb
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/ref/Aktitic.HrProject.BL.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.BL/obj/Debug/net8.0/Aktitic.HrProject.BL.sourcelink.json

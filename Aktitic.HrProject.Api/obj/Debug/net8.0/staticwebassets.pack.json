@@ -1,12 +1,8 @@
 {
   "Files": [
     {
-      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamid/abdulhamid.jpg",
-      "PackagePath": "staticwebassets/uploads/employees/abdulhamid/abdulhamid.jpg"
-    },
-    {
-      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ahmed/ahmed.png",
-      "PackagePath": "staticwebassets/uploads/employees/ahmed/ahmed.png"
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ali/ali.png",
+      "PackagePath": "staticwebassets/uploads/employees/ali/ali.png"
     },
     {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Aktitic.HrProject.Api.Microsoft.AspNetCore.StaticWebAssets.props",

@@ -10,7 +10,7 @@ public class EmployeeUpdateDto
     public string? Gender { get; set; }
     public string? Email { get; set; }
     public string? ImgUrl { get; set; }
-    public static IFormFile Image { get; set; }=null!;
+    public IFormFile Image { get; set; }=null!;
 
     public string? Phone { get; set; }
 
