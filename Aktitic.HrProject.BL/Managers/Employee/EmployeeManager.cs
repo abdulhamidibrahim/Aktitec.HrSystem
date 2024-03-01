@@ -1,9 +1,14 @@
 
+using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using File = Aktitic.HrProject.DAL.Models.File;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
 
@@ -12,12 +17,16 @@ public class EmployeeManager:IEmployeeManager
     private readonly IEmployeeRepo _employeeRepo;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IFileRepo _fileRepo;
+    private readonly UserManager<Employee> _userManager;
+    private readonly IMapper _mapper;
 
-    public EmployeeManager(IEmployeeRepo employeeRepo, IWebHostEnvironment webHostEnvironment, IFileRepo fileRepo)
+    public EmployeeManager(IEmployeeRepo employeeRepo, IWebHostEnvironment webHostEnvironment, IFileRepo fileRepo, UserManager<Employee> userManager, IMapper mapper)
     {
         _employeeRepo = employeeRepo;
         _webHostEnvironment = webHostEnvironment;
         _fileRepo = fileRepo;
+        _userManager = userManager;
+        _mapper = mapper;
     }
     
     public void Add(EmployeeAddDto employeeAddDto)
@@ -25,26 +34,27 @@ public class EmployeeManager:IEmployeeManager
         var employee = new Employee()
         {
             FullName = employeeAddDto.FullName!,
-            Phone = employeeAddDto.Phone,
+            // Phone = employeeAddDto.Phone,
             Email = employeeAddDto.Email,
-            DepartmentId = employeeAddDto.DepartmentId,
-            JoiningDate = employeeAddDto.JoiningDate,
-            Salary = employeeAddDto.Salary,
-            JobPosition = employeeAddDto.JobPosition,
-            YearsOfExperience = employeeAddDto.YearsOfExperience,
-            ManagerId = employeeAddDto.ManagerId,
+            // DepartmentId = employeeAddDto.DepartmentId,
+            // JoiningDate = employeeAddDto.JoiningDate,
+            // Salary = employeeAddDto.Salary,
+            // JobPosition = employeeAddDto.JobPosition,
+            // YearsOfExperience = employeeAddDto.YearsOfExperience,
+            // ManagerId = employeeAddDto.ManagerId,
             Age = employeeAddDto.Age,
-            
+            // FileName = employeeAddDto.Image.FileName,
+            // FileExtension = employeeAddDto.Image.ContentType,
         };
-        var file = new File()
-        {
-            Name = employeeAddDto.Image.FileName,
-            // Content = image.OpenReadStream().ReadAllBytes(),
-            Extension = employeeAddDto.Image.ContentType,
-            EmployeeName = employeeAddDto.FullName,
-        };
+        // var file = new UserFile()
+        // {
+        //     Name = employeeAddDto.Image.FileName,
+        //     // Content = image.OpenReadStream().ReadAllBytes(),
+        //     Extension = employeeAddDto.Image.ContentType,
+        //     
+        // };
        
-        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",file.EmployeeName!);
+        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.FullName!);
         if (Directory.Exists(path))
         {
             Directory.Delete(path);
@@ -52,11 +62,11 @@ public class EmployeeManager:IEmployeeManager
         {
             Directory.CreateDirectory(path);
         }
-        employee.ImgUrl = path+"/"+ file.EmployeeName+".png";
+        employee.ImgUrl = path+"/"+ employee.FileName+".png";
         using FileStream fileStream = new(employee.ImgUrl, FileMode.Create);
-        employeeAddDto.Image.CopyToAsync(fileStream);
+        // employeeAddDto.Image.CopyToAsync(fileStream);
     
-        _fileRepo.Add(file);
+        // _fileRepo.Add(file);
         _employeeRepo.Add(employee);
     }
     
@@ -76,16 +86,19 @@ public class EmployeeManager:IEmployeeManager
         employee.Result.YearsOfExperience = employeeUpdateDto.YearsOfExperience;
         employee.Result.ManagerId = employeeUpdateDto.ManagerId;
         employee.Result.Age = employeeUpdateDto.Age;
+        // employee.Result.FileContent = employeeUpdateDto.Image.ContentType;
+        employee.Result.FileExtension= employeeUpdateDto.Image.ContentType;
+        employee.Result.FileName=employeeUpdateDto.Image.FileName;
         
-        var file = new File()
-        {
-            Name = EmployeeUpdateDto.Image.FileName,
-            // Content = image.OpenReadStream().ReadAllBytes(),
-            Extension = EmployeeUpdateDto.Image.ContentType,
-            // EmployeeName = EmployeeUpdateDto.FullName
-        };
+        // var file = new UserFile()
+        // {
+        //     Name = EmployeeUpdateDto.Image.FileName,
+        //     // Content = image.OpenReadStream().ReadAllBytes(),
+        //     Extension = EmployeeUpdateDto.Image.ContentType,
+        //     // EmployeeName = EmployeeUpdateDto.FullName
+        // };
        
-        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",file.EmployeeName!);
+        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.Result.FullName!);
         if (Directory.Exists(path))
         {
             Directory.Delete(path);
@@ -93,9 +106,9 @@ public class EmployeeManager:IEmployeeManager
         {
             Directory.CreateDirectory(path);
         }
-        employee.Result.ImgUrl = path+"/"+ file.EmployeeName+".png";
+        employee.Result.ImgUrl = path+"/"+ employee.Result.FileName+".png";
         using FileStream fileStream = new(employee.Result.ImgUrl, FileMode.Create);
-        EmployeeUpdateDto.Image.CopyToAsync(fileStream);
+        employeeUpdateDto.Image.CopyToAsync(fileStream);
 
         
         _employeeRepo.Update(employee.Result);
@@ -147,7 +160,96 @@ public class EmployeeManager:IEmployeeManager
             
         }).ToList());
     }
+
+    public Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(string? term, string? sort, int page, int limit)
+    {
+        var employees = _employeeRepo.GetEmployeesAsync(term, sort, page, limit);
+        return Task.FromResult(employees.Result.Employees.Select(employee => new EmployeeDto()
+        {
+            Id = employee.Id,
+            FullName = employee.FullName,
+            Email = employee.Email,
+            ImgUrl = employee.ImgUrl,
+            ImgId = employee.ImgId,
+
+        }));
+    }
+
+   
+
+    public IEnumerable<EmployeeDto> GetFilteredEmployeesAsync(string column, string value1, string? value2,string @operator)
+    {
+        var users = _userManager.Users.ToList().AsQueryable();
+        
+        var employeeDto = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(users);
+        IEnumerable<Employee> employees;
+            // filtering logic implementation 
+            @operator = @operator.ToLower();
+            decimal employeeValue;
+            switch (@operator)
+            {
+                case "contains":
+                    employees = users.Where(e => 
+                        e.GetValue(column).Contains(value1) || e.GetValue(column).Contains(value2));
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+                case "doesnotcontain":
+                     employees= users.SkipWhile(e =>
+                        e.GetValue(column).Contains(value1) || e.GetValue(column).Contains(value2));
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+                case "startswith":
+                    employees = users.Where(e=> 
+                        e.GetValue(column).StartsWith(value1) || e.GetValue(column).StartsWith(value2));
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+                case "endswith":
+                    employees = users.Where(e=> 
+                        e.GetValue(column).EndsWith(value1) || e.GetValue(column).EndsWith(value2));
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+                case "eq":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out employeeValue) &&
+                        (employeeValue == decimal.Parse(value1) || employeeValue == decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+
+                case "neq":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out employeeValue) &&
+                        (employeeValue != decimal.Parse(value1) && employeeValue != decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+
+                case "gte":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out employeeValue) &&
+                        (employeeValue >= decimal.Parse(value1) || employeeValue >= decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+
+                case "gt":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out  employeeValue) &&
+                        (employeeValue > decimal.Parse(value1) || employeeValue > decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+
+                case "lte":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out  employeeValue) &&
+                        (employeeValue <= decimal.Parse(value1) || employeeValue <= decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);
+
+                case "lt":
+                    employees = users.Where(e =>
+                        decimal.TryParse(e.GetValue(column), out  employeeValue) &&
+                        (employeeValue < decimal.Parse(value1) || employeeValue < decimal.Parse(value2))
+                    );
+                    return _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(employees);default:
+                    return employeeDto;
+            }
+        }
     
+
     // public string? GetFilePath(int id)
     // {
     //     var file = _fileRepo.GetByEmployeeId(id);

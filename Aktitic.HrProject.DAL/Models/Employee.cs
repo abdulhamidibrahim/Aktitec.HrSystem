@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection.Metadata;
 
 namespace Aktitic.HrProject.DAL.Models;
 
 [Table("Employee")]
 public partial class Employee : ApplicationUser
 {
-    public string? FullName { get; set; }=string.Empty;
-    public override string? Email { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public  int Id { get; set; }
+    public string? FullName { get; set; } = string.Empty;
+    // public override string? Email { get; set; }
     public string? ImgUrl { get; set; }
     public int? ImgId { get; set; }
 
@@ -26,15 +29,24 @@ public partial class Employee : ApplicationUser
 
     public decimal? Salary { get; set; }
 
+    public string? FileName { get; set; }
+    public string? FileContent { get; set; }
+    public string? FileExtension { get; set; }
+    
+    public bool? TeamLeader { get; set; }
+
     public int? DepartmentId { get; set; }
 
-    public int? ManagerId { get; set; }
+    public int? ManagerId { get; set; } 
 
+    [ForeignKey(nameof(Project))]
+    public int? ProjectId { get; set; }
+    public Project? Project { get; set; } 
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
     public virtual Department? Department { get; set; }
 
-    public virtual File? Img { get; set; }
+    // public virtual UserFile? Img { get; set; }
 
     public virtual ICollection<Leaves> LeafApprovedByNavigations { get; set; } = new List<Leaves>();
 
@@ -49,6 +61,20 @@ public partial class Employee : ApplicationUser
     public virtual ICollection<Scheduling> SchedulingEmployees { get; set; } = new List<Scheduling>();
 
     public virtual ICollection<Shift> Shifts { get; set; } = new List<Shift>();
+    
+    public virtual ICollection<TicketFollowers> TicketFollowers { get; set; } = new List<TicketFollowers>();
 
     public virtual Timesheet? Timesheet { get; set; }
+    
+    public string GetValue(string columnName)
+    {
+        var propertyInfo = GetType().GetProperty(columnName);
+        if (propertyInfo != null)
+        {
+            var value = propertyInfo.GetValue(this)?.ToString();
+            return value ?? string.Empty;
+        }
+
+        return string.Empty;
+    }
 }

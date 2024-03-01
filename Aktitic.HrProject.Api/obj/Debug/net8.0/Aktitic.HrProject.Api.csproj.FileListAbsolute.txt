@@ -10,9 +10,6 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Azure.Identity.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Humanizer.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.OpenApi.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.CodeAnalysis.dll
@@ -26,9 +23,6 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.SqlServer.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.DependencyModel.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Identity.Core.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Identity.Stores.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Options.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Identity.Client.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Identity.Client.Extensions.Msal.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
@@ -147,3 +141,12 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/Aktitic.HrProject.Api.pdb
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/Aktitic.HrProject.Api.genruntimeconfig.cache
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/ref/Aktitic.HrProject.Api.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/Aktitic.HrProject.Api.sourcelink.json
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/System.Linq.Dynamic.Core.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Identity.Core.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Identity.Stores.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Options.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/AutoMapper.dll

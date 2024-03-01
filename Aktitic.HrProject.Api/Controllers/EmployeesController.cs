@@ -1,6 +1,12 @@
+using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.BL.Dtos.Employee;
+using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.API.Controllers;
 
@@ -11,12 +17,18 @@ public class EmployeesController: ControllerBase
     private readonly IEmployeeManager _employeeManager;
     private readonly IFileRepo _fileRepo;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly UserManager<Employee> _userManager;
 
-    public EmployeesController(IEmployeeManager employeeManager, IFileRepo fileRepo, IWebHostEnvironment webHostEnvironment)
+    public EmployeesController(
+        IEmployeeManager employeeManager, 
+        IFileRepo fileRepo, 
+        IWebHostEnvironment webHostEnvironment,
+        UserManager<Employee> userManager)
     {
         _employeeManager = employeeManager;
         _fileRepo = fileRepo;
         _webHostEnvironment = webHostEnvironment;
+        _userManager = userManager;
     }
     
     [HttpGet]
@@ -35,11 +47,49 @@ public class EmployeesController: ControllerBase
         return Task.FromResult(user)!;
     }
     
-    [HttpPost("create")]
-    public ActionResult Create(EmployeeAddDto employeeAddDto)
+    [HttpGet("/getEmployees")]
+    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(string? term, string? sort, int page, int limit)
     {
-        _employeeManager.Add(employeeAddDto);
-        return Ok();
+        return await _employeeManager.GetEmployeesAsync(term, sort, page, limit);
+    }
+    
+    [HttpGet("/getFilteredEmployees")]
+    public IEnumerable<EmployeeDto> GetFilteredEmployeesAsync(string column, string value1,[Optional] string value2, string @operator)
+    {
+        return _employeeManager.GetFilteredEmployeesAsync(column, value1, value2, @operator);
+    }
+    
+    [HttpPost("create")]
+    public async Task<ActionResult> Create(EmployeeAddDto employeeAddDto)
+    {
+        if (ModelState.IsValid)
+        {
+            var employee = new Employee()
+            {
+                FullName = employeeAddDto.FullName,
+                Email = employeeAddDto.Email,
+                UserName = employeeAddDto.Email!.Substring(0, employeeAddDto.Email.IndexOf('@')),
+                // ImgUrl = employeeAddDto.ImgUrl,
+                Phone = employeeAddDto.Phone,
+                Age = employeeAddDto.Age,
+                JobPosition = employeeAddDto.JobPosition,
+                JoiningDate = employeeAddDto.JoiningDate,
+                YearsOfExperience = employeeAddDto.YearsOfExperience,
+                Salary = employeeAddDto.Salary,
+                // DepartmentId = employeeAddDto.DepartmentId,
+                // ManagerId = employeeAddDto.ManagerId,
+            };
+            IdentityResult result = await _userManager.CreateAsync(employee, employeeAddDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest("error while creating user");
+            }
+            
+            return Ok("Account Created Successfully ");
+        }
+        
+        var errors = ModelState.Where (n => n.Value?.Errors.Count > 0).ToList ();
+        return BadRequest(errors);
     }
     
     [HttpPut]
@@ -55,6 +105,8 @@ public class EmployeesController: ControllerBase
         _employeeManager.Delete(employeeDeleteDto);
         return Ok();
     }
+    
+    
     
     // [HttpPost("uploadImage")]
     // [ImageValidator]

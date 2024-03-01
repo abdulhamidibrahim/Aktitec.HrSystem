@@ -34,7 +34,7 @@ public class FileManager:IFileManager
         file.Result.Name = fileUpdateDto.Name;
         file.Result.Content = fileUpdateDto.Content;
         file.Result.Extension = fileUpdateDto.Extension;
-        file.Result.EmployeeId = fileUpdateDto.EmployeeId;
+        
         
         _fileRepo.Update(file.Result);
     }
@@ -54,23 +54,21 @@ public class FileManager:IFileManager
             Name = file.Result.Name,
             Content = file.Result.Content,
             Extension = file.Result.Extension,
-            EmployeeId = file.Result.EmployeeId
+            
         };
     }
 
-    public FileReadDto? GetByEmployeeId(int id)
-    {
-        var file = _fileRepo.GetByEmployeeId(id);
-        if (file.Result == null) return null;
-        return new FileReadDto()
-        {
-            Name = file.Result.Name,
-            Content = file.Result.Content,
-            Extension = file.Result.Extension,
-            EmployeeId = file.Result.EmployeeId,
-            EmployeeName = file.Result.EmployeeName
-        };
-    }
+    // public FileReadDto? GetByEmployeeId(int id)
+    // {
+    //     var file = _fileRepo.GetByEmployeeId(id);
+    //     if (file.Result == null) return null;
+    //     return new FileReadDto()
+    //     {
+    //         Name = file.Result.Name,
+    //         Content = file.Result.Content,
+    //         Extension = file.Result.Extension,
+    //     };
+    // }
 
     public List<FileReadDto> GetAll()
     {
@@ -80,7 +78,7 @@ public class FileManager:IFileManager
             Name = file.Name,
             Content = file.Content,
             Extension = file.Extension,
-            EmployeeId = file.EmployeeId,
+           
         }).ToList();
     }
 }

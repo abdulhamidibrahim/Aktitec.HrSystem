@@ -14,13 +14,13 @@ public class FileRepo :GenericRepo<File>,IFileRepo
         _context = context;
     }
     
-    public async Task<File?> GetByEmployeeId(int employeeId)
-    {
-        var file= await _context.Files.FirstOrDefaultAsync(f => f!.EmployeeId == employeeId);
-        var emp= _context.Employees.FindAsync(employeeId);
-       
-            file!.EmployeeName = emp.Result?.FullName;
-            return file;
-    }
+    // public async Task<UserFile?> GetByEmployeeId(int employeeId)
+    // {
+    //     var file= await _context.Files.FirstOrDefaultAsync(f => f!.EmployeeId == employeeId);
+    //     var emp= _context.Employees.FindAsync(employeeId);
+    //    
+    //         file!.EmployeeName = emp.Result?.FullName;
+    //         return file;
+    // }
     
 }
