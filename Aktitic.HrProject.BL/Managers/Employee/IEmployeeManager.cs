@@ -11,7 +11,7 @@ public interface IEmployeeManager
 {
     public void Add(EmployeeAddDto employeeAddDto);
     public void Update(EmployeeUpdateDto employeeUpdateDto);
-    public void Delete(EmployeeDeleteDto employeeDeleteDto);
+    public void Delete(int id);
     public EmployeeReadDto? Get(int id);
     public Task<List<EmployeeReadDto>> GetAll();
     public Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(string? term, string? sort, int page, int limit);

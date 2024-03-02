@@ -98,7 +98,7 @@ public class EmployeeManager:IEmployeeManager
         //     // EmployeeName = EmployeeUpdateDto.FullName
         // };
        
-        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.Result.FullName!);
+        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.Result.UserName!);
         if (Directory.Exists(path))
         {
             Directory.Delete(path);
@@ -114,9 +114,9 @@ public class EmployeeManager:IEmployeeManager
         _employeeRepo.Update(employee.Result);
     }
 
-    public void Delete(EmployeeDeleteDto employeeDeleteDto)
+    public void Delete(int id)
     {
-        var employee = _employeeRepo.GetById(employeeDeleteDto.Id);
+        var employee = _employeeRepo.GetById(id);
         if (employee.Result != null) _employeeRepo.Delete(employee.Result);
     }
 
@@ -171,7 +171,7 @@ public class EmployeeManager:IEmployeeManager
             Email = employee.Email,
             ImgUrl = employee.ImgUrl,
             ImgId = employee.ImgId,
-
+            
         }));
     }
 

@@ -98,6 +98,33 @@ builder.Services.Configure<IdentityOptions>(options =>
 //     options.AddPolicy("User", policy => policy.RequireRole("User"));
 // });
 
+// builder.Services.AddCors(
+//     
+//     options =>
+//     {
+//         options.AddPolicy("CorsPolicy",
+//             b =>
+//             {
+//                 b.AllowAnyOrigin()
+//                     .AllowAnyMethod()
+//                     .AllowAnyHeader();
+//             });
+//     });
+    
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularOrigins",
+        policyBuilder =>
+        {
+            policyBuilder.WithOrigins(
+                    "http://localhost:4200"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Auto Mapper Configurations
@@ -151,9 +178,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-// app.UseRouting();
+app.UseRouting();
 
 app.UseStaticFiles();
 

@@ -76,9 +76,25 @@ public class EmployeesController: ControllerBase
                 JoiningDate = employeeAddDto.JoiningDate,
                 YearsOfExperience = employeeAddDto.YearsOfExperience,
                 Salary = employeeAddDto.Salary,
+                FileName = employeeAddDto.Image.FileName,
+                FileContent = employeeAddDto.Image.FileName,
+                FileExtension = employeeAddDto.Image.ContentType,
                 // DepartmentId = employeeAddDto.DepartmentId,
                 // ManagerId = employeeAddDto.ManagerId,
             };
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.FullName!);
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path);
+            }else
+            {
+                Directory.CreateDirectory(path);
+            }
+            employee.ImgUrl = path+"/"+ employee.FileName+".png";
+            await using FileStream fileStream = new(employee.ImgUrl, FileMode.Create);
+            // employeeAddDto.Image.CopyToAsync(fileStream);
+            await employeeAddDto.Image.CopyToAsync(fileStream);
+            
             IdentityResult result = await _userManager.CreateAsync(employee, employeeAddDto.Password);
             if (!result.Succeeded)
             {
@@ -100,9 +116,9 @@ public class EmployeesController: ControllerBase
     }
     
     [HttpDelete]
-    public ActionResult Delete(EmployeeDeleteDto employeeDeleteDto)
+    public ActionResult Delete(int id)
     {
-        _employeeManager.Delete(employeeDeleteDto);
+        _employeeManager.Delete(id);
         return Ok();
     }
     

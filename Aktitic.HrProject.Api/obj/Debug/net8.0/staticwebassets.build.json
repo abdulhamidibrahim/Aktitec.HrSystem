@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "b1SntNobGa04B0izCIS0TT/z3f5WLnmrhngBnerJNfk=",
+  "Hash": "EuQ5dHosNdKPbnh0dBd5Lw8SC1RFix3Kh9oIHm7L/7M=",
   "Source": "Aktitic.HrProject.Api",
   "BasePath": "_content/Aktitic.HrProject.Api",
   "Mode": "Default",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png",
+      "SourceId": "Aktitic.HrProject.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
+      "BasePath": "_content/Aktitic.HrProject.Api",
+      "RelativePath": "uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png"
+    },
     {
       "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ali/ali.png",
       "SourceId": "Aktitic.HrProject.Api",
