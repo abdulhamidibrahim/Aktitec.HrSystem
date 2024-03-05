@@ -52,7 +52,7 @@ builder.Services.AddDbContext<HrManagementDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
         option => option.CommandTimeout(300));
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 
@@ -61,10 +61,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
     .AddDefaultTokenProviders();
 
 
-builder.Services.AddIdentityCore<Employee>()    
-    .AddRoles<IdentityRole<int>>()
-    .AddEntityFrameworkStores<HrManagementDbContext>()
-    .AddDefaultTokenProviders();
+// builder.Services.AddIdentityCore<Employee>()    
+//     .AddRoles<IdentityRole<int>>()
+//     .AddEntityFrameworkStores<HrManagementDbContext>()
+//     .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -178,7 +178,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseRouting();
 
@@ -187,6 +187,8 @@ app.UseStaticFiles();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors("AllowAngularOrigins");
 
 app.MapControllers();
 

@@ -2,6 +2,7 @@
 
 public class TimesheetReadDto
 {
+    public int Id { get; set; }
 
     public DateOnly? Date { get; set; }
 

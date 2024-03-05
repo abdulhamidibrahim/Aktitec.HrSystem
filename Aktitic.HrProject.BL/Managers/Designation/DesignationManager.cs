@@ -47,6 +47,7 @@ public class DesignationManager:IDesignationManager
         if (designation.Result == null) return null;
         return new DesignationReadDto()
         {
+            Id = designation.Result.Id,
             Name = designation.Result.Name,
             DepartmentId = designation.Result.DepartmentId,
         };
@@ -57,6 +58,7 @@ public class DesignationManager:IDesignationManager
         var designations = _designationRepo.GetAll();
         return designations.Result.Select(designation => new DesignationReadDto()
         {
+            Id = designation.Id,
             Name = designation.Name,
             DepartmentId = designation.DepartmentId
             

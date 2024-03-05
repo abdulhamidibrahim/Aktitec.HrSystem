@@ -51,6 +51,7 @@ public class FileManager:IFileManager
         if (file.Result == null) return null;
         return new FileReadDto()
         {
+            Id = file.Result.Id,
             Name = file.Result.Name,
             Content = file.Result.Content,
             Extension = file.Result.Extension,
@@ -75,6 +76,7 @@ public class FileManager:IFileManager
         var files = _fileRepo.GetAll();
         return files.Result.Select(file => new FileReadDto()
         {
+            Id = file.Id,
             Name = file.Name,
             Content = file.Content,
             Extension = file.Extension,

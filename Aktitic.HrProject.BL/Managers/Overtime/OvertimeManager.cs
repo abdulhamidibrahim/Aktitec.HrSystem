@@ -58,6 +58,7 @@ public class OvertimeManager:IOvertimeManager
         if (overtime.Result == null) return null;
         return new OvertimeReadDto()
         {
+            Id = overtime.Result.Id,
             OtHours = overtime.Result.OtHours,
             OtDate = overtime.Result.OtDate,
             OtType = overtime.Result.OtType,

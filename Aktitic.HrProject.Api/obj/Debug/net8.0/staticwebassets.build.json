@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "EuQ5dHosNdKPbnh0dBd5Lw8SC1RFix3Kh9oIHm7L/7M=",
+  "Hash": "g5d/oiBH03WKRALO9BtSMsPQ/4GcXE6quOe/C9EcXk4=",
   "Source": "Aktitic.HrProject.Api",
   "BasePath": "_content/Aktitic.HrProject.Api",
   "Mode": "Default",
@@ -17,12 +17,12 @@
   ],
   "Assets": [
     {
-      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png",
+      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/abdulhamid/WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png",
       "SourceId": "Aktitic.HrProject.Api",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
       "BasePath": "_content/Aktitic.HrProject.Api",
-      "RelativePath": "uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png",
+      "RelativePath": "uploads/employees/abdulhamid/WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -33,26 +33,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33\u202FPM.png.png"
-    },
-    {
-      "Identity": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/employees/ali/ali.png",
-      "SourceId": "Aktitic.HrProject.Api",
-      "SourceType": "Discovered",
-      "ContentRoot": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/",
-      "BasePath": "_content/Aktitic.HrProject.Api",
-      "RelativePath": "uploads/employees/ali/ali.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/uploads/employees/ali/ali.png"
+      "OriginalItemSpec": "wwwroot/uploads/employees/abdulhamid/WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png"
     }
   ]
 }

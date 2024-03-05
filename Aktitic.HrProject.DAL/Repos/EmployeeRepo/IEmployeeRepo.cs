@@ -7,4 +7,10 @@ public interface IEmployeeRepo :IGenericRepo<Employee>
 {
     Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit);
     // Task<Employee> GetFilteredEmployees(Filter filter);
+    Task<Employee?> GetByEmail(string email);
+    
+    Task<Employee?> GetByManager(int managerId);
+    
+    IQueryable<Employee> GlobalSearch(string? column);
+    public Task<List<Employee>>? GetSubordinatesAsync(int employeeId);
 }

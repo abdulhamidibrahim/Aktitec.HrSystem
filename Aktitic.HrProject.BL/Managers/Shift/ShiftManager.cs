@@ -78,6 +78,7 @@ public class ShiftManager:IShiftManager
         if (shift.Result == null) return null;
         return new ShiftReadDto()
         {
+            Id = shift.Result.Id,
             Name = shift.Result.Name,
             MinStartTime = shift.Result.MinStartTime,
             MaxStartTime = shift.Result.MaxStartTime,
@@ -103,6 +104,7 @@ public class ShiftManager:IShiftManager
         var shifts = _shiftRepo.GetAll();
         return shifts.Result.Select(shift => new ShiftReadDto()
         {
+            Id = shift.Id,
             Name = shift.Name,
             MinStartTime = shift.MinStartTime,
             MaxStartTime = shift.MaxStartTime,

@@ -46,6 +46,7 @@ public class DepartmentManager:IDepartmentManager
         if (department.Result == null) return null;
         return new DepartmentReadDto()
         {
+            Id = department.Result.Id,
             Name = department.Result.Name,
         };
     }
@@ -55,6 +56,7 @@ public class DepartmentManager:IDepartmentManager
         var departments = _departmentRepo.GetAll();
         return departments.Result.Select(department => new DepartmentReadDto()
         {
+            Id = department.Id,
             Name = department.Name,
             
         }).ToList();

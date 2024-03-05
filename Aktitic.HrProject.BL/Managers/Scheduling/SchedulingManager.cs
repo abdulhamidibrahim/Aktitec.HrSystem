@@ -74,6 +74,7 @@ public class SchedulingManager:ISchedulingManager
         if (scheduling.Result == null) return null;
         return new SchedulingReadDto()
         {
+            Id = scheduling.Result.Id,
             DepartmentId = scheduling.Result.DepartmentId,
             EmployeeId = scheduling.Result.EmployeeId,
             Date = scheduling.Result.Date,

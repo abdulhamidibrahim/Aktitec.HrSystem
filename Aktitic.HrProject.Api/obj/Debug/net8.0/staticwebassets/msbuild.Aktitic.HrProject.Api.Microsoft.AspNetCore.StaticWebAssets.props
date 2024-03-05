@@ -1,11 +1,11 @@
 ﻿<Project>
   <ItemGroup>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\abdulhamidibrahim\Screenshot 2024-02-24 at 6.07.33 PM.png.png))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\abdulhamid\WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/Aktitic.HrProject.Api</BasePath>
-      <RelativePath>uploads/employees/abdulhamidibrahim/Screenshot 2024-02-24 at 6.07.33 PM.png.png</RelativePath>
+      <RelativePath>uploads/employees/abdulhamid/WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -14,23 +14,7 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\abdulhamidibrahim\Screenshot 2024-02-24 at 6.07.33 PM.png.png))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali\ali.png))">
-      <SourceType>Package</SourceType>
-      <SourceId>Aktitic.HrProject.Api</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
-      <RelativePath>uploads/employees/ali/ali.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali\ali.png))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\abdulhamid\WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

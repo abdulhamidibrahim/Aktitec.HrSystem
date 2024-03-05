@@ -59,6 +59,7 @@ public class AttendanceManager:IAttendanceManager
         if (attendance.Result == null) return null;
         return new AttendanceReadDto()
         {
+            Id = attendance.Result.Id,
             EmployeeId = attendance.Result.EmployeeId,
             Break = attendance.Result.Break,
             Date = attendance.Result.Date,
@@ -74,6 +75,7 @@ public class AttendanceManager:IAttendanceManager
         var attendances = _attendanceRepo.GetAll();
         return attendances.Result.Select(attendance => new AttendanceReadDto()
         {
+            Id = attendance.Id,
             EmployeeId = attendance.EmployeeId,
             Break = attendance.Break,
             Date = attendance.Date,

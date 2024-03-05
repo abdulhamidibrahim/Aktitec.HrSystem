@@ -48,6 +48,7 @@ public class HolidayManager:IHolidayManager
         if (holiday.Result == null) return null;
         return new HolidayReadDto()
         {
+            Id = holiday.Result.Id,
             Title = holiday.Result.Title,
             Date = holiday.Result.Date
         };

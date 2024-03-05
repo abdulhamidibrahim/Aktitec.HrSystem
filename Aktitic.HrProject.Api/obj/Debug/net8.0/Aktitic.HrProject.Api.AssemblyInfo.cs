@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Aktitic.HrProject.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+66002fa36114037128efd8b33260e98e7a2ce68c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a6715c03fb3dbf74520ae083f776204fa9ff5d1f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Aktitic.HrProject.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Aktitic.HrProject.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

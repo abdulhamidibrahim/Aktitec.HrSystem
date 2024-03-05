@@ -14,9 +14,9 @@ namespace Aktitic.HrProject.DAL.Context;
 
 public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,IdentityRole<int>,int>
 {
-    // public HrManagementDbContext()
-    // {
-    // }
+    public HrManagementDbContext()
+    {
+    }
 
     public HrManagementDbContext(DbContextOptions<HrManagementDbContext> options)
         : base(options)
@@ -65,6 +65,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
     public virtual DbSet<Ticket>? Tickets { get; set; }
     public virtual DbSet<TicketFollowers>? TicketFollowers { get; set; }
     public virtual DbSet<Timesheet>? Timesheets { get; set; }
+    // public virtual DbSet<ApplicationUser>? ApplicationUsers { get; set; }
     
 
     

@@ -61,6 +61,7 @@ public class LeavesManager:ILeavesManager
         if (leaves.Result == null) return null;
         return new LeavesReadDto()
         {
+            Id = leaves.Result.Id,
             EmployeeId = leaves.Result.EmployeeId,
             Type = leaves.Result.Type,
             FromDate = leaves.Result.FromDate,
@@ -78,6 +79,7 @@ public class LeavesManager:ILeavesManager
         var leaves = _leavesRepo.GetAll();
         return leaves.Result.Select(leave => new LeavesReadDto()
         {
+            Id = leave.Id,
             EmployeeId = leave.EmployeeId,
             Type = leave.Type,
             FromDate = leave.FromDate,

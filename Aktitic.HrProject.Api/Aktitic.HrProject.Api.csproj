@@ -39,6 +39,8 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\abdulhamid\abdulhamid.jpg" />
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ahmed\ahmed.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\abdulhamidibrahim\Screenshot 2024-02-24 at 6.07.33 PM.png.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ali\ali.png" />
     </ItemGroup>
 
 </Project>

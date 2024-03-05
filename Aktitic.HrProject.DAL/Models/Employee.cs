@@ -5,13 +5,15 @@ using System.Reflection.Metadata;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-[Table("Employee")]
-public partial class Employee : ApplicationUser
+// [Table("Employee")]
+public partial class Employee 
+    // : ApplicationUser
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public  int Id { get; set; }
     public string? FullName { get; set; } = string.Empty;
-    // public override string? Email { get; set; }
+    public string? UserName { get; set; }
+    public  string? Email { get; set; }
     public string? ImgUrl { get; set; }
     public int? ImgId { get; set; }
 
@@ -68,6 +70,7 @@ public partial class Employee : ApplicationUser
     
     public string GetValue(string columnName)
     {
+        columnName = columnName.Replace(columnName[0], char.ToUpper(columnName[0]));
         var propertyInfo = GetType().GetProperty(columnName);
         if (propertyInfo != null)
         {
@@ -77,4 +80,11 @@ public partial class Employee : ApplicationUser
 
         return string.Empty;
     }
+    
+}
+
+public class ManagerTree
+{
+    public Employee Employee { get; set; }
+    public List<ManagerTree> Subordinates { get; set; } = new List<ManagerTree?>();
 }

@@ -59,6 +59,7 @@ public class TimesheetManager:ITimesheetManager
         if (timesheet.Result == null) return null;
         return new TimesheetReadDto()
         {
+            Id = timesheet.Result.Id,
             Date = timesheet.Result.Date,
             EmployeeId = timesheet.Result.EmployeeId,
             ProjectId = timesheet.Result.ProjectId,
@@ -75,6 +76,7 @@ public class TimesheetManager:ITimesheetManager
         var timesheets = _timesheetRepo.GetAll();
         return timesheets.Result.Select(timesheet => new TimesheetReadDto()
         {
+            Id = timesheet.Id,
             Date = timesheet.Date,
             EmployeeId = timesheet.EmployeeId,
             ProjectId = timesheet.ProjectId,

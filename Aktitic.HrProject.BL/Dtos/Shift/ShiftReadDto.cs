@@ -2,6 +2,7 @@
 
 public class ShiftReadDto
 {
+    public int Id { get; set; }
     public string? Name { get; set; }
 
     public TimeOnly? MinStartTime { get; set; }
