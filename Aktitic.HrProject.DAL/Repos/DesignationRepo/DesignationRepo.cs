@@ -12,4 +12,26 @@ public class DesignationRepo :GenericRepo<Designation>,IDesignationRepo
         _context = context;
     }
     
+    public IQueryable<Designation> GlobalSearch(string? searchKey)
+    {
+        if (_context.Designations != null)
+        {
+            var query = _context.Designations.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                searchKey = searchKey.Trim().ToLower();
+                query = query
+                    .Where(x =>
+                        x.Name!.ToLower().Contains(searchKey));
+                       
+                        
+                return query;
+            }
+           
+        }
+
+        return _context.Designations!.AsQueryable();
+    }
+    
 }

@@ -4,6 +4,7 @@ using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Task = System.Threading.Tasks.Task;
@@ -53,15 +54,18 @@ public class EmployeesController: ControllerBase
     }
     
     [HttpGet("getFilteredEmployees")]
-    public Task<IEnumerable<EmployeeDto>> GetFilteredEmployeesAsync(string column, string value1,string? @operator1,[Optional] string? value2, string @operator2, int page, int pageSize)
+    public Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
         return _employeeManager.GetFilteredEmployeesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     // [ValidateAntiForgeryToken]
+    [Consumes("multipart/form-data")]
+    // [EmployeeEmailAddressValidator]
+    // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public async Task<ActionResult> Create(EmployeeAddDto employeeAddDto)
+    public async Task<ActionResult> Create([FromForm] EmployeeAddDto employeeAddDto,[FromForm] IFormFile? image)
     {
         
         // if (ModelState.IsValid)
@@ -98,7 +102,7 @@ public class EmployeesController: ControllerBase
             // await employeeAddDto.Image.CopyToAsync(fileStream);
             
             
-            int result = await _employeeManager.Add(employeeAddDto);
+            int result = await _employeeManager.Add(employeeAddDto,image);
             if (result.Equals(0))
             {
                 return BadRequest("Account Creation Failed");
@@ -111,15 +115,17 @@ public class EmployeesController: ControllerBase
         // return BadRequest(errors);
     }
     
+    [Consumes("multipart/form-data")]
+    // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromBody] EmployeeUpdateDto employeeUpdateDto,int id)
+    public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id,[FromForm] IFormFile? image)
     {
-        var result = _employeeManager.Update(employeeUpdateDto,id);
+        var result = _employeeManager.Update(employeeUpdateDto,id,image);
         if (result.Result.Equals(0))
         {
             return BadRequest("Account Update Failed");
         }
-        return Ok();
+        return Ok("Account updated successfully !");
     }
     
     [HttpDelete("delete/{id}")]
@@ -140,9 +146,9 @@ public class EmployeesController: ControllerBase
     }
 
     [HttpGet("getManagerTree")]
-    public async Task<ManagerTree?> GetManagerTree(int rootEmployeeId)
+    public async Task<List<ManagerTree>?> GetManagerTree()
     {
-        return await _employeeManager.GetManagersTreeAsync(rootEmployeeId);
+        return await _employeeManager.GetManagersTreeAsync();
     }
 
     #region commented

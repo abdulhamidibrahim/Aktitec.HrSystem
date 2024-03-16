@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "TTOlD4uEophVLF0PqxFOU7aniUEcIfAPrhC8L+SREfdt2nZpWaOh3V11LwPNMqHeJR0+sSClpzhO3JOZL8SBPg==",
+  "dgSpecHash": "T7oW4eKb9k4/j/NoS90m0U6M2d/nKuXvtqvVTcVNTBIBuGspmPdve195fX0iZ676LzlvYpJrLaKULR22bUpz9w==",
   "success": true,
   "projectFilePath": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/Aktitic.HrProject.Api.csproj",
   "expectedPackageFiles": [
@@ -53,10 +53,10 @@
     "/Users/abdulhamid/.nuget/packages/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/mono.texttemplating/2.2.1/mono.texttemplating.2.2.1.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore/6.4.0/swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swagger/6.4.0/swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.4.0/swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.4.0/swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.5.0/swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/system.codedom/4.4.0/system.codedom.4.4.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/system.collections.immutable/6.0.0/system.collections.immutable.6.0.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/system.composition/6.0.0/system.composition.6.0.0.nupkg.sha512",

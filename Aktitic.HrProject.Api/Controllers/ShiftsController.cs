@@ -28,24 +28,24 @@ public class ShiftsController: ControllerBase
         return user;
     }
     
-    [HttpPost]
-    public ActionResult Add(ShiftAddDto shiftAddDto)
+    [HttpPost("create")]
+    public ActionResult Add([FromForm] ShiftAddDto shiftAddDto)
     {
         _shiftManager.Add(shiftAddDto);
         return Ok();
     }
     
-    [HttpPut]
-    public ActionResult Update(ShiftUpdateDto shiftUpdateDto)
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] ShiftUpdateDto shiftUpdateDto,int id)
     {
-        _shiftManager.Update(shiftUpdateDto);
+        _shiftManager.Update(shiftUpdateDto,id);
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(ShiftDeleteDto shiftDeleteDto)
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete(int id)
     {
-        _shiftManager.Delete(shiftDeleteDto);
+        _shiftManager.Delete(id);
         return Ok();
     }
     

@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -24,29 +26,46 @@ public class LeavesController: ControllerBase
     public ActionResult<LeavesReadDto?> Get(int id)
     {
         var user = _leaveManager.Get(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound("Leave not found.");
         return user;
     }
     
-    [HttpPost]
-    public ActionResult Add(LeavesAddDto leaveAddDto)
+    [HttpGet("GlobalSearch")]
+    public async Task<IEnumerable<LeavesDto>> GlobalSearch(string search,string? column)
     {
-        _leaveManager.Add(leaveAddDto);
-        return Ok();
+        return await _leaveManager.GlobalSearch(search,column);
     }
     
-    [HttpPut]
-    public ActionResult Update(LeavesUpdateDto leaveUpdateDto)
+    [HttpGet("getFilteredLeaves")]
+    public Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
-        _leaveManager.Update(leaveUpdateDto);
-        return Ok();
+        
+        return _leaveManager.GetFilteredLeavesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+    }
+
+    
+    [HttpPost("create")]
+    public ActionResult Add([FromForm] LeavesAddDto leaveAddDto)
+    {
+        var result = _leaveManager.Add(leaveAddDto);
+        if (result.Result == 0) return BadRequest("Error in adding the leave.");
+        return Ok("Leave added successfully.");
     }
     
-    [HttpDelete]
-    public ActionResult Delete(LeavesDeleteDto leaveDeleteDto)
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] LeavesUpdateDto leavesUpdateDto,int id)
     {
-        _leaveManager.Delete(leaveDeleteDto);
-        return Ok();
+        var result = _leaveManager.Update(leavesUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Error in updating the leave.");
+        return Ok("Leave updated successfully.");
+    }
+    
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete( int id)
+    {
+        var result = _leaveManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Error in deleting the leave.");
+        return Ok("Leave deleted successfully.");
     }
     
 }

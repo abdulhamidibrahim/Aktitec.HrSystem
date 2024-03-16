@@ -25,5 +25,5 @@ public class EmployeeReadDto
 
     public int? ManagerId { get; set; }
 
-
+    public EmployeeReadDto? Manager { get; set; }
 }

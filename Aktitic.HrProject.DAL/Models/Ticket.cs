@@ -1,9 +1,11 @@
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Aktitic.HrProject.DAL.Models;
 
 public class Ticket
 {
-    
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string Subject { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

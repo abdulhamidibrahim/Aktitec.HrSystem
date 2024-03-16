@@ -12,6 +12,27 @@ public class DepartmentRepo :GenericRepo<Department>,IDepartmentRepo
         _context = context;
     }
     
+    public IQueryable<Department> GlobalSearch(string? searchKey)
+    {
+        if (_context.Departments != null)
+        {
+            var query = _context.Departments.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                searchKey = searchKey.Trim().ToLower();
+                query = query
+                    .Where(x =>
+                        x.Name!.ToLower().Contains(searchKey));
+                       
+                        
+                return query;
+            }
+           
+        }
+
+        return _context.Departments!.AsQueryable();
+    }
 }
 
     

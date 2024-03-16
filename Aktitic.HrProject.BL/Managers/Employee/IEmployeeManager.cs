@@ -11,15 +11,15 @@ namespace Aktitic.HrProject.BL;
 
 public interface IEmployeeManager
 {
-    public Task<int> Add(EmployeeAddDto employeeAddDto);
-    public Task<int> Update(EmployeeUpdateDto employeeUpdateDto,int id);
+    public Task<int> Add(EmployeeAddDto employeeAddDto, IFormFile? image);
+    public Task<int> Update(EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image);
     public Task<int> Delete(int id);
     public EmployeeReadDto? Get(int id);
     public Task<List<EmployeeReadDto>> GetAll();
     public Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit);
-    public Task<IEnumerable<EmployeeDto>> GetFilteredEmployeesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<EmployeeDto>> GlobalSearch(string searchKey,string? column);
     bool IsEmailUnique(string email);
-    public Task<ManagerTree?> GetManagersTreeAsync(int employeeId);
+    public Task<List<ManagerTree>> GetManagersTreeAsync();
 }

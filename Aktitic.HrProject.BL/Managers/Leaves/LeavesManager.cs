@@ -1,20 +1,26 @@
 
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
+using AutoMapper;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
 
 public class LeavesManager:ILeavesManager
 {
     private readonly ILeavesRepo _leavesRepo;
+    private readonly IMapper _mapper;
 
-    public LeavesManager(ILeavesRepo leavesRepo)
+    public LeavesManager(ILeavesRepo leavesRepo, IMapper mapper)
     {
         _leavesRepo = leavesRepo;
+        _mapper = mapper;
     }
     
-    public void Add(LeavesAddDto leavesAddDto)
+    public Task<int> Add(LeavesAddDto leavesAddDto)
     {
         var leaves = new Leaves()
         {
@@ -29,30 +35,31 @@ public class LeavesManager:ILeavesManager
             
             
         };
-        _leavesRepo.Add(leaves);
+        return _leavesRepo.Add(leaves);
     }
 
-    public void Update(LeavesUpdateDto leavesUpdateDto)
+    public Task<int> Update(LeavesUpdateDto leavesUpdateDto,int id)
     {
-        var leaves = _leavesRepo.GetById(leavesUpdateDto.Id);
+        var leaves = _leavesRepo.GetById(id);
         
-        if (leaves.Result == null) return;
-        leaves.Result.EmployeeId = leavesUpdateDto.EmployeeId;
-        leaves.Result.Type = leavesUpdateDto.Type;
-        leaves.Result.FromDate = leavesUpdateDto.FromDate;
-        leaves.Result.ToDate = leavesUpdateDto.ToDate;
-        leaves.Result.Reason = leavesUpdateDto.Reason;
-        leaves.Result.ApprovedBy = leavesUpdateDto.ApprovedBy;
-        leaves.Result.Days = leavesUpdateDto.Days;
-        leaves.Result.Approved = leavesUpdateDto.Approved;
+        if (leaves.Result == null) return Task.FromResult(0);
+        if(leavesUpdateDto.EmployeeId != null) leaves.Result.EmployeeId = leavesUpdateDto.EmployeeId;
+        if(leavesUpdateDto.Type != null) leaves.Result.Type = leavesUpdateDto.Type;
+        if(leavesUpdateDto.FromDate != null) leaves.Result.FromDate = leavesUpdateDto.FromDate;
+        if(leavesUpdateDto.ToDate != null) leaves.Result.ToDate = leavesUpdateDto.ToDate;
+        if(leavesUpdateDto.Reason != null) leaves.Result.Reason = leavesUpdateDto.Reason;
+        if(leavesUpdateDto.ApprovedBy!=null) leaves.Result.ApprovedBy = leavesUpdateDto.ApprovedBy;
+        if(leavesUpdateDto.Days != null) leaves.Result.Days = leavesUpdateDto.Days;
+        if(leavesUpdateDto.Approved != null) leaves.Result.Approved = leavesUpdateDto.Approved;
         
-        _leavesRepo.Update(leaves.Result);
+        return _leavesRepo.Update(leaves.Result);
     }
 
-    public void Delete(LeavesDeleteDto leavesDeleteDto)
+    public Task<int> Delete(int id)
     {
-        var leaves = _leavesRepo.GetById(leavesDeleteDto.Id);
-        if (leaves.Result != null) _leavesRepo.Delete(leaves.Result);
+        var leaves = _leavesRepo.GetById(id);
+        if (leaves.Result != null) return _leavesRepo.Delete(leaves.Result);
+        return Task.FromResult(0);
     }
 
     public LeavesReadDto? Get(int id)
@@ -92,4 +99,109 @@ public class LeavesManager:ILeavesManager
             
         }).ToList();
     }
+    
+    public async Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+{
+    var users = await _leavesRepo.GetAll();
+    
+    // Check if users is null
+    if (users == null)
+    {
+        return new FilteredLeavesDto();
+    }
+
+    // Check if column, value1, and operator1 are all null or empty
+    IEnumerable<Leaves>? paginatedResults;
+    if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
+    {
+        var count = users.Count();
+        var pages = (int)Math.Ceiling((double)count / pageSize);
+
+        // Use ToList() directly without checking Any() condition
+        var userList = users.ToList();
+
+        paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+
+        var map = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(paginatedResults);
+        FilteredLeavesDto result = new()
+        {
+            LeavesDto = map,
+            TotalCount = count,
+            TotalPages = pages
+        };
+        return result;
+    }
+
+    IEnumerable<Leaves> filteredResults;
+    
+    // Apply the first filter
+    filteredResults = ApplyFilter(users, column, value1, operator1);
+
+    // Apply the second filter only if both value2 and operator2 are provided
+    if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
+    {
+        filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+    }
+
+    var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
+    var totalCount = enumerable.Count();
+    var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+    paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
+
+    var mappedLeaves = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(paginatedResults);
+
+    FilteredLeavesDto filteredLeavesDto = new()
+    {
+        LeavesDto = mappedLeaves,
+        TotalCount = totalCount,
+        TotalPages = totalPages
+    };
+    return filteredLeavesDto;
+}
+    private IEnumerable<Leaves> ApplyFilter(IEnumerable<Leaves> users, string? column, string? value, string? operatorType)
+    {
+        // value2 ??= value;
+
+        return operatorType switch
+        {
+            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(users, column, projectValue, operatorType),
+            _ => users
+        };
+    }
+
+    private IEnumerable<Leaves> ApplyNumericFilter(IEnumerable<Leaves> users, string? column, decimal? value, string? operatorType)
+{
+    return operatorType?.ToLower() switch
+    {
+        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
+        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
+        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
+        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
+        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
+        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
+        _ => users
+    };
+}
+
+
+    public Task<List<LeavesDto>> GlobalSearch(string searchKey, string? column)
+    {
+        
+        if(column!=null)
+        {
+            IEnumerable<Leaves> user;
+            user = _leavesRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var project = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(user);
+            return Task.FromResult(project.ToList());
+        }
+
+        var  users = _leavesRepo.GlobalSearch(searchKey);
+        var projects = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(users);
+        return Task.FromResult(projects.ToList());
+    }
+
 }

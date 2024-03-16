@@ -23,4 +23,7 @@ public class Client
 
     public List<Ticket>? Tickets { get; set; }
     public Project? Project { get; set; }
+    public string? UserName { get; set; }
+    public string? ImgUrl { get; set; }
+    
 }

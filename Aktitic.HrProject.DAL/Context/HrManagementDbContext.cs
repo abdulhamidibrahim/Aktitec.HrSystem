@@ -61,10 +61,12 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
     public virtual DbSet<Project>? Projects { get; set; }
     public virtual DbSet<Task>? Tasks { get; set; }
     public virtual DbSet<TaskList>? TaskLists { get; set; }
-    public virtual DbSet<Taskboard>? Taskboards { get; set; }
+    public virtual DbSet<TaskBoard>? Taskboards { get; set; }
     public virtual DbSet<Ticket>? Tickets { get; set; }
     public virtual DbSet<TicketFollowers>? TicketFollowers { get; set; }
     public virtual DbSet<Timesheet>? Timesheets { get; set; }
+    public virtual DbSet<Notes>? Notes { get; set; }
+    
     // public virtual DbSet<ApplicationUser>? ApplicationUsers { get; set; }
     
 
@@ -109,7 +111,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         {
             entity.ToTable("Designation", "employee");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.DepartmentId).HasColumnName("department_id");
             entity.Property(e => e.Name).HasColumnName("name");
 
@@ -169,8 +171,8 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         modelBuilder.Entity<Holiday>(entity =>
         {
             entity.ToTable("Holiday", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.Title)
                 .HasMaxLength(50)
@@ -180,7 +182,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         modelBuilder.Entity<Leaves>(entity =>
         {
             entity.ToTable("leaves", "employee");
-
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Approved).HasColumnName("approved");
             entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
@@ -372,7 +374,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
             
         {
         entity.ToTable("Project", "project");
-        entity.Property(e => e.Id).ValueGeneratedNever();
+        entity.Property(e => e.Id).ValueGeneratedOnAdd();
         entity.Property(e => e.Name)
             .HasMaxLength(100)
             .HasColumnName("name");
@@ -398,7 +400,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         {
             entity.ToTable("Task", "project");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.Title)
                 .HasMaxLength(100)
                 .HasColumnName("title");
@@ -415,12 +417,12 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         {
             entity.ToTable("TaskList", "project");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.ListName)
                 .HasMaxLength(100)
                 .HasColumnName("name");
         });
-        modelBuilder.Entity<Taskboard>(entity =>
+        modelBuilder.Entity<TaskBoard>(entity =>
         {
             entity.ToTable("Taskboard", "project");
             
@@ -462,7 +464,7 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
         {
             entity.ToTable("TicketFollowers", "project");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.TicketId).HasColumnName("ticket_id");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             // entity.HasOne(d => d.Employee).WithMany(p => p.TicketFollowers)
@@ -471,6 +473,24 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
             entity.HasOne(d => d.Ticket).WithMany(p => p.TicketFollowers)
                 .HasForeignKey(d => d.TicketId)
                 .HasConstraintName("FK_TicketFollowers_Ticket");
+        });
+        modelBuilder.Entity<Notes>(entity =>
+        {
+            entity.ToTable("Notes", "employee");
+            
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.SenderId).HasColumnName("sender_id");
+            entity.Property(e => e.ReceiverId).HasColumnName("receiver_id");
+            entity.Property(e => e.Content)
+                .HasColumnName("content");
+            entity.Property(e => e.Starred).HasColumnName("starred");
+            entity.Property(e => e.Date).HasColumnName("date");
+            // entity.HasOne(d => d.Sender).WithMany(p => p.NotesSender)
+            //     .HasForeignKey(d => d.SenderId)
+            //     .HasConstraintName("FK_Notes_Employee_Sender");
+            // entity.HasOne(d => d.Receiver).WithMany(p => p.NotesReceiver)
+            //     .HasForeignKey(d => d.ReceiverId)
+            //     .HasConstraintName("FK_Notes_Employee_Receiver");
         });
         OnModelCreatingPartial(modelBuilder);
     }

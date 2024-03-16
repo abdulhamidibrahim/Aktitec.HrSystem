@@ -2,7 +2,6 @@
 
 public class OvertimeUpdateDto
 {
-    public int Id { get; set; }
 
     public DateOnly? OtDate { get; set; }
 

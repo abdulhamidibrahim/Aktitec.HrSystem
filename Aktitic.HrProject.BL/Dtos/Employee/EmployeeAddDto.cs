@@ -16,7 +16,7 @@ public class EmployeeAddDto
     public string? Email { get; set; }
 
     public string? Gender { get; set; }
-    public IFormFile? Image { get; set; }=null!;
+    // public IFormFile? Image { get; set; }=null!;
     public string? Phone { get; set; }
     // public string? ImgUrl { get; set; }
 

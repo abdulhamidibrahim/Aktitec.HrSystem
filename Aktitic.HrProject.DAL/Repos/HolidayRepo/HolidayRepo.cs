@@ -12,4 +12,26 @@ public class HolidayRepo :GenericRepo<Holiday>,IHolidayRepo
         _context = context;
     }
     
+    public IQueryable<Holiday> GlobalSearch(string? searchKey)
+    {
+        if (_context.Holidays != null)
+        {
+            var query = _context.Holidays.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                searchKey = searchKey.Trim().ToLower();
+                query = query
+                    .Where(x =>
+                        x.Title!.ToLower().Contains(searchKey));
+                       
+                        
+                return query;
+            }
+           
+        }
+
+        return _context.Holidays!.AsQueryable();
+    }
+    
 }

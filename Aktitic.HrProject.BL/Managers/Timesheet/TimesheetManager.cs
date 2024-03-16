@@ -31,25 +31,32 @@ public class TimesheetManager:ITimesheetManager
         _timesheetRepo.Add(timesheet);
     }
 
-    public void Update(TimesheetUpdateDto timesheetUpdateDto)
+    public void Update(TimesheetUpdateDto timesheetUpdateDto,int id)
     {
-        var timesheet = _timesheetRepo.GetById(timesheetUpdateDto.Id);
+        var timesheet = _timesheetRepo.GetById(id);
         
         if (timesheet.Result == null) return;
-        timesheet.Result.Date = timesheetUpdateDto.Date;
-        timesheet.Result.EmployeeId = timesheetUpdateDto.EmployeeId;
-        timesheet.Result.ProjectId = timesheetUpdateDto.ProjectId;
-        timesheet.Result.Deadline = timesheetUpdateDto.Deadline;
-        timesheet.Result.AssignedHours = timesheetUpdateDto.AssignedHours;
-        timesheet.Result.Hours = timesheetUpdateDto.Hours;
-        timesheet.Result.Description = timesheetUpdateDto.Description;
+        if(timesheetUpdateDto.Date != null) 
+            timesheet.Result.Date = timesheetUpdateDto.Date;
+        if(timesheetUpdateDto.EmployeeId != null) 
+            timesheet.Result.EmployeeId = timesheetUpdateDto.EmployeeId;
+        if(timesheetUpdateDto.ProjectId != null) 
+            timesheet.Result.ProjectId = timesheetUpdateDto.ProjectId;
+        if(timesheetUpdateDto.Deadline != null) 
+            timesheet.Result.Deadline = timesheetUpdateDto.Deadline;
+        if(timesheetUpdateDto.AssignedHours != null) 
+            timesheet.Result.AssignedHours = timesheetUpdateDto.AssignedHours;
+        if(timesheetUpdateDto.Hours != null) 
+            timesheet.Result.Hours = timesheetUpdateDto.Hours;
+        if(timesheetUpdateDto.Description != null) 
+            timesheet.Result.Description = timesheetUpdateDto.Description;
         
         _timesheetRepo.Update(timesheet.Result);
     }
 
-    public void Delete(TimesheetDeleteDto timesheetDeleteDto)
+    public void Delete(int id)
     {
-        var timesheet = _timesheetRepo.GetById(timesheetDeleteDto.Id);
+        var timesheet = _timesheetRepo.GetById(id);
         if (timesheet.Result != null) _timesheetRepo.Delete(timesheet.Result);
     }
 

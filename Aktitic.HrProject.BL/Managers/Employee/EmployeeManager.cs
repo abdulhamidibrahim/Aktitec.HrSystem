@@ -1,12 +1,15 @@
 
 using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.BL.Helpers;
+using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Task = System.Threading.Tasks.Task;
@@ -25,8 +28,11 @@ public class EmployeeManager(
 
     // _userManager = userManager;
 
-    public Task<int> Add(EmployeeAddDto employeeAddDto)
+    public Task<int> Add(EmployeeAddDto employeeAddDto, IFormFile? image)
     {
+        
+       
+        
         var employee = new Employee()
         {
             FullName = employeeAddDto.FullName!,
@@ -40,8 +46,8 @@ public class EmployeeManager(
             Gender = employeeAddDto.Gender,
             ManagerId = employeeAddDto.ManagerId,
             Age = employeeAddDto.Age,
-            FileName = employeeAddDto.Image?.FileName,
-            FileExtension = employeeAddDto.Image?.ContentType,
+            FileName = image?.FileName,
+            FileExtension = image?.ContentType,
             UserName = employeeAddDto.Email?.Substring(0,employeeAddDto.Email.IndexOf('@'))
         };
 
@@ -55,29 +61,45 @@ public class EmployeeManager(
         //     
         // };
         #endregion
-        
-        var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/employees",employee.UserName!);
+
+        var unique = Guid.NewGuid();
+
+        var path = Path.Combine(webHostEnvironment.WebRootPath,"uploads/employees", employee.UserName+unique);
         if (Directory.Exists(path))
         {
-            Directory.Delete(path);
+            Directory.Delete(path,true);
         }else
         {
             Directory.CreateDirectory(path);
         }
-        employee.ImgUrl = path+"/"+ employee.FileName+".png";
-        using FileStream fileStream = new(employee.ImgUrl, FileMode.Create);
-        employeeAddDto.Image?.CopyToAsync(fileStream);
-    
+        
+        var imgPath = Path.Combine(path, employee.FileName!);
+        using FileStream fileStream = new(imgPath, FileMode.Create);
+        image?.CopyToAsync(fileStream);
+        employee.ImgUrl = Path.Combine("uploads/employees", employee.UserName + unique, employee.FileName!);
         // _fileRepo.Add(file);
         
 
        
         
-        return employeeRepo.Add(employee);
+         var result = employeeRepo.Add(employee);
+         if (employee.ManagerId.HasValue)
+         {
+             var manager = employeeRepo.GetById(employee.ManagerId.Value);
+
+             if (manager != null && manager.Id == employee.Id)
+             {
+                 employeeRepo.Delete(employee);
+                 // The employee cannot be the manager of their own manager
+                 throw new InvalidOperationException("An employee cannot be the manager of their own manager.");
+             }
+         }
+
+         return result;
     }
     
 
-    public async Task<int> Update(EmployeeUpdateDto employeeUpdateDto,int id)
+    public async Task<int> Update(EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image)
     {
         var employee = employeeRepo.GetById(id);
         
@@ -94,25 +116,28 @@ public class EmployeeManager(
         if (employeeUpdateDto.Gender != null) employee.Result.Gender = employeeUpdateDto.Gender;
         if (employeeUpdateDto.Age != null) employee.Result.Age = employeeUpdateDto.Age;
         // employee.Result.FileContent = employeeUpdateDto.Image.ContentType;
-        if (employeeUpdateDto.Image != null)
+        if (image != null)
         {
-            employee.Result.FileExtension = employeeUpdateDto.Image?.ContentType;
-            employee.Result.FileName = employeeUpdateDto.Image?.FileName;
+            employee.Result.FileExtension = image?.ContentType;
+            employee.Result.FileName = image?.FileName;
             employee.Result.UserName = employee.Result.Email?.Substring(0, employee.Result.Email.IndexOf('@'));
-            
-            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/employees", employee.Result.UserName!);
+
+            var unique = Guid.NewGuid();
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/employees", employee.Result.UserName+unique);
             if (Directory.Exists(path))
             {
-                Directory.Delete(path);
+                Directory.Delete(path,true);
             }
             else
             {
                 Directory.CreateDirectory(path);
             }
-
-            employee.Result.ImgUrl = path + "/" + employee.Result.FileName + ".png";
-            await using FileStream fileStream = new(employee.Result.ImgUrl, FileMode.Create);
-            employeeUpdateDto.Image?.CopyToAsync(fileStream);
+            
+           
+            var imgPath = Path.Combine(path, employee.Result.FileName!);
+            await using FileStream fileStream = new(imgPath, FileMode.Create);
+            image?.CopyToAsync(fileStream);
+            employee.Result.ImgUrl = Path.Combine("uploads/employees", employee.Result.UserName+unique, employee.Result.FileName!);
         }
 
         return await employeeRepo.Update(employee.Result);
@@ -129,6 +154,7 @@ public class EmployeeManager(
     {
         var employee = employeeRepo.GetById(id);
         if (employee.Result == null) return null;
+        var manager = employeeRepo.GetById(employee.Result.ManagerId);
         return new EmployeeReadDto()
         {
             Id = employee.Id,
@@ -143,6 +169,21 @@ public class EmployeeManager(
             DepartmentId = employee.Result.DepartmentId,
             ManagerId = employee.Result.ManagerId,
             ImgUrl = employee.Result.ImgUrl,
+            Manager = manager.Result == null ? null : new EmployeeReadDto()
+            {
+                Id = manager.Result.Id,
+                FullName = manager.Result.FullName,
+                Phone = manager.Result.Phone,
+                Email = manager.Result.Email,
+                Age = manager.Result.Age,
+                JobPosition = manager.Result.JobPosition,
+                JoiningDate = manager.Result.JoiningDate,
+                YearsOfExperience = manager.Result.YearsOfExperience,
+                Salary = manager.Result.Salary,
+                DepartmentId = manager.Result.DepartmentId,
+                ManagerId = manager.Result.ManagerId,
+                ImgUrl = manager.Result.ImgUrl
+            }
         };
     }
 
@@ -197,43 +238,88 @@ public class EmployeeManager(
 
    
 
-    public async Task<IEnumerable<EmployeeDto>> GetFilteredEmployeesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+    public async Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
         var users = await employeeRepo.GetAll();
-        value2 ??= value1;
+        
 
-        var filteredResults = ApplyFilter(users, column, value1, operator1, value2)
-            .Intersect(ApplyFilter(users, column, value2, operator2));
-
-        var paginatedResults = filteredResults.Skip((page - 1) * pageSize).Take(pageSize);
-
-        return mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(paginatedResults);
-    }
-    private IEnumerable<Employee> ApplyFilter(IEnumerable<Employee> users, string column, string value, string? operatorType, string? value2 = null)
-    {
-        value2 ??= value;
-
-        return operatorType?.ToLower() switch
+        // Check if column, value1, and operator1 are all null or empty
+        if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            "contains" => users.Where(e => e.GetValue(column).Contains(value)),
-            "doesnotcontain" => users.SkipWhile(e => e.GetValue(column).Contains(value)),
-            "startswith" => users.Where(e => e.GetValue(column).StartsWith(value)),
-            "endswith" => users.Where(e => e.GetValue(column).EndsWith(value)),
+            var count = users.Count();
+            var pages = (int)Math.Ceiling((double)count / pageSize);
+
+            // Use ToList() directly without checking Any() condition
+            var userList = users.ToList();
+
+            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var map = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(paginatedResults);
+            FilteredEmployeeDto result = new()
+            {
+                EmployeeDto = map,
+                TotalCount = count,
+                TotalPages = pages
+            };
+            return result;
+        }
+
+        if (users != null)
+        {
+            IEnumerable<Employee> filteredResults;
+        
+            // Apply the first filter
+            filteredResults = ApplyFilter(users, column, value1, operator1);
+
+            // Apply the second filter only if both value2 and operator2 are provided
+            if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
+            {
+                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+            }
+
+            var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
+            var totalCount = enumerable.Count();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+            var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var mappedEmployee = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(paginatedResults);
+
+            FilteredEmployeeDto filteredEmployeeDto = new()
+            {
+                EmployeeDto = mappedEmployee,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+            return filteredEmployeeDto;
+        }
+
+        return new FilteredEmployeeDto();
+    }
+    private IEnumerable<Employee> ApplyFilter(IEnumerable<Employee> users, string? column, string? value, string? operatorType)
+    {
+        // value2 ??= value;
+
+        return operatorType switch
+        {
+            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
             _ when decimal.TryParse(value, out var employeeValue) => ApplyNumericFilter(users, column, employeeValue, operatorType),
             _ => users
         };
     }
 
-private IEnumerable<Employee> ApplyNumericFilter(IEnumerable<Employee> users, string column, decimal value, string? operatorType)
+    private IEnumerable<Employee> ApplyNumericFilter(IEnumerable<Employee> users, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue == value),
-        "neq" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue != value),
-        "gte" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue >= value),
-        "gt" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue > value),
-        "lte" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue <= value),
-        "lt" => users.Where(e => decimal.TryParse(e.GetValue(column), out var employeeValue) && employeeValue < value),
+        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue == value),
+        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue != value),
+        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue >= value),
+        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue > value),
+        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue <= value),
+        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var employeeValue) && employeeValue < value),
         _ => users
     };
 }
@@ -241,9 +327,16 @@ private IEnumerable<Employee> ApplyNumericFilter(IEnumerable<Employee> users, st
 
     public Task<List<EmployeeDto>> GlobalSearch(string searchKey, string? column)
     {
-        var  users = employeeRepo.GlobalSearch(searchKey);
+        
         if(column!=null)
-            users = (IQueryable<Employee>)employeeRepo.GetAll().Result.Where(e => e.GetValue(column).Contains(searchKey));
+        {
+            IEnumerable<Employee> user;
+            user = employeeRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var employee = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(user);
+            return Task.FromResult(employee.ToList());
+        }
+
+        var  users = employeeRepo.GlobalSearch(searchKey);
         var employees = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(users);
         return Task.FromResult(employees.ToList());
     }
@@ -261,37 +354,110 @@ private IEnumerable<Employee> ApplyNumericFilter(IEnumerable<Employee> users, st
         var employee = employeeRepo.GetByEmail(email);
         return employee.Result == null;
     }
-
-    public async Task<ManagerTree?> GetManagersTreeAsync(int employeeId)
-{
-    var employee = await employeeRepo.GetById(employeeId);
-
-    if (employee == null)
+    
+    public async Task<List<ManagerTree>> GetManagersTreeAsync()
     {
-        return null;
+        var managers = await employeeRepo.GetAllManagersAsync();
+
+        if (!managers.Any())
+        {
+            return new List<ManagerTree>();
+        }
+
+        var managerTrees = new List<ManagerTree>();
+
+        foreach (var manager in managers)
+        {
+            var managerTree = await BuildManagerTreeAsync(manager);
+            if (managerTree != null)
+            {
+                managerTrees.Add(managerTree);
+            }
+        }
+
+        return managerTrees;
     }
 
-    return await BuildManagerTreeAsync(employee);
-}
-
-private async Task<ManagerTree?> BuildManagerTreeAsync(Employee employee)
-{
-    var node = new ManagerTree()
+    private async Task<ManagerTree?> BuildManagerTreeAsync(Employee manager)
     {
-        Employee = employee,
-        Subordinates = new List<ManagerTree>()
-    };
+        var node = new ManagerTree()
+        {
+            Employee = mapper.Map<Employee, EmployeeDto>(manager),
+            Subordinates = new List<ManagerTree>()
+        };
 
-    var subordinates = await employeeRepo.GetSubordinatesAsync(employee.Id)!;
+        var subordinates = await employeeRepo.GetSubordinatesAsync(manager.Id);
 
-    foreach (var subordinate in subordinates)
-    {
-        var subordinateNode = await BuildManagerTreeAsync(subordinate);
-        if (subordinateNode != null) node.Subordinates.Add(subordinateNode);
+        foreach (var subordinate in subordinates)
+        {
+            var subordinateNode = await BuildManagerTreeAsync(subordinate);
+            if (subordinateNode != null)
+            {
+                node.Subordinates.Add(subordinateNode);
+            }
+        }
+
+        return node;
     }
 
-    return node;
-}
+
+
+//     public async Task<ManagerTree?> GetManagersTreeAsync()
+// {
+//     var employees = await employeeRepo.GetAllManagers();
+//
+//     // if (employees == null)
+//     // {
+//     //     return null;
+//     // }
+//     var dtos=mapper.Map<List<Employee>, List<EmployoeeDto>>(employees);
+//     
+//     foreach (var employee in dtos)
+//     {
+//         List<Employee> subordinates = await employeeRepo.GetSubordinatesAsync(employee.Id);
+//         var employeeSubordinates = mapper.Map<List<Employee>, List<EmployoeeDto>>(subordinates);
+//         return await BuildManagerTreeAsync(employee,employeeSubordinates);
+//     }
+//
+//     
+// }
+//
+// private async Task<ManagerTree?> BuildManagerTreeAsync(EmployoeeDto employee,List<EmployoeeDto> employees)
+// {
+//     var node = new ManagerTree()
+//     {
+//         Employee = employee,
+//         Subordinates = new List<ManagerTree>()
+//     };
+//     
+//     // var employees = await employeeRepo.GetSubordinatesAsync(employee.Id);
+//     foreach (var subordinate in employees)
+//     {
+//         var subordinateNode = await BuildManagerTreeAsync(subordinate,employees);
+//         if (subordinateNode != null) node.Subordinates.Add(subordinateNode);
+//     }
+//
+//     return node;
+// }
+
+// {
+//     var node = new ManagerTree()
+//     {
+//         Employee = employee,
+//         Subordinates = new List<ManagerTree>()
+//     };
+//     
+//     
+//     var subordinates = await employeeRepo.GetSubordinatesAsync(employee.Id)!;
+//
+//     foreach (var subordinate in subordinates)
+//     {
+//         var subordinateNode = await BuildManagerTreeAsync(subordinate);
+//         if (subordinateNode != null) node.Subordinates.Add(subordinateNode);
+//     }
+//
+//     return node;
+// }
 
 }
 

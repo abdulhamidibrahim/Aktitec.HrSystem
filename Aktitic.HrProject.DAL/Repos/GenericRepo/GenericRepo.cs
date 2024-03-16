@@ -1,4 +1,5 @@
 using Aktitic.HrProject.DAL.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL;
 
@@ -13,12 +14,16 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
 
     public Task<List<T>> GetAll()
     { 
-        return Task.FromResult(_context.Set<T>().ToList());
+        return Task.FromResult(_context.Set<T>()
+            .AsNoTracking()
+            .ToList());
     }
 
-    public Task<T?> GetById(int id)
+    public Task<T?> GetById(int? id)
     {
-        return Task.FromResult(_context.Set<T>().Find(id));        
+        return Task.FromResult(
+            _context.Set<T>()
+            .Find(id));        
     }
 
     public async Task<int> Add(T entity)
