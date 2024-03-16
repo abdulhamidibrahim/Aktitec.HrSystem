@@ -2,8 +2,6 @@
 
 public class AttendanceUpdateDto
 {
-    public int Id { get; set; }
-
     public DateOnly? Date { get; set; }
 
     public DateTime? PunchIn { get; set; }

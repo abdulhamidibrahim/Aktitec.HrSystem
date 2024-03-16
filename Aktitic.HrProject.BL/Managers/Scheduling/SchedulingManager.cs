@@ -38,33 +38,33 @@ public class SchedulingManager:ISchedulingManager
         _schedulingRepo.Add(scheduling);
     }
 
-    public void Update(SchedulingUpdateDto schedulingUpdateDto)
+    public void Update(SchedulingUpdateDto schedulingUpdateDto,int id)
     {
-        var scheduling = _schedulingRepo.GetById(schedulingUpdateDto.Id);
+        var scheduling = _schedulingRepo.GetById(id);
         
         if (scheduling.Result == null) return;
-        scheduling.Result.DepartmentId = schedulingUpdateDto.DepartmentId;
-        scheduling.Result.EmployeeId = schedulingUpdateDto.EmployeeId;
-        scheduling.Result.Date = schedulingUpdateDto.Date;
-        scheduling.Result.ShiftId = schedulingUpdateDto.ShiftId;
-        scheduling.Result.MinStartTime = schedulingUpdateDto.MinStartTime;
-        scheduling.Result.MaxStartTime = schedulingUpdateDto.MaxStartTime;
-        scheduling.Result.StartTime = schedulingUpdateDto.StartTime;
-        scheduling.Result.MinEndTime = schedulingUpdateDto.MinEndTime;
-        scheduling.Result.EndTime = schedulingUpdateDto.EndTime;
-        scheduling.Result.MaxEndTime = schedulingUpdateDto.MaxEndTime;
-        scheduling.Result.BreakTime = schedulingUpdateDto.BreakTime;
-        scheduling.Result.RepeatEvery = schedulingUpdateDto.RepeatEvery;
-        scheduling.Result.Note = schedulingUpdateDto.Note;
-        scheduling.Result.Status = schedulingUpdateDto.Status;
-        scheduling.Result.ApprovedBy = schedulingUpdateDto.ApprovedBy;
+        if(schedulingUpdateDto.DepartmentId != null) scheduling.Result.DepartmentId = schedulingUpdateDto.DepartmentId;
+        if(schedulingUpdateDto.EmployeeId != null) scheduling.Result.EmployeeId = schedulingUpdateDto.EmployeeId;
+        if(schedulingUpdateDto.Date != null) scheduling.Result.Date = schedulingUpdateDto.Date;
+        if(schedulingUpdateDto.ShiftId != null) scheduling.Result.ShiftId = schedulingUpdateDto.ShiftId;
+        if(schedulingUpdateDto.MinStartTime != null) scheduling.Result.MinStartTime = schedulingUpdateDto.MinStartTime;
+        if(schedulingUpdateDto.MaxStartTime != null) scheduling.Result.MaxStartTime = schedulingUpdateDto.MaxStartTime;
+        if(schedulingUpdateDto.StartTime != null) scheduling.Result.StartTime = schedulingUpdateDto.StartTime;
+        if(schedulingUpdateDto.MaxEndTime != null) scheduling.Result.MinEndTime = schedulingUpdateDto.MinEndTime;
+        if(schedulingUpdateDto.EndTime != null) scheduling.Result.EndTime = schedulingUpdateDto.EndTime;
+        if(schedulingUpdateDto.MaxEndTime != null) scheduling.Result.MaxEndTime = schedulingUpdateDto.MaxEndTime;
+        if(schedulingUpdateDto.BreakTime != null) scheduling.Result.BreakTime = schedulingUpdateDto.BreakTime;
+        if(schedulingUpdateDto.RepeatEvery != null) scheduling.Result.RepeatEvery = schedulingUpdateDto.RepeatEvery;
+        if(schedulingUpdateDto.Note != null) scheduling.Result.Note = schedulingUpdateDto.Note;
+        if(schedulingUpdateDto.Status != null) scheduling.Result.Status = schedulingUpdateDto.Status;
+        if(schedulingUpdateDto.ApprovedBy != null) scheduling.Result.ApprovedBy = schedulingUpdateDto.ApprovedBy;
 
         _schedulingRepo.Update(scheduling.Result);
     }
 
-    public void Delete(SchedulingDeleteDto schedulingDeleteDto)
+    public void Delete(int id)
     {
-        var scheduling = _schedulingRepo.GetById(schedulingDeleteDto.Id);
+        var scheduling = _schedulingRepo.GetById(id);
         if (scheduling.Result != null) _schedulingRepo.Delete(scheduling.Result);
     }
 
@@ -74,6 +74,7 @@ public class SchedulingManager:ISchedulingManager
         if (scheduling.Result == null) return null;
         return new SchedulingReadDto()
         {
+            Id = scheduling.Result.Id,
             DepartmentId = scheduling.Result.DepartmentId,
             EmployeeId = scheduling.Result.EmployeeId,
             Date = scheduling.Result.Date,
@@ -98,6 +99,7 @@ public class SchedulingManager:ISchedulingManager
         var schedulings = _schedulingRepo.GetAll();
         return schedulings.Result.Select(scheduling => new SchedulingReadDto()
         {
+            Id = scheduling.Id,
             DepartmentId = scheduling.DepartmentId,
             EmployeeId = scheduling.EmployeeId,
             Date = scheduling.Date,

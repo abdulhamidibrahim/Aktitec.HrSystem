@@ -2,7 +2,7 @@
 
 public class OvertimeReadDto
 {
-
+    public int Id { get; set; }
     public DateOnly? OtDate { get; set; }
 
     public byte? OtHours { get; set; }

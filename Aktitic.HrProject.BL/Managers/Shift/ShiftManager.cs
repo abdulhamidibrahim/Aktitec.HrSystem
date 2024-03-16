@@ -39,36 +39,36 @@ public class ShiftManager:IShiftManager
         _shiftRepo.Add(shift);
     }
 
-    public void Update(ShiftUpdateDto shiftUpdateDto)
+    public void Update(ShiftUpdateDto shiftUpdateDto,int id)
     {
-        var shift = _shiftRepo.GetById(shiftUpdateDto.Id);
+        var shift = _shiftRepo.GetById(id);
         
         if (shift.Result == null) return;
-        shift.Result.Name = shiftUpdateDto.Name;
-        shift.Result.MinStartTime = shiftUpdateDto.MinStartTime;
-        shift.Result.MaxStartTime = shiftUpdateDto.MaxStartTime;
-        shift.Result.MinEndTime = shiftUpdateDto.MinEndTime;
-        shift.Result.MaxEndTime = shiftUpdateDto.MaxEndTime;
-        shift.Result.BreakeTime = shiftUpdateDto.BreakeTime;
-        shift.Result.EndDate = shiftUpdateDto.EndDate;
-        shift.Result.RepeatEvery = shiftUpdateDto.RepeatEvery;
-        shift.Result.RecurringShift = shiftUpdateDto.RecurringShift;
-        shift.Result.Indefinate = shiftUpdateDto.Indefinate;
-        shift.Result.Tag = shiftUpdateDto.Tag;
-        shift.Result.Note = shiftUpdateDto.Note;
-        shift.Result.Status = shiftUpdateDto.Status;
-        shift.Result.ApprovedBy = shiftUpdateDto.ApprovedBy;
-        shift.Result.StartTime = shiftUpdateDto.StartTime;
-        shift.Result.EndTime = shiftUpdateDto.EndTime;
+        if(shiftUpdateDto.Name != null) shift.Result.Name = shiftUpdateDto.Name;
+        if(shiftUpdateDto.MinStartTime != null) shift.Result.MinStartTime = shiftUpdateDto.MinStartTime;
+        if(shiftUpdateDto.MaxStartTime != null) shift.Result.MaxStartTime = shiftUpdateDto.MaxStartTime;
+        if(shiftUpdateDto.MinEndTime != null) shift.Result.MinEndTime = shiftUpdateDto.MinEndTime;
+        if(shiftUpdateDto.MaxEndTime != null) shift.Result.MaxEndTime = shiftUpdateDto.MaxEndTime;
+        if(shiftUpdateDto.BreakeTime != null) shift.Result.BreakeTime = shiftUpdateDto.BreakeTime;
+        if(shiftUpdateDto.EndDate != null) shift.Result.EndDate = shiftUpdateDto.EndDate;
+        if(shiftUpdateDto.RepeatEvery != null) shift.Result.RepeatEvery = shiftUpdateDto.RepeatEvery;
+        if(shiftUpdateDto.RecurringShift != null) shift.Result.RecurringShift = shiftUpdateDto.RecurringShift;
+        if(shiftUpdateDto.Indefinate != null) shift.Result.Indefinate = shiftUpdateDto.Indefinate;
+        if(shiftUpdateDto.Tag != null) shift.Result.Tag = shiftUpdateDto.Tag;
+        if(shiftUpdateDto.Note != null) shift.Result.Note = shiftUpdateDto.Note;
+        if(shiftUpdateDto.Status != null) shift.Result.Status = shiftUpdateDto.Status;
+        if(shiftUpdateDto.ApprovedBy != null) shift.Result.ApprovedBy = shiftUpdateDto.ApprovedBy;
+        if(shiftUpdateDto.StartTime != null) shift.Result.StartTime = shiftUpdateDto.StartTime;
+        if(shiftUpdateDto.EndDate != null) shift.Result.EndTime = shiftUpdateDto.EndTime;
         
 
 
         _shiftRepo.Update(shift.Result);
     }
 
-    public void Delete(ShiftDeleteDto shiftDeleteDto)
+    public void Delete(int id)
     {
-        var shift = _shiftRepo.GetById(shiftDeleteDto.Id);
+        var shift = _shiftRepo.GetById(id);
         if (shift.Result != null) _shiftRepo.Delete(shift.Result);
     }
 
@@ -78,6 +78,7 @@ public class ShiftManager:IShiftManager
         if (shift.Result == null) return null;
         return new ShiftReadDto()
         {
+            Id = shift.Result.Id,
             Name = shift.Result.Name,
             MinStartTime = shift.Result.MinStartTime,
             MaxStartTime = shift.Result.MaxStartTime,
@@ -103,6 +104,7 @@ public class ShiftManager:IShiftManager
         var shifts = _shiftRepo.GetAll();
         return shifts.Result.Select(shift => new ShiftReadDto()
         {
+            Id = shift.Id,
             Name = shift.Name,
             MinStartTime = shift.MinStartTime,
             MaxStartTime = shift.MaxStartTime,

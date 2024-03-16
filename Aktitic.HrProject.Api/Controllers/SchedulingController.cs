@@ -28,24 +28,24 @@ public class SchedulingController: ControllerBase
         return user;
     }
     
-    [HttpPost]
-    public ActionResult Add(SchedulingAddDto schedulingAddDto)
+    [HttpPost("create")]
+    public ActionResult Add([FromForm] SchedulingAddDto schedulingAddDto)
     {
         _schedulingManager.Add(schedulingAddDto);
         return Ok();
     }
     
-    [HttpPut]
-    public ActionResult Update(SchedulingUpdateDto schedulingUpdateDto)
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] SchedulingUpdateDto schedulingUpdateDto,int id)
     {
-        _schedulingManager.Update(schedulingUpdateDto);
+        _schedulingManager.Update(schedulingUpdateDto,id);
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(SchedulingDeleteDto schedulingDeleteDto)
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete(int id)
     {
-        _schedulingManager.Delete(schedulingDeleteDto);
+        _schedulingManager.Delete(id);
         return Ok();
     }
     

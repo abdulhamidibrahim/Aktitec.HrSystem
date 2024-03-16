@@ -30,25 +30,25 @@ public class OvertimeManager:IOvertimeManager
         _overtimeRepo.Add(overtime);
     }
 
-    public void Update(OvertimeUpdateDto overtimeUpdateDto)
+    public void Update(OvertimeUpdateDto overtimeUpdateDto,int id)
     {
-        var overtime = _overtimeRepo.GetById(overtimeUpdateDto.Id);
+        var overtime = _overtimeRepo.GetById(id);
         
         if (overtime.Result == null) return;
-        overtime.Result.OtHours = overtimeUpdateDto.OtHours;
-        overtime.Result.OtDate = overtimeUpdateDto.OtDate;
-        overtime.Result.OtType = overtimeUpdateDto.OtType;
-        overtime.Result.Description = overtimeUpdateDto.Description;
-        overtime.Result.Status = overtimeUpdateDto.Status;
-        overtime.Result.ApprovedBy = overtimeUpdateDto.ApprovedBy;
-        overtime.Result.EmployeeId = overtimeUpdateDto.EmployeeId;
+        if(overtimeUpdateDto.OtHours != null) overtime.Result.OtHours = overtimeUpdateDto.OtHours;
+        if(overtimeUpdateDto.OtDate != null) overtime.Result.OtDate = overtimeUpdateDto.OtDate;
+        if(overtimeUpdateDto.OtType != null) overtime.Result.OtType = overtimeUpdateDto.OtType;
+        if(overtimeUpdateDto.Description != null) overtime.Result.Description = overtimeUpdateDto.Description;
+        if(overtimeUpdateDto.Status != null) overtime.Result.Status = overtimeUpdateDto.Status;
+        if(overtimeUpdateDto.ApprovedBy != null) overtime.Result.ApprovedBy = overtimeUpdateDto.ApprovedBy;
+        if(overtimeUpdateDto.EmployeeId != null) overtime.Result.EmployeeId = overtimeUpdateDto.EmployeeId;
 
         _overtimeRepo.Update(overtime.Result);
     }
 
-    public void Delete(OvertimeDeleteDto overtimeDeleteDto)
+    public void Delete(int id)
     {
-        var overtime = _overtimeRepo.GetById(overtimeDeleteDto.Id);
+        var overtime = _overtimeRepo.GetById(id);
         if (overtime.Result != null) _overtimeRepo.Delete(overtime.Result);
     }
 
@@ -58,6 +58,7 @@ public class OvertimeManager:IOvertimeManager
         if (overtime.Result == null) return null;
         return new OvertimeReadDto()
         {
+            Id = overtime.Result.Id,
             OtHours = overtime.Result.OtHours,
             OtDate = overtime.Result.OtDate,
             OtType = overtime.Result.OtType,
@@ -73,6 +74,7 @@ public class OvertimeManager:IOvertimeManager
         var overtimes = _overtimeRepo.GetAll();
         return overtimes.Result.Select(overtime => new OvertimeReadDto()
         {
+            Id = overtime.Id,
             OtHours = overtime.OtHours,
             OtDate = overtime.OtDate,
             OtType = overtime.OtType,

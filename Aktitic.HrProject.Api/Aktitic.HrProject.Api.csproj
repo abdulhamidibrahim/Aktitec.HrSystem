@@ -18,7 +18,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.8" />
     </ItemGroup>
 
@@ -39,6 +39,8 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\abdulhamid\abdulhamid.jpg" />
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ahmed\ahmed.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\abdulhamidibrahim\Screenshot 2024-02-24 at 6.07.33 PM.png.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ali\ali.png" />
     </ItemGroup>
 
 </Project>

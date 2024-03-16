@@ -4,11 +4,12 @@ namespace Aktitic.HrProject.DAL.Models;
 
 public class Project
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     
     [ForeignKey(nameof(Client))]
     public int? ClientId { get; set; }
@@ -28,4 +29,7 @@ public class Project
     public List<Employee> Employees { get; set; } = new();
     public List<Department> Departments { get; set; } = new();
     public ICollection<File> Files { get; set; }   = new List<File>();
+    
+    
+
 }

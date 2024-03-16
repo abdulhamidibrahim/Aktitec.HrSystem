@@ -5,8 +5,15 @@ using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.Repos.ClientRepo;
+using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrTask.BL;
+using Aktitic.HrTaskBoard.BL;
+using Aktitic.HrTaskList.BL;
+using Aktitic.HrTicket.BL;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,8 +25,6 @@ builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSwaggerGen(options =>
@@ -44,6 +49,8 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+    // options.CustomSchemaIds(e => e.FullName);
+    
     options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
 
@@ -52,7 +59,7 @@ builder.Services.AddDbContext<HrManagementDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
         option => option.CommandTimeout(300));
-    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 
@@ -61,10 +68,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
     .AddDefaultTokenProviders();
 
 
-builder.Services.AddIdentityCore<Employee>()    
-    .AddRoles<IdentityRole<int>>()
-    .AddEntityFrameworkStores<HrManagementDbContext>()
-    .AddDefaultTokenProviders();
+// builder.Services.AddIdentityCore<Employee>()    
+//     .AddRoles<IdentityRole<int>>()
+//     .AddEntityFrameworkStores<HrManagementDbContext>()
+//     .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -98,6 +105,33 @@ builder.Services.Configure<IdentityOptions>(options =>
 //     options.AddPolicy("User", policy => policy.RequireRole("User"));
 // });
 
+// builder.Services.AddCors(
+//     
+//     options =>
+//     {
+//         options.AddPolicy("CorsPolicy",
+//             b =>
+//             {
+//                 b.AllowAnyOrigin()
+//                     .AllowAnyMethod()
+//                     .AllowAnyHeader();
+//             });
+//     });
+    
+builder.Services.AddCors(options =>      // cross-origin resource sharing
+{
+    options.AddPolicy("AllowAngularOrigins",
+        policyBuilder =>
+        {
+            policyBuilder.WithOrigins(
+                    "http://localhost:4200"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Auto Mapper Configurations
@@ -121,7 +155,15 @@ builder.Services.AddScoped<IOvertimeManager, OvertimeManager>();
 builder.Services.AddScoped<ISchedulingManager, SchedulingManager>();
 builder.Services.AddScoped<IShiftManager, ShiftManager>();
 builder.Services.AddScoped<ITimesheetManager, TimesheetManager>();
-builder.Services.AddScoped<IFileRepo, FileRepo>();
+builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<INoteManager, NoteManager>();
+builder.Services.AddScoped<IClientManager, ClientManager>();
+builder.Services.AddScoped<ITaskManager, TaskManager>();
+builder.Services.AddScoped<ITaskListManager, TaskListManager>();
+builder.Services.AddScoped<ITaskBoardManager, TaskBoardManager>();
+builder.Services.AddScoped<IProjectManager, ProjectManager>();
+builder.Services.AddScoped<ITicketManager, TicketManager>();
+builder.Services.AddScoped<ITicketFollowersManager, TicketFollowersManager>();
 
 #endregion
 
@@ -138,9 +180,23 @@ builder.Services.AddScoped<IOvertimeRepo, OvertimeRepo>();
 builder.Services.AddScoped<ISchedulingRepo, SchedulingRepo>();
 builder.Services.AddScoped<IShiftRepo, ShiftRepo>();
 builder.Services.AddScoped<ITimesheetRepo, TimesheetRepo>();
+builder.Services.AddScoped<INotesRepo, NotesRepo>();
+builder.Services.AddScoped<IClientRepo, ClientRepo>();
+builder.Services.AddScoped<IProjectRepo, ProjectRepo>();
+builder.Services.AddScoped<ITaskRepo, TaskRepo>();
+builder.Services.AddScoped<ITaskBoardRepo, TaskBoardRepo>();
+builder.Services.AddScoped<ITaskListRepo, TaskListRepo>();
+builder.Services.AddScoped<ITicketRepo, TicketRepo>();
+builder.Services.AddScoped<ITicketFollowersRepo, TicketFollowersRepo>();
 
 #endregion
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = int.MaxValue; //104857600; // 100MB
+    options.MemoryBufferThreshold = int.MaxValue;
+});
 
 var app = builder.Build();
 
@@ -153,13 +209,16 @@ if (app.Environment.IsDevelopment())
 
 // app.UseHttpsRedirection();
 
-// app.UseRouting();
+
+app.UseRouting();
 
 app.UseStaticFiles();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors("AllowAngularOrigins");
 
 app.MapControllers();
 

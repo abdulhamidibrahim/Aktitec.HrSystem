@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-[Table("Employee")]
-public partial class Employee : ApplicationUser
+// [Table("Employee")]
+public partial class Employee 
+    // : ApplicationUser
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public  int Id { get; set; }
     public string? FullName { get; set; } = string.Empty;
-    // public override string? Email { get; set; }
+    public string? UserName { get; set; }
+    public  string? Email { get; set; }
     public string? ImgUrl { get; set; }
     public int? ImgId { get; set; }
 
@@ -50,7 +53,7 @@ public partial class Employee : ApplicationUser
 
     public virtual ICollection<Leaves> LeafApprovedByNavigations { get; set; } = new List<Leaves>();
 
-    public virtual ICollection<Leaves> LeafEmployees { get; set; } = new List<Leaves>();
+    public virtual ICollection<Leaves>? LeafEmployees { get; set; } = new List<Leaves>();
 
     public virtual ICollection<Overtime> OvertimeApprovedByNavigations { get; set; } = new List<Overtime>();
 
@@ -66,15 +69,12 @@ public partial class Employee : ApplicationUser
 
     public virtual Timesheet? Timesheet { get; set; }
     
-    public string GetValue(string columnName)
-    {
-        var propertyInfo = GetType().GetProperty(columnName);
-        if (propertyInfo != null)
-        {
-            var value = propertyInfo.GetValue(this)?.ToString();
-            return value ?? string.Empty;
-        }
 
-        return string.Empty;
-    }
+    
 }
+
+// public class ManagerTree
+// {
+//     public EmployeeDto Employee { get; set; }
+//     public List<ManagerTree> Subordinates { get; set; } = new ();
+// }

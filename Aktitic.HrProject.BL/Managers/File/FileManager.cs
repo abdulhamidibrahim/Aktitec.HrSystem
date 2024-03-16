@@ -26,22 +26,22 @@ public class FileManager:IFileManager
         _fileRepo.Add(file);
     }
 
-    public void Update(FileUpdateDto fileUpdateDto)
+    public void Update(FileUpdateDto fileUpdateDto,int id)
     {
-        var file = _fileRepo.GetById(fileUpdateDto.Id);
+        var file = _fileRepo.GetById(id);
         
         if (file.Result == null) return;
-        file.Result.Name = fileUpdateDto.Name;
-        file.Result.Content = fileUpdateDto.Content;
-        file.Result.Extension = fileUpdateDto.Extension;
+        if(fileUpdateDto.Name != null) file.Result.Name = fileUpdateDto.Name;
+        if(fileUpdateDto.Content != null) file.Result.Content = fileUpdateDto.Content;
+        if(fileUpdateDto.Extension != null) file.Result.Extension = fileUpdateDto.Extension;
         
         
         _fileRepo.Update(file.Result);
     }
 
-    public void Delete(FileDeleteDto fileDeleteDto)
+    public void Delete(int id)
     {
-        var file = _fileRepo.GetById(fileDeleteDto.Id);
+        var file = _fileRepo.GetById(id);
         if (file.Result != null) _fileRepo.Delete(file.Result);
     }
 
@@ -51,6 +51,7 @@ public class FileManager:IFileManager
         if (file.Result == null) return null;
         return new FileReadDto()
         {
+            Id = file.Result.Id,
             Name = file.Result.Name,
             Content = file.Result.Content,
             Extension = file.Result.Extension,
@@ -75,6 +76,7 @@ public class FileManager:IFileManager
         var files = _fileRepo.GetAll();
         return files.Result.Select(file => new FileReadDto()
         {
+            Id = file.Id,
             Name = file.Name,
             Content = file.Content,
             Extension = file.Extension,

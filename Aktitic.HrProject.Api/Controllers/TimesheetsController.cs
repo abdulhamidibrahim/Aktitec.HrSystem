@@ -30,24 +30,24 @@ public class TimesheetsController: ControllerBase
         return user;
     }
     
-    [HttpPost]
-    public ActionResult Add(TimesheetAddDto timesheetAddDto)
+    [HttpPost("create")]
+    public ActionResult Add([FromForm] TimesheetAddDto timesheetAddDto)
     {
         _timesheetManager.Add(timesheetAddDto);
         return Ok();
     }
     
-    [HttpPut]
-    public ActionResult Update(TimesheetUpdateDto timesheetUpdateDto)
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] TimesheetUpdateDto timesheetUpdateDto,int id)
     {
-        _timesheetManager.Update(timesheetUpdateDto);
+        _timesheetManager.Update(timesheetUpdateDto,id);
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(TimesheetDeleteDto timesheetDeleteDto)
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete(int id)
     {
-        _timesheetManager.Delete(timesheetDeleteDto);
+        _timesheetManager.Delete(id);
         return Ok();
     }
     

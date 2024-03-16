@@ -4,6 +4,7 @@ using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Task = System.Threading.Tasks.Task;
@@ -17,18 +18,17 @@ public class EmployeesController: ControllerBase
     private readonly IEmployeeManager _employeeManager;
     private readonly IFileRepo _fileRepo;
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly UserManager<Employee> _userManager;
+    // private readonly UserManager<Employee> _userManager;
 
     public EmployeesController(
         IEmployeeManager employeeManager, 
         IFileRepo fileRepo, 
-        IWebHostEnvironment webHostEnvironment,
-        UserManager<Employee> userManager)
+        IWebHostEnvironment webHostEnvironment)
     {
         _employeeManager = employeeManager;
         _fileRepo = fileRepo;
         _webHostEnvironment = webHostEnvironment;
-        _userManager = userManager;
+        // _userManager = userManager;
     }
     
     [HttpGet]
@@ -47,66 +47,112 @@ public class EmployeesController: ControllerBase
         return Task.FromResult(user)!;
     }
     
-    [HttpGet("/getEmployees")]
-    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(string? term, string? sort, int page, int limit)
+    [HttpGet("getEmployees")]
+    public async Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit)
     {
         return await _employeeManager.GetEmployeesAsync(term, sort, page, limit);
     }
     
-    [HttpGet("/getFilteredEmployees")]
-    public IEnumerable<EmployeeDto> GetFilteredEmployeesAsync(string column, string value1,[Optional] string value2, string @operator)
+    [HttpGet("getFilteredEmployees")]
+    public Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
-        return _employeeManager.GetFilteredEmployeesAsync(column, value1, value2, @operator);
+        
+        return _employeeManager.GetFilteredEmployeesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
+    // [ValidateAntiForgeryToken]
+    [Consumes("multipart/form-data")]
+    // [EmployeeEmailAddressValidator]
+    // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public async Task<ActionResult> Create(EmployeeAddDto employeeAddDto)
+    public async Task<ActionResult> Create([FromForm] EmployeeAddDto employeeAddDto,[FromForm] IFormFile? image)
     {
-        if (ModelState.IsValid)
-        {
-            var employee = new Employee()
+        
+        // if (ModelState.IsValid)
+        // {
+            // var employee = new Employee()
+            // {
+            //     FullName = employeeAddDto.FullName,
+            //     Email = employeeAddDto.Email,
+            //     UserName = employeeAddDto.Email!.Substring(0, employeeAddDto.Email.IndexOf('@')),
+            //     // ImgUrl = employeeAddDto.ImgUrl,
+            //     Phone = employeeAddDto.Phone,
+            //     Age = employeeAddDto.Age,
+            //     JobPosition = employeeAddDto.JobPosition,
+            //     JoiningDate = employeeAddDto.JoiningDate,
+            //     YearsOfExperience = employeeAddDto.YearsOfExperience,
+            //     Salary = employeeAddDto.Salary,
+            //     // FileName = employeeAddDto.Image.FileName,
+            //     // FileContent = employeeAddDto.Image.FileName,
+            //     // FileExtension = employeeAddDto.Image.ContentType,
+            //     // DepartmentId = employeeAddDto.DepartmentId,
+            //     // ManagerId = employeeAddDto.ManagerId,
+            // };
+            // var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.FullName!);
+            // if (Directory.Exists(path))
+            // {
+                // Directory.Delete(path);
+            // }else
+            // {
+                // Directory.CreateDirectory(path);
+            // }
+            // employee.ImgUrl = path+"/"+ employee.FileName+".png";
+            // await using FileStream fileStream = new(employee.ImgUrl, FileMode.Create);
+            // employeeAddDto.Image.CopyToAsync(fileStream);
+            // await employeeAddDto.Image.CopyToAsync(fileStream);
+            
+            
+            int result = await _employeeManager.Add(employeeAddDto,image);
+            if (result.Equals(0))
             {
-                FullName = employeeAddDto.FullName,
-                Email = employeeAddDto.Email,
-                UserName = employeeAddDto.Email!.Substring(0, employeeAddDto.Email.IndexOf('@')),
-                // ImgUrl = employeeAddDto.ImgUrl,
-                Phone = employeeAddDto.Phone,
-                Age = employeeAddDto.Age,
-                JobPosition = employeeAddDto.JobPosition,
-                JoiningDate = employeeAddDto.JoiningDate,
-                YearsOfExperience = employeeAddDto.YearsOfExperience,
-                Salary = employeeAddDto.Salary,
-                // DepartmentId = employeeAddDto.DepartmentId,
-                // ManagerId = employeeAddDto.ManagerId,
-            };
-            IdentityResult result = await _userManager.CreateAsync(employee, employeeAddDto.Password);
-            if (!result.Succeeded)
-            {
-                return BadRequest("error while creating user");
+                return BadRequest("Account Creation Failed");
             }
             
             return Ok("Account Created Successfully ");
-        }
+        // }
         
-        var errors = ModelState.Where (n => n.Value?.Errors.Count > 0).ToList ();
-        return BadRequest(errors);
+        // var errors = ModelState.Where (n => n.Value?.Errors.Count > 0).ToList ();
+        // return BadRequest(errors);
     }
     
-    [HttpPut]
-    public ActionResult Update(EmployeeUpdateDto employeeUpdateDto)
+    [Consumes("multipart/form-data")]
+    // [DisableFormValueModelBinding]
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id,[FromForm] IFormFile? image)
     {
-        _employeeManager.Update(employeeUpdateDto);
+        var result = _employeeManager.Update(employeeUpdateDto,id,image);
+        if (result.Result.Equals(0))
+        {
+            return BadRequest("Account Update Failed");
+        }
+        return Ok("Account updated successfully !");
+    }
+    
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete(int id)
+    {
+        var result =_employeeManager.Delete(id);
+        if (result.Result.Equals(0))
+        {
+            return BadRequest("Account Deletion Failed");
+        }
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(EmployeeDeleteDto employeeDeleteDto)
+    [HttpGet("GlobalSearch")]
+    public async Task<IEnumerable<EmployeeDto>> GlobalSearch(string search,string? column)
     {
-        _employeeManager.Delete(employeeDeleteDto);
-        return Ok();
+        return await _employeeManager.GlobalSearch(search,column);
     }
-    
-    
+
+    [HttpGet("getManagerTree")]
+    public async Task<List<ManagerTree>?> GetManagerTree()
+    {
+        return await _employeeManager.GetManagersTreeAsync();
+    }
+
+    #region commented
+
     
     // [HttpPost("uploadImage")]
     // [ImageValidator]
@@ -178,5 +224,7 @@ public class EmployeesController: ControllerBase
     //     return BadRequest("Image Not Found");
     // }
     
+
+    #endregion
     
 }

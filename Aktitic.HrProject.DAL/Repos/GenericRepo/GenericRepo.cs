@@ -1,4 +1,5 @@
 using Aktitic.HrProject.DAL.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL;
 
@@ -13,40 +14,44 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
 
     public Task<List<T>> GetAll()
     { 
-        return Task.FromResult(_context.Set<T>().ToList());
+        return Task.FromResult(_context.Set<T>()
+            .AsNoTracking()
+            .ToList());
     }
 
-    public Task<T?> GetById(int id)
+    public Task<T?> GetById(int? id)
     {
-        return Task.FromResult(_context.Set<T>().Find(id));        
+        return Task.FromResult(
+            _context.Set<T>()
+            .Find(id));        
     }
 
-    public void Add(T entity)
+    public async Task<int> Add(T entity)
     {
         _context.Set<T>().Add(entity);
-        _context.SaveChanges();        
+        return await _context.SaveChangesAsync();        
     }
 
-    public void Update(T entity)
+    public async Task<int> Update(T entity)
     {
         _context.Set<T>().Update(entity);
-        _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 
-    public void Delete(T entity)
+    public async Task<int> Delete(T entity)
     {
         _context.Remove(entity);
-        _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task<int> Delete(int id)
     {
-        var entity = _context.Set<T>().Find(id);
+        var entity = await _context.Set<T>().FindAsync(id);
         
-        if (entity == null) return;
+        if (entity == null) return 0;
         
         _context.Remove(entity);
-        _context.SaveChanges();        
+        return await _context.SaveChangesAsync();        
     }
     
 }

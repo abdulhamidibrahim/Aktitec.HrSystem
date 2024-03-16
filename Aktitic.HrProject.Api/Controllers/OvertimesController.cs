@@ -28,24 +28,24 @@ public class OvertimesController: ControllerBase
         return user;
     }
     
-    [HttpPost]
-    public ActionResult Add(OvertimeAddDto overtimeAddDto)
+    [HttpPost("create")]
+    public ActionResult Add([FromForm] OvertimeAddDto overtimeAddDto)
     {
         _overtimeManager.Add(overtimeAddDto);
         return Ok();
     }
     
-    [HttpPut]
-    public ActionResult Update(OvertimeUpdateDto overtimeUpdateDto)
+    [HttpPut("update/{id}")]
+    public ActionResult Update([FromForm] OvertimeUpdateDto overtimeUpdateDto,int id)
     {
-        _overtimeManager.Update(overtimeUpdateDto);
+        _overtimeManager.Update(overtimeUpdateDto,id);
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(OvertimeDeleteDto overtimeDeleteDto)
+    [HttpDelete("delete/{id}")]
+    public ActionResult Delete(int id)
     {
-        _overtimeManager.Delete(overtimeDeleteDto);
+        _overtimeManager.Delete(id);
         return Ok();
     }
     
