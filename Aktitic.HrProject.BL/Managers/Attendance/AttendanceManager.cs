@@ -1,5 +1,6 @@
 
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
@@ -32,7 +33,7 @@ public class AttendanceManager:IAttendanceManager
            EmployeeId = attendanceAddDto.EmployeeId,
            Break = attendanceAddDto.Break,
            Date = attendanceAddDto.Date,
-           OvertimeId = attendanceAddDto.OvertimeId,
+           OvertimeId = attendanceAddDto.Overtime,
            Production = attendanceAddDto.Production,
            PunchIn = attendanceAddDto.PunchIn,
            PunchOut = attendanceAddDto.PunchOut,
@@ -48,7 +49,7 @@ public class AttendanceManager:IAttendanceManager
         if(attendanceUpdateDto.EmployeeId!=null) attendance.Result.EmployeeId = attendanceUpdateDto.EmployeeId;
         if(attendanceUpdateDto.Break!=null) attendance.Result.Break = attendanceUpdateDto.Break;
         if(attendanceUpdateDto.Date!=null) attendance.Result.Date = attendanceUpdateDto.Date;
-        if(attendanceUpdateDto.OvertimeId!=null) attendance.Result.OvertimeId = attendanceUpdateDto.OvertimeId;
+        if(attendanceUpdateDto.Overtime!=null) attendance.Result.OvertimeId = attendanceUpdateDto.Overtime;
         if(attendanceUpdateDto.Production!=null) attendance.Result.Production = attendanceUpdateDto.Production;
         if(attendanceUpdateDto.PunchIn!=null) attendance.Result.PunchIn = attendanceUpdateDto.PunchIn;
         if(attendanceUpdateDto.PunchOut!=null) attendance.Result.PunchOut = attendanceUpdateDto.PunchOut;
@@ -74,7 +75,7 @@ public class AttendanceManager:IAttendanceManager
             EmployeeId = attendance.Result.EmployeeId,
             Break = attendance.Result.Break,
             Date = attendance.Result.Date,
-            OvertimeId = attendance.Result.OvertimeId,
+            Overtime = attendance.Result.OvertimeId,
             Production = attendance.Result.Production,
             PunchIn = attendance.Result.PunchIn,
             PunchOut = attendance.Result.PunchOut,
@@ -90,7 +91,7 @@ public class AttendanceManager:IAttendanceManager
             EmployeeId = attendance.EmployeeId,
             Break = attendance.Break,
             Date = attendance.Date,
-            OvertimeId = attendance.OvertimeId,
+            Overtime = attendance.OvertimeId,
             Production = attendance.Production,
             PunchIn = attendance.PunchIn,
             PunchOut = attendance.PunchOut,
@@ -201,23 +202,36 @@ public class AttendanceManager:IAttendanceManager
         return Task.FromResult(projects.ToList());
     }
 
-    public async Task<List<EmployeeAttendanceDto>> GetAllEmployeeAttendanceInCurrentMonth()
+    public async Task<List<EmployeeAttendanceDto>> GetAllEmployeeAttendanceInCurrentMonth(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
         // Call the method to get attendance records for the current month
-        var attendance =  _attendanceRepo.GetEmployeeAttendanceInCurrentMonth();
+        var paginatedAttendance = await GetFilteredAttendancesAsync(column, value1, operator1, value2, operator2, page, pageSize);
+
+        var attendanceDtoList = paginatedAttendance.AttendanceDto.ToList();
+
+        // Get employee attendance information for the filtered attendance records
+        var employeeAttendance = _attendanceRepo.GetEmployeeAttendanceInCurrentMonth(attendanceDtoList);
+
+        // Create DTOs for each employee's attendance
         var result = new List<EmployeeAttendanceDto>();
-        // Map attendance records to EmployeeAttendanceDto
-        foreach (var element in attendance)
+
+        foreach (var element in employeeAttendance)
         {
             var employee = await _employeeRepo.GetById(element.EmployeeId);
-            var empResult = _mapper.Map<Employee, EmployeeDto>(employee);
+            var employeeDto = _mapper.Map<Employee, EmployeeDto>(employee);
+
+            // Map attendance records to AttendanceDto
+            var attendanceDto = _mapper.Map<List<AttendanceDto>>(element.Attendance);
+
             result.Add(new EmployeeAttendanceDto()
             {
-                EmployeeDto = empResult,
+                EmployeeDto = employeeDto,
+                AttendanceDto = attendanceDto,
                 Date = element.Date,
                 Attended = element.Attended
             });
         }
+
         return result;
     }
 }

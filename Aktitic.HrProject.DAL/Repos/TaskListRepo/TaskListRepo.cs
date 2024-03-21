@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class TaskListRepo :GenericRepo<TaskList>,ITaskListRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public TaskListRepo(HrManagementDbContext context) : base(context)
+    public TaskListRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

@@ -3,6 +3,7 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
@@ -12,11 +13,13 @@ namespace Aktitic.HrProject.BL;
 public class DesignationManager:IDesignationManager
 {
     private readonly IDesignationRepo _designationRepo;
+    private readonly IDepartmentRepo _departmentRepo;
     private readonly IMapper _mapper;
-    public DesignationManager(IDesignationRepo designationRepo, IMapper mapper)
+    public DesignationManager(IDesignationRepo designationRepo, IMapper mapper, IDepartmentRepo departmentRepo)
     {
         _designationRepo = designationRepo;
         _mapper = mapper;
+        _departmentRepo = departmentRepo;
     }
     
     public Task<int> Add(DesignationAddDto designationAddDto)
@@ -47,22 +50,31 @@ public class DesignationManager:IDesignationManager
         return Task.FromResult(0);
     }
 
-    public DesignationReadDto? Get(int id)
+    public async Task<DesignationReadDto>? Get(int id)
     {
-        var designation = _designationRepo.GetById(id);
-        if (designation.Result == null) return null;
-        return new DesignationReadDto()
+        var designation = await _designationRepo.GetById(id);
+        if (designation == null)
+            return new DesignationReadDto();
+
+        var department = await _departmentRepo.GetById(designation.DepartmentId);
+
+        var mappedDepartment = department != null
+            ? _mapper.Map<Department, DepartmentDto>(department)
+            : new DepartmentDto();
+
+        return new DesignationReadDto
         {
-            Id = designation.Result.Id,
-            Name = designation.Result.Name,
-            DepartmentId = designation.Result.DepartmentId,
+            Id = designation.Id,
+            Name = designation.Name,
+            DepartmentId = designation.DepartmentId,
+            Department = mappedDepartment
         };
     }
 
-    public List<DesignationReadDto> GetAll()
+    public async Task<List<DesignationReadDto>> GetAll()
     {
-        var designations = _designationRepo.GetAll();
-        return designations.Result.Select(designation => new DesignationReadDto()
+        var  designations = await _designationRepo.GetAll();
+        return designations.Select(designation => new DesignationReadDto()
         {
             Id = designation.Id,
             Name = designation.Name,
@@ -71,9 +83,11 @@ public class DesignationManager:IDesignationManager
         }).ToList();
     }
     
-      public async Task<FilteredDesignationDto> GetFilteredDesignationsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+      public async Task<FilteredDesignationDto> GetFilteredDesignationsAsync
+          (string? column, string? value1, string? operator1, string? value2,
+              string? operator2, int page, int pageSize)
     {
-        var users = await _designationRepo.GetAll();
+        var users = _designationRepo.GetDesignationsWithDepartments();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -87,13 +101,28 @@ public class DesignationManager:IDesignationManager
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(paginatedResults);
+            List<DesignationDto> designationDto = new();
+            foreach (var designation in paginatedResults)
+            {
+                designationDto.Add(new DesignationDto()
+                {
+                    Name = designation.Name,
+                    Id = designation.Id,
+                    DepartmentId = designation.DepartmentId,
+                    Department = designation.Department.Name,
+                });
+            }
+            
             FilteredDesignationDto result = new()
             {
-                DesignationDto = map,
+                DesignationDto = designationDto,
                 TotalCount = count,
                 TotalPages = pages
             };
+            // foreach (var designation in result.DesignationDto)
+            // {
+            //     designation.Department = _mapper.Map<Department, DepartmentDto>(designation.Department);
+            // }
             return result;
         }
 
@@ -115,11 +144,20 @@ public class DesignationManager:IDesignationManager
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var mappedDesignation = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(paginatedResults);
-
+            List<DesignationDto> designationDto = new();
+            foreach (var designation in paginatedResults)
+            {
+                designationDto.Add(new DesignationDto()
+                {
+                    Name = designation.Name,
+                    Id = designation.Id,
+                    DepartmentId = designation.DepartmentId,
+                    Department = designation.Department.Name,
+                });
+            }
             FilteredDesignationDto filteredDesignationDto = new()
             {
-                DesignationDto = mappedDesignation,
+                DesignationDto = designationDto,
                 TotalCount = totalCount,
                 TotalPages = totalPages
             };

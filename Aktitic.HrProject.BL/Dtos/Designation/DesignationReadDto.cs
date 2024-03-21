@@ -1,4 +1,7 @@
-﻿namespace Aktitic.HrProject.BL;
+﻿using Aktitic.HrProject.DAL.Pagination.Client;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
+namespace Aktitic.HrProject.BL;
 
 public class DesignationReadDto
 {
@@ -6,5 +9,7 @@ public class DesignationReadDto
     public string? Name { get; set; }
 
     public int? DepartmentId { get; set; }
+
+    public DepartmentDto? Department { get; set; }
 
 }

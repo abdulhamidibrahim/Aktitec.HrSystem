@@ -1,15 +1,46 @@
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
-public class TimesheetRepo :GenericRepo<Timesheet>,ITimesheetRepo
+public class TimesheetRepo :GenericRepo<TimeSheet>,ITimesheetRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public TimesheetRepo(HrManagementDbContext context) : base(context)
+    public TimesheetRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
     
+    public IQueryable<TimeSheet> GlobalSearch(string? searchKey)
+    {
+        if (_context.Timesheets != null)
+        {
+            var query = _context.Timesheets.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKey))
+            {
+                searchKey = searchKey.Trim().ToLower();
+                query = query
+                    .Where(x =>
+                        x.Date!.ToString().ToLower().Contains(searchKey) ||
+                        x.Description!.ToLower().Contains(searchKey) ||
+                        x.Hours!.ToString().ToLower().Contains(searchKey));
+                       
+                        
+                return query;
+            }
+           
+        }
+
+        return _context.Timesheets!.AsQueryable();
+    }
+
+    public Task<List<TimeSheet>> GetTimeSheetWithEmployeeAndProject()
+    {
+        return _context.Timesheets
+            .Include(x => x.Employee)
+            .Include(x => x.Project).ToListAsync();
+    }
 }

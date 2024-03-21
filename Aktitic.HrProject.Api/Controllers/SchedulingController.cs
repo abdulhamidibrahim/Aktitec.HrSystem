@@ -1,4 +1,5 @@
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -15,38 +16,52 @@ public class SchedulingController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<SchedulingReadDto>> GetAll()
+    public async Task<List<SchedulingReadDto>> GetAll()
     {
-        return _schedulingManager.GetAll();
+        return await _schedulingManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<SchedulingReadDto?> Get(int id)
     {
-        var user = _schedulingManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var schedule = _schedulingManager.Get(id);
+        if (schedule == null) return NotFound("Schedule not found");
+        return Ok(schedule);
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromForm] SchedulingAddDto schedulingAddDto)
+    public async Task<ActionResult> Add([FromBody] SchedulingAddDto schedulingAddDto)
     {
-        _schedulingManager.Add(schedulingAddDto);
-        return Ok();
+        var result = await _schedulingManager.Add(schedulingAddDto);
+        if (result == 0) return BadRequest("Failed to create");
+        return Ok("Created Successfully");
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] SchedulingUpdateDto schedulingUpdateDto,int id)
+    public async Task<ActionResult> Update([FromBody] SchedulingUpdateDto schedulingUpdateDto,int id)
     {
-        _schedulingManager.Update(schedulingUpdateDto,id);
-        return Ok();
+        var result =await _schedulingManager.Update(schedulingUpdateDto,id);
+        if (result == 0) return BadRequest("Failed to update");
+        return Ok("Updated Successfully");
     }
     
     [HttpDelete("delete/{id}")]
-    public ActionResult Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        _schedulingManager.Delete(id);
-        return Ok();
+        var result = await _schedulingManager.Delete(id);
+        if (result == 0) return BadRequest("Failed to delete");
+        return Ok("Deleted Successfully");
     }
     
+    [HttpGet("GetAllEmployeesScheduling")]
+    public async Task<List<FilteredSchedulingDto>> GetAllEmployeesScheduling(int page, int pageSize)
+    {
+        return await _schedulingManager.GetAllEmployeesScheduling(page,pageSize);
+    }
+    
+    [HttpGet("GlobalSearch")]
+    public async Task<IEnumerable<ScheduleDto>> GlobalSearch(string search,string? column)
+    {
+        return await _schedulingManager.GlobalSearch(search,column);
+    }
 }

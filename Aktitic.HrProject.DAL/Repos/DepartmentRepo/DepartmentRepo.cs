@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL.Repos;
 
 public class DepartmentRepo :GenericRepo<Department>,IDepartmentRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public DepartmentRepo(HrManagementDbContext context) : base(context)
+    public DepartmentRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

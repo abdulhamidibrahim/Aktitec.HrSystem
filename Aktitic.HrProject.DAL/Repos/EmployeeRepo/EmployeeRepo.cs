@@ -12,9 +12,9 @@ namespace Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 
 public class EmployeeRepo : GenericRepo<Employee>, IEmployeeRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public EmployeeRepo(HrManagementDbContext context) : base(context)
+    public EmployeeRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
@@ -167,6 +167,15 @@ public class EmployeeRepo : GenericRepo<Employee>, IEmployeeRepo
         if (query != null) return await query;
         return null;
     }
-
+    
+    // get employee with department
+    public async Task<List<Employee>> GetEmployeeWithDepartment()
+    {
+        if (_context.Employees != null)
+            return await _context.Employees
+                .Include(x => x.Department)
+                .ToListAsync();
+        return new List<Employee>();
+    }
 }
 

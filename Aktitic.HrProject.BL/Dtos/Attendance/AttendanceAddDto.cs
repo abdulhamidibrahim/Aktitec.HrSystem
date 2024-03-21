@@ -9,11 +9,11 @@ public class AttendanceAddDto
 
     public DateTime? PunchOut { get; set; }
 
-    public TimeOnly? Production { get; set; }
+    public string? Production { get; set; }
 
-    public TimeOnly? Break { get; set; }
+    public string? Break { get; set; }
 
-    public int? OvertimeId { get; set; }
+    public int? Overtime { get; set; }
 
     public int? EmployeeId { get; set; }
 

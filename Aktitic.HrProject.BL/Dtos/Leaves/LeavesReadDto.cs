@@ -18,5 +18,5 @@ public class LeavesReadDto
     public bool? Approved { get; set; }
 
     public int? ApprovedBy { get; set; }
-
+    public string? Status { get; set; }
 }

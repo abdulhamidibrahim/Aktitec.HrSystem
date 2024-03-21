@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -15,38 +17,55 @@ public class OvertimesController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<OvertimeReadDto>> GetAll()
+    public async Task<ActionResult<List<OvertimeReadDto>>> GetAll()
     {
-        return _overtimeManager.GetAll();
+        return await _overtimeManager.GetAll();
     }
     
     [HttpGet("{id}")]
-    public ActionResult<OvertimeReadDto?> Get(int id)
+    public async Task<ActionResult<OvertimeReadDto?>> Get(int id)
     {
-        var user = _overtimeManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var user =await _overtimeManager.Get(id);
+        if (user == null) return NotFound("User not found");
+        return Ok(user);
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromForm] OvertimeAddDto overtimeAddDto)
+    public ActionResult Add([FromBody] OvertimeAddDto overtimeAddDto)
     {
-        _overtimeManager.Add(overtimeAddDto);
-        return Ok();
+        var result = _overtimeManager.Add(overtimeAddDto);
+        if (result.Result == 0) return BadRequest("Overtime not added");
+        return Ok("Overtime added successfully");
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] OvertimeUpdateDto overtimeUpdateDto,int id)
+    public ActionResult Update([FromBody] OvertimeUpdateDto overtimeUpdateDto,int id)
     {
-        _overtimeManager.Update(overtimeUpdateDto,id);
-        return Ok();
+        var result  = _overtimeManager.Update(overtimeUpdateDto,id);
+        if(result.Result == 0)return BadRequest("Overtime not updated");
+        return Ok("Overtime updated Successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        _overtimeManager.Delete(id);
-        return Ok();
+        var result = _overtimeManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete Overtime");
+        return Ok("Deleted successfully");
+    }
+    
+     
+    [HttpGet("GlobalSearch")]
+    public async Task<IEnumerable<OvertimeDto>> GlobalSearch(string search,string? column)
+    {
+        return await _overtimeManager.GlobalSearch(search,column);
+    }
+    
+    [HttpGet("getFilteredOvertimes")]
+    public Task<FilteredOvertimeDto> GetFilteredOvertimesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    {
+        
+        return _overtimeManager.GetFilteredOvertimesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
 }

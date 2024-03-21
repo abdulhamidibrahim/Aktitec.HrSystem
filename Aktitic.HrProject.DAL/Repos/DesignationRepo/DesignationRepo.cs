@@ -1,13 +1,15 @@
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class DesignationRepo :GenericRepo<Designation>,IDesignationRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public DesignationRepo(HrManagementDbContext context) : base(context)
+    public DesignationRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
@@ -33,5 +35,11 @@ public class DesignationRepo :GenericRepo<Designation>,IDesignationRepo
 
         return _context.Designations!.AsQueryable();
     }
+    // get designations with departments
     
+    public IQueryable<Designation> GetDesignationsWithDepartments()
+    {
+        return _context.Designations!.Include(d => d.Department).AsQueryable();
+    }
+   
 }

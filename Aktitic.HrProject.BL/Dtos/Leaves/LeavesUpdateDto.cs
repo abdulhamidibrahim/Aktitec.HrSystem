@@ -19,4 +19,5 @@ public class LeavesUpdateDto
 
     public int? ApprovedBy { get; set; }
 
+    public string? Status { get; set; }
 }

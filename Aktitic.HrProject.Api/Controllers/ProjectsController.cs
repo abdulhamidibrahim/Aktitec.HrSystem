@@ -44,14 +44,6 @@ public class ProjectsController: ControllerBase
         return user;
     }
     
-    
-    [HttpGet("getFilteredProjects")]
-    public Task<FilteredProjectDto> GetFilteredProjectsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
-    {
-        
-        return _projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
-    }
-    
     // [ValidateAntiForgeryToken]
     [Consumes("multipart/form-data")]
     // [ProjectEmailAddressValidator]
@@ -99,6 +91,13 @@ public class ProjectsController: ControllerBase
     public async Task<IEnumerable<ProjectDto>> GlobalSearch(string search,string? column)
     {
         return await _projectManager.GlobalSearch(search,column);
+    }
+    
+    [HttpGet("getFilteredProjects")]
+    public Task<FilteredProjectDto> GetFilteredProjectsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    {
+        
+        return _projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     

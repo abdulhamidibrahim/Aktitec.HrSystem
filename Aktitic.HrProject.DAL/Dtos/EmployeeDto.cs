@@ -1,3 +1,5 @@
+using Aktitic.HrProject.DAL.Pagination.Client;
+
 namespace Aktitic.HrProject.DAL.Pagination.Employee;
 
 public class EmployeeDto
@@ -35,5 +37,6 @@ public class EmployeeDto
     
     // public int? ProjectId { get; set; }
     public string? Department { get; set; }
-    
+
+    public DepartmentDto? DepartmentDto { get; set; }
 }

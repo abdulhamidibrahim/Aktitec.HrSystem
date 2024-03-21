@@ -1,6 +1,6 @@
 using Aktitic.HrProject.DAL.Pagination.Employee;
 
-namespace Aktitic.HrProject.DAL.Pagination.Client;
+namespace Aktitic.HrProject.DAL.Dtos;
 
 public class AttendanceDto
 {

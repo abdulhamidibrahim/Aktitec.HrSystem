@@ -12,13 +12,13 @@ using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.Context;
 
-public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,IdentityRole<int>,int>
+public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,IdentityRole<int>,int>
 {
-    public HrManagementDbContext()
+    public HrSystemDbContext()
     {
     }
 
-    public HrManagementDbContext(DbContextOptions<HrManagementDbContext> options)
+    public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options)
         : base(options)
     {
         if(Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
@@ -58,14 +58,23 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
     public virtual DbSet<Shift>? Shifts { get; set; }
 
     public virtual DbSet<Client>? Clients { get; set; }
+    
+    public virtual DbSet<CustomPolicy>? CustomPolicies { get; set; }
     public virtual DbSet<Project>? Projects { get; set; }
     public virtual DbSet<Task>? Tasks { get; set; }
     public virtual DbSet<TaskList>? TaskLists { get; set; }
     public virtual DbSet<TaskBoard>? Taskboards { get; set; }
     public virtual DbSet<Ticket>? Tickets { get; set; }
     public virtual DbSet<TicketFollowers>? TicketFollowers { get; set; }
-    public virtual DbSet<Timesheet>? Timesheets { get; set; }
+    public virtual DbSet<TimeSheet>? Timesheets { get; set; }
     public virtual DbSet<Notes>? Notes { get; set; }
+    public virtual DbSet<LeaveSettings>? LeaveSettings { get; set; }
+    // public virtual DbSet<Annual>? Annuals { get; set; }
+    // public virtual DbSet<Sick>? Sicks { get; set; }
+    // public virtual DbSet<Lop>? Lops { get; set; }
+    // public virtual DbSet<Hospitalisation>? Hospitalisations { get; set; }
+    // public virtual DbSet<Paternity>? Paternities { get; set; }
+    // public virtual DbSet<Maternity>? Maternities { get; set; }
     
     // public virtual DbSet<ApplicationUser>? ApplicationUsers { get; set; }
     
@@ -300,12 +309,12 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
                 .HasMaxLength(50)
                 .HasColumnName("tag");
 
-            // entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.Shifts)
-                // .HasForeignKey(d => d.ApprovedBy)
-                // .HasConstraintName("FK_Shift_Employee");
+            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.Shifts)
+                .HasForeignKey(d => d.ApprovedBy)
+                .HasConstraintName("FK_Shift_Employee");
         });
 
-        modelBuilder.Entity<Timesheet>(entity =>
+        modelBuilder.Entity<TimeSheet>(entity =>
         {
             entity.ToTable("Timesheet", "employee");
 
@@ -313,15 +322,14 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
             entity.Property(e => e.AssignedHours).HasColumnName("assigned_hours");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.Deadline)
-                .HasColumnType("datetime")
                 .HasColumnName("deadline");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.Hours).HasColumnName("hours");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
 
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Timesheet)
-                .HasForeignKey<Timesheet>(d => d.Id)
+            entity.HasOne(d => d.Employee).WithOne(p => p.Timesheet)
+                .HasForeignKey<TimeSheet>(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Timesheet_Employee");
         });
@@ -491,6 +499,13 @@ public partial class HrManagementDbContext : IdentityDbContext<ApplicationUser,I
             // entity.HasOne(d => d.Receiver).WithMany(p => p.NotesReceiver)
             //     .HasForeignKey(d => d.ReceiverId)
             //     .HasConstraintName("FK_Notes_Employee_Receiver");
+        });
+
+        modelBuilder.Entity<CustomPolicy>(entity =>
+        {
+            entity.ToTable("CustomPolicy", "employee");
+            
+            
         });
         OnModelCreatingPartial(modelBuilder);
     }

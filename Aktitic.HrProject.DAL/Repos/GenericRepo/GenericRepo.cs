@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL;
 
 public class GenericRepo<T> : IGenericRepo<T> where T : class
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public GenericRepo(HrManagementDbContext context)
+    public GenericRepo(HrSystemDbContext context)
     {
         _context = context;
     }

@@ -38,6 +38,8 @@ public partial class Shift
     public string? Note { get; set; }
 
     public string? Status { get; set; }
+    
+    public string[]? Days { get; set; }
 
     public int? ApprovedBy { get; set; }
 

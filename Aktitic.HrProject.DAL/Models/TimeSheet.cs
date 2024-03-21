@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Timesheet
+public partial class TimeSheet
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -13,7 +13,7 @@ public partial class Timesheet
 
     public int? ProjectId { get; set; }
 
-    public DateTime? Deadline { get; set; }
+    public DateOnly? Deadline { get; set; }
 
     public short? AssignedHours { get; set; }
 
@@ -23,5 +23,7 @@ public partial class Timesheet
 
     public string? Description { get; set; }
 
-    public virtual Employee IdNavigation { get; set; } = null!;
+    public virtual Employee? Employee { get; set; } 
+    
+    public virtual Project? Project { get; set; }
 }

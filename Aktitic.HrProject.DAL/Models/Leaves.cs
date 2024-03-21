@@ -20,11 +20,12 @@ public partial class Leaves
     public string? Reason { get; set; }
 
     public short? Days { get; set; }
-
+    
     public bool? Approved { get; set; }
-
+    
     public int? ApprovedBy { get; set; }
 
+    public string? Status { get; set; } = string.Empty;
     public virtual Employee? ApprovedByNavigation { get; set; }
 
     public virtual Employee? Employee { get; set; } 

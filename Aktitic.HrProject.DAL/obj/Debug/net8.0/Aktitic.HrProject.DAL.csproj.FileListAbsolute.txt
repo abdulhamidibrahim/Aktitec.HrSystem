@@ -7,9 +7,9 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.AssemblyInfoInputs.cache
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.AssemblyInfo.cs
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.csproj.CoreCompileInputs.cache
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.sourcelink.json
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/refint/Aktitic.HrProject.DAL.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.pdb
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.genruntimeconfig.cache
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/ref/Aktitic.HrProject.DAL.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.DAL/obj/Debug/net8.0/Aktitic.HrProject.DAL.sourcelink.json

@@ -12,9 +12,9 @@ namespace Aktitic.HrProject.DAL.Repos.ClientRepo;
 
 public class ClientRepo : GenericRepo<Client>, IClientRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public ClientRepo(HrManagementDbContext context) : base(context)
+    public ClientRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

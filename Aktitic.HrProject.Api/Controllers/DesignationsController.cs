@@ -17,17 +17,23 @@ public class DesignationsController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<DesignationReadDto>> GetAll()
+    public async Task<ActionResult<List<DesignationReadDto>>> GetAll()
     {
-        return _designationManager.GetAll();
+        var result = await _designationManager.GetAll();
+        return Ok(result);
     }
     
     [HttpGet("{id}")]
-    public ActionResult<DesignationReadDto?> Get(int id)
+    public async Task<ActionResult<DesignationReadDto?>> Get(int id)
     {
-        var user = _designationManager.Get(id);
-        if (user == null) return NotFound("Designation Not Found!");
-        return user;
+        var designation = await _designationManager.Get(id);
+
+        if (designation == null)
+        {
+            return NotFound("Designation Not Found!");
+        }
+
+        return Ok(designation);
     }
     
     [HttpPost("create")]
