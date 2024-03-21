@@ -1,4 +1,6 @@
-﻿namespace Aktitic.HrProject.BL;
+﻿using Aktitic.HrProject.DAL.Pagination.Employee;
+
+namespace Aktitic.HrProject.BL;
 
 public class OvertimeReadDto
 {

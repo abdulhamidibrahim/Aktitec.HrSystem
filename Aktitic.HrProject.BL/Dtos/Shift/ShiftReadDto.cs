@@ -35,4 +35,6 @@ public class ShiftReadDto
 
     public int? ApprovedBy { get; set; }
 
+    public string[]? Days { get; set; }
+
 }

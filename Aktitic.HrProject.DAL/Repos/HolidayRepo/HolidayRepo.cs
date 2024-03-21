@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class HolidayRepo :GenericRepo<Holiday>,IHolidayRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public HolidayRepo(HrManagementDbContext context) : base(context)
+    public HolidayRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

@@ -8,9 +8,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class NotesRepo :GenericRepo<Notes>,INotesRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public NotesRepo (HrManagementDbContext context) : base(context)
+    public NotesRepo (HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

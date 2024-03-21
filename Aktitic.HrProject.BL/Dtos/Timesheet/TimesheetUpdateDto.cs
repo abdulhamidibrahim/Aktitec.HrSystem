@@ -7,7 +7,7 @@ public class TimesheetUpdateDto
 
     public int? ProjectId { get; set; }
 
-    public DateTime? Deadline { get; set; }
+    public DateOnly? Deadline { get; set; }
 
     public short? AssignedHours { get; set; }
 

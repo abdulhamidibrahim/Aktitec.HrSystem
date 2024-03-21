@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //add connection string
-builder.Services.AddDbContext<HrManagementDbContext>(options =>
+builder.Services.AddDbContext<HrSystemDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
         option => option.CommandTimeout(300));
@@ -64,7 +64,7 @@ builder.Services.AddDbContext<HrManagementDbContext>(options =>
 
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
-    .AddEntityFrameworkStores<HrManagementDbContext>()
+    .AddEntityFrameworkStores<HrSystemDbContext>()
     .AddDefaultTokenProviders();
 
 
@@ -139,7 +139,6 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new AutoMapperProfiles());
 });
-
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
@@ -149,8 +148,9 @@ builder.Services.AddScoped<IAttendanceManager, AttendanceManager>();
 builder.Services.AddScoped<IDepartmentManager, DepartmentManager>();
 builder.Services.AddScoped<IDesignationManager, DesignationManager>();
 builder.Services.AddScoped<IEmployeeManager, EmployeeManager>();
-builder.Services.AddScoped<IHolidayManager, HolidayManager>();
+builder.Services.AddScoped<IHolidayManager, HolidayManager>(); 
 builder.Services.AddScoped<ILeavesManager, LeavesManager>();
+builder.Services.AddScoped<ILeaveSettingsManager, LeaveSettingsManager>();
 builder.Services.AddScoped<IOvertimeManager, OvertimeManager>();
 builder.Services.AddScoped<ISchedulingManager, SchedulingManager>();
 builder.Services.AddScoped<IShiftManager, ShiftManager>();
@@ -158,6 +158,7 @@ builder.Services.AddScoped<ITimesheetManager, TimesheetManager>();
 builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<INoteManager, NoteManager>();
 builder.Services.AddScoped<IClientManager, ClientManager>();
+builder.Services.AddScoped<ICustomPolicyManager, CustomPolicyManager>();
 builder.Services.AddScoped<ITaskManager, TaskManager>();
 builder.Services.AddScoped<ITaskListManager, TaskListManager>();
 builder.Services.AddScoped<ITaskBoardManager, TaskBoardManager>();
@@ -176,17 +177,25 @@ builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
 builder.Services.AddScoped<IFileRepo, FileRepo>();
 builder.Services.AddScoped<IHolidayRepo, HolidayRepo>();
 builder.Services.AddScoped<ILeavesRepo, LeavesRepo>();
+builder.Services.AddScoped<ILeaveSettingRepo, LeaveSettingRepo>();
 builder.Services.AddScoped<IOvertimeRepo, OvertimeRepo>();
 builder.Services.AddScoped<ISchedulingRepo, SchedulingRepo>();
 builder.Services.AddScoped<IShiftRepo, ShiftRepo>();
 builder.Services.AddScoped<ITimesheetRepo, TimesheetRepo>();
 builder.Services.AddScoped<INotesRepo, NotesRepo>();
 builder.Services.AddScoped<IClientRepo, ClientRepo>();
+builder.Services.AddScoped<ICustomPolicyRepo, CustomPolicyRepo>();
 builder.Services.AddScoped<IProjectRepo, ProjectRepo>();
 builder.Services.AddScoped<ITaskRepo, TaskRepo>();
 builder.Services.AddScoped<ITaskBoardRepo, TaskBoardRepo>();
 builder.Services.AddScoped<ITaskListRepo, TaskListRepo>();
 builder.Services.AddScoped<ITicketRepo, TicketRepo>();
+// builder.Services.AddScoped<IAnnualRepo, AnnualRepo>();
+// builder.Services.AddScoped<ISickRepo, SickRepo>();
+// builder.Services.AddScoped<IHospitalisationRepo, HospitalisationRepo>();
+// builder.Services.AddScoped<IMaternityRepo, MaternityRepo>();
+// builder.Services.AddScoped<IPaternityRepo, PaternityRepo>();
+// builder.Services.AddScoped<ILopRepo, LopRepo>();
 builder.Services.AddScoped<ITicketFollowersRepo, TicketFollowersRepo>();
 
 #endregion

@@ -13,4 +13,7 @@ public interface IEmployeeRepo :IGenericRepo<Employee>
     
     IQueryable<Employee> GlobalSearch(string? column);
     public Task<List<Employee>> GetSubordinatesAsync(int employeeId);
+
+    public Task<List<Employee>> GetEmployeeWithDepartment();
+
 }

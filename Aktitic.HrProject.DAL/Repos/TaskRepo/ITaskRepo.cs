@@ -6,4 +6,5 @@ namespace Aktitic.HrProject.DAL.Repos;
 public interface ITaskRepo :IGenericRepo<Task>
 {
     IQueryable<Task> GlobalSearch(string? searchKey);
+    IEnumerable<Task>? GetTaskWithProjectId(int projectId);
 }

@@ -1,13 +1,14 @@
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos;
 
 public class LeavesRepo :GenericRepo<Leaves>,ILeavesRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public LeavesRepo(HrManagementDbContext context) : base(context)
+    public LeavesRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
@@ -37,5 +38,11 @@ public class LeavesRepo :GenericRepo<Leaves>,ILeavesRepo
 
         return _context.Leaves!.AsQueryable();
     }
-    
+
+    public List<Leaves> GetLeavesWithEmployee()
+    {
+        return _context.Leaves
+            .Include(e => e.Employee)
+            .Include(e => e.ApprovedByNavigation).ToList();
+    }
 }

@@ -26,29 +26,32 @@ public class TasksController: ControllerBase
     public ActionResult<Task<TaskReadDto?>> Get(int id)
     {
         var user = _taskManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        if (user == null) return NotFound("Task not found!");
+        return Ok(user);
     }
     
     [HttpPost("create")]
     public ActionResult<Task> Add([FromForm] TaskAddDto taskAddDto)
     {
-        _taskManager.Add(taskAddDto);
-        return Ok();
+        var result =_taskManager.Add(taskAddDto);
+        if(result.Result ==0 ) return BadRequest("Failed to add task!");
+        return Ok("Task added successfully!");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] TaskUpdateDto taskUpdateDto,int id)
     {
-        _taskManager.Update(taskUpdateDto,id);
-        return Ok();
+        var result = _taskManager.Update(taskUpdateDto,id);
+        if(result.Result ==0 ) return BadRequest("Failed to update task!");
+        return Ok("Task updated successfully!");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        _taskManager.Delete(id);
-        return Ok();
+        var task = _taskManager.Delete(id);
+        if (task.Result == 0) return NotFound("Task not found!");
+        return Ok("Task deleted successfully!");
     }
     
     [HttpGet("getFilteredTasks")]

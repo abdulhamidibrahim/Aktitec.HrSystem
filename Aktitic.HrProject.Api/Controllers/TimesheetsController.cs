@@ -1,6 +1,8 @@
+using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Microsoft.AspNetCore.Mvc;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -17,38 +19,53 @@ public class TimesheetsController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<TimesheetReadDto>> GetAll()
+    public async Task<ActionResult<List<TimesheetReadDto>>> GetAll()
     {
-        return _timesheetManager.GetAll();
+        return await _timesheetManager.GetAll();
     }
     
     [HttpGet("{id}")]
-    public ActionResult<TimesheetReadDto?> Get(int id)
+    public async Task<ActionResult<TimesheetReadDto?>> Get(int id)
     {
-        var user = _timesheetManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var user = await _timesheetManager.Get(id);
+        if (user == null) return NotFound("TimeSheet not found");
+        return Ok(user);
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromForm] TimesheetAddDto timesheetAddDto)
+    public ActionResult Add([FromBody] TimesheetAddDto timesheetAddDto)
     {
-        _timesheetManager.Add(timesheetAddDto);
-        return Ok();
+        var result = _timesheetManager.Add(timesheetAddDto);
+        if (result.Result == 0) return BadRequest("Invalid data");
+        return Ok("Created successfully");
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] TimesheetUpdateDto timesheetUpdateDto,int id)
+    public ActionResult Update([FromBody] TimesheetUpdateDto timesheetUpdateDto,int id)
     {
-        _timesheetManager.Update(timesheetUpdateDto,id);
-        return Ok();
+        var result = _timesheetManager.Update(timesheetUpdateDto,id);
+        if(result.Result == 0)return BadRequest("Invalid data");
+        return Ok("Updated successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        _timesheetManager.Delete(id);
-        return Ok();
+        var result = _timesheetManager.Delete(id);
+        if(result.Result==0) return BadRequest("Invalid data");
+        return Ok("Deleted successfully");
+    }
+    [HttpGet("getFilteredTimeSheets")]
+    public Task<FilteredTimeSheetDto> GetFilteredTimeSheetsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    {
+        
+        return _timesheetManager.GetFilteredTimeSheetsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
+    [HttpGet("GlobalSearch")]
+    public async Task<IEnumerable<TimeSheetDto>> GlobalSearch(string search,string? column)
+    {
+        return await _timesheetManager.GlobalSearch(search,column);
+    }
+
 }

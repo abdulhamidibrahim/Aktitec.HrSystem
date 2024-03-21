@@ -7,9 +7,9 @@ namespace Aktitic.HrProject.DAL.Repos;
 
 public class FileRepo :GenericRepo<File>,IFileRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public FileRepo(HrManagementDbContext context) : base(context)
+    public FileRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

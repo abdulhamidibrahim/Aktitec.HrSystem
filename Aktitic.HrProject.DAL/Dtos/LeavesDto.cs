@@ -20,9 +20,11 @@ public class LeavesDto
 
     public bool? Approved { get; set; }
 
-    public int? ApprovedBy { get; set; }
+    public int? ApprovedById { get; set; }
+    
+    public string? Status { get; set; }
 
-    public virtual EmployeeDto? ApprovedByNavigation { get; set; }
+    public virtual EmployeeDto? ApprovedBy { get; set; }
 
     public virtual EmployeeDto? Employee { get; set; } 
 }

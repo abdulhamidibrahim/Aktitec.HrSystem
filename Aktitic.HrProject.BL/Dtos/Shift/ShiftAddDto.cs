@@ -33,4 +33,7 @@ public class ShiftAddDto
     public string? Status { get; set; }
 
     public int? ApprovedBy { get; set; }
+    
+    public string[]? Days { get; set; }
 }
+

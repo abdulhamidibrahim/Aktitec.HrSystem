@@ -1,4 +1,5 @@
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Pagination.Client;
 
 namespace Aktitic.HrProject.BL;
@@ -13,6 +14,6 @@ public interface IAttendanceManager
     public Task<FilteredAttendanceDto> GetFilteredAttendancesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<AttendanceDto>> GlobalSearch(string searchKey,string? column);
-    public Task<List<EmployeeAttendanceDto>> GetAllEmployeeAttendanceInCurrentMonth();
+    public Task<List<EmployeeAttendanceDto>> GetAllEmployeeAttendanceInCurrentMonth(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
 }

@@ -6,9 +6,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class TaskRepo :GenericRepo<Task>,ITaskRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public TaskRepo(HrManagementDbContext context) : base(context)
+    public TaskRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
@@ -36,5 +36,10 @@ public class TaskRepo :GenericRepo<Task>,ITaskRepo
         }
 
         return _context.Tasks!.AsQueryable();
+    }
+
+    public IEnumerable<Task>? GetTaskWithProjectId(int projectId)
+    {
+        return _context.Tasks.Where(x => x.ProjectId == projectId).ToList();
     }
 }

@@ -80,6 +80,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ahmedd920b369-c96c-4bea-908c-a3b3298b94f9\Notations for Traditional ERD-Page-1.png\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali3054081a-0c7a-43e0-abfb-e353f2263325\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali3054081a-0c7a-43e0-abfb-e353f2263325/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali3054081a-0c7a-43e0-abfb-e353f2263325\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali36ed53fd-05ce-4a53-8c53-82f702377b03\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -95,6 +111,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali36ed53fd-05ce-4a53-8c53-82f702377b03\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali45ba979b-c7f1-4f7a-8f5e-790b3c389e31\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali45ba979b-c7f1-4f7a-8f5e-790b3c389e31/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali45ba979b-c7f1-4f7a-8f5e-790b3c389e31\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali611a8d88-62fa-4cb9-94bb-ac4c96872e93\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>
@@ -128,6 +160,54 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali816095e4-ff34-429c-88c8-a23037ca56ce\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali8775f880-d8e0-48e7-a501-ba4f6df5fcf8\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali8775f880-d8e0-48e7-a501-ba4f6df5fcf8/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali8775f880-d8e0-48e7-a501-ba4f6df5fcf8\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali98f9928d-4a35-4c5f-97c8-84eff3095b34\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali98f9928d-4a35-4c5f-97c8-84eff3095b34/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali98f9928d-4a35-4c5f-97c8-84eff3095b34\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali9eab530c-e20e-4a02-982a-e3e15a86f42c\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali9eab530c-e20e-4a02-982a-e3e15a86f42c/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali9eab530c-e20e-4a02-982a-e3e15a86f42c\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alialiali\384523371_1021371202246592_691489130222820721_n.png))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -159,6 +239,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alib751d2fe-2735-41b5-8714-b68ef8ac47c3\Notations for Traditional ERD-Page-1.png\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alibe8b94bf-eec5-4dc1-8a72-70e54d1097e1\Notations for Traditional ERD-Page-1.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/alibe8b94bf-eec5-4dc1-8a72-70e54d1097e1/Notations for Traditional ERD-Page-1.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alibe8b94bf-eec5-4dc1-8a72-70e54d1097e1\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\elhelwabf0707b-ea25-4bf2-a836-1b0e7504b9eb\Notations for Traditional ERD-Page-1.png\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>

@@ -35,4 +35,6 @@ public class ShiftUpdateDto
 
     public int? ApprovedBy { get; set; }
 
+    public string[]? Days { get; set; }
+
 }

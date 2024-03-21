@@ -3,6 +3,7 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
@@ -32,7 +33,7 @@ public class LeavesManager:ILeavesManager
             ApprovedBy = leavesAddDto.ApprovedBy,
             Days = leavesAddDto.Days,
             Approved = leavesAddDto.Approved,
-            
+            Status = leavesAddDto.Status
             
         };
         return _leavesRepo.Add(leaves);
@@ -77,7 +78,7 @@ public class LeavesManager:ILeavesManager
             ApprovedBy = leaves.Result.ApprovedBy,
             Days = leaves.Result.Days,
             Approved = leaves.Result.Approved,
-            
+            Status = leaves.Result.Status,
         };
     }
 
@@ -95,69 +96,108 @@ public class LeavesManager:ILeavesManager
             ApprovedBy = leave.ApprovedBy,
             Days = leave.Days,
             Approved = leave.Approved,
-            
-            
+            Status = leaves.Status.ToString()
+
         }).ToList();
     }
-    
-    public async Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
-{
-    var users = await _leavesRepo.GetAll();
-    
-    // Check if users is null
-    if (users == null)
+
+    public async Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1,
+        string? value2, string? operator2, int page, int pageSize)
     {
-        return new FilteredLeavesDto();
-    }
+        var users =  _leavesRepo.GetLeavesWithEmployee();
 
-    // Check if column, value1, and operator1 are all null or empty
-    IEnumerable<Leaves>? paginatedResults;
-    if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
-    {
-        var count = users.Count();
-        var pages = (int)Math.Ceiling((double)count / pageSize);
-
-        // Use ToList() directly without checking Any() condition
-        var userList = users.ToList();
-
-        paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
-
-        var map = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(paginatedResults);
-        FilteredLeavesDto result = new()
+        // Check if users is null
+        if (users == null)
         {
-            LeavesDto = map,
-            TotalCount = count,
-            TotalPages = pages
+            return new FilteredLeavesDto();
+        }
+
+        // Check if column, value1, and operator1 are all null or empty
+        IEnumerable<Leaves>? paginatedResults;
+        if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
+        {
+            var count = users.Count();
+            var pages = (int)Math.Ceiling((double)count / pageSize);
+
+            // Use ToList() directly without checking Any() condition
+            var userList = users.ToList();
+
+            paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+
+            List<LeavesDto> leavesDto = new();
+            foreach (var leaves in paginatedResults)
+            {
+                leavesDto.Add(new LeavesDto()
+                {
+                    Id = leaves.Id,
+                    EmployeeId = leaves.EmployeeId,
+                    Type = leaves.Type,
+                    FromDate = leaves.FromDate,
+                    ToDate = leaves.ToDate,
+                    Reason = leaves.Reason,
+                    Days = leaves.Days,
+                    Approved = leaves.Approved,
+                    ApprovedById = leaves.ApprovedBy,
+                    Status = leaves.Status,
+                    Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
+                    ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)
+                });
+            }
+
+            var result = new FilteredLeavesDto()
+            {
+                LeavesDto = leavesDto,
+                TotalCount = count,
+                TotalPages = pages
+            };
+            return result;
+        }
+
+        IEnumerable<Leaves> filteredResults;
+
+        // Apply the first filter
+        filteredResults = ApplyFilter(users, column, value1, operator1);
+
+        // Apply the second filter only if both value2 and operator2 are provided
+        if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
+        {
+            filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+        }
+
+        var enumerable = filteredResults.Distinct().ToList(); // Use Distinct to eliminate duplicates
+        var totalCount = enumerable.Count();
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
+
+        List<LeavesDto> leavesDtos = new();
+        foreach (var leaves in paginatedResults)
+        {
+            leavesDtos.Add(new LeavesDto()
+            {
+                Id = leaves.Id,
+                EmployeeId = leaves.EmployeeId,
+                Type = leaves.Type,
+                FromDate = leaves.FromDate,
+                ToDate = leaves.ToDate,
+                Reason = leaves.Reason,
+                Days = leaves.Days,
+                Approved = leaves.Approved,
+                ApprovedById = leaves.ApprovedBy,
+                Status = leaves.Status,
+                Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
+                ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)
+            });
+        }
+
+        var filteredLeaves = new FilteredLeavesDto()
+        {
+            LeavesDto = leavesDtos,
+            TotalCount = totalCount,
+            TotalPages = totalPages
         };
-        return result;
+        return filteredLeaves;
     }
 
-    IEnumerable<Leaves> filteredResults;
-    
-    // Apply the first filter
-    filteredResults = ApplyFilter(users, column, value1, operator1);
-
-    // Apply the second filter only if both value2 and operator2 are provided
-    if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
-    {
-        filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
-    }
-
-    var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
-    var totalCount = enumerable.Count();
-    var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-    paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
-
-    var mappedLeaves = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(paginatedResults);
-
-    FilteredLeavesDto filteredLeavesDto = new()
-    {
-        LeavesDto = mappedLeaves,
-        TotalCount = totalCount,
-        TotalPages = totalPages
-    };
-    return filteredLeavesDto;
-}
     private IEnumerable<Leaves> ApplyFilter(IEnumerable<Leaves> users, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;

@@ -1,4 +1,7 @@
-﻿namespace Aktitic.HrProject.BL;
+﻿using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
+
+namespace Aktitic.HrProject.BL;
 
 public class EmployeeReadDto
 {
@@ -22,6 +25,7 @@ public class EmployeeReadDto
     public decimal? Salary { get; set; }
 
     public int? DepartmentId { get; set; }
+    public DepartmentDto? DepartmentDto { get; set; }
 
     public int? ManagerId { get; set; }
 

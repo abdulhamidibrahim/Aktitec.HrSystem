@@ -1,4 +1,6 @@
-﻿namespace Aktitic.HrProject.BL;
+﻿using Aktitic.HrProject.DAL.Pagination.Employee;
+
+namespace Aktitic.HrProject.BL;
 
 public class SchedulingReadDto
 {
@@ -32,5 +34,7 @@ public class SchedulingReadDto
     public string? Status { get; set; }
 
     public int? ApprovedBy { get; set; }
+
+    public EmployeeDto? Employee { get; set; }
 
 }

@@ -67,7 +67,7 @@ public partial class Employee
     
     public virtual ICollection<TicketFollowers> TicketFollowers { get; set; } = new List<TicketFollowers>();
 
-    public virtual Timesheet? Timesheet { get; set; }
+    public virtual TimeSheet? Timesheet { get; set; }
     
 
     

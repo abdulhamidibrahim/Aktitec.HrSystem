@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ public class AttendancesController: ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromForm] AttendanceAddDto attendanceAddDto)
+    public ActionResult Add([FromBody] AttendanceAddDto attendanceAddDto)
     {
         var result = _attendanceManager.Add(attendanceAddDto);
         if (result.Result == 0) return BadRequest("Failed to Create!");
@@ -39,7 +40,7 @@ public class AttendancesController: ControllerBase
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] AttendanceUpdateDto attendanceUpdateDto,int id)
+    public ActionResult Update([FromBody] AttendanceUpdateDto attendanceUpdateDto,int id)
     {
         var result = _attendanceManager.Update(attendanceUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to Update!");
@@ -69,9 +70,9 @@ public class AttendancesController: ControllerBase
 
 
     [HttpGet("getAllAttendances")]
-    public async Task<List<EmployeeAttendanceDto>> GetAllAttendancesAsync()
+    public async Task<List<EmployeeAttendanceDto>> GetAllAttendancesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        return  await _attendanceManager.GetAllEmployeeAttendanceInCurrentMonth();
+        return  await _attendanceManager.GetAllEmployeeAttendanceInCurrentMonth(column,  value1,  operator1,  value2,  operator2, page,pageSize);
     }
 
 }

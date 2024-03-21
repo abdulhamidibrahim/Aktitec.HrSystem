@@ -43,8 +43,8 @@ public class EmployeesController: ControllerBase
         var user = _employeeManager.Get(id);
         if (user == null) return Task.FromResult<EmployeeReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
-        user.ImgUrl = hostUrl + user.ImgUrl; 
-        return Task.FromResult(user)!;
+        user.Result.ImgUrl = hostUrl + user.Result.ImgUrl; 
+        return user!;
     }
     
     [HttpGet("getEmployees")]

@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class TicketRepo :GenericRepo<Ticket>,ITicketRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public TicketRepo(HrManagementDbContext context) : base(context)
+    public TicketRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

@@ -5,9 +5,9 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
 public class ProjectRepo :GenericRepo<Project>,IProjectRepo
 {
-    private readonly HrManagementDbContext _context;
+    private readonly HrSystemDbContext _context;
 
-    public ProjectRepo(HrManagementDbContext context) : base(context)
+    public ProjectRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }

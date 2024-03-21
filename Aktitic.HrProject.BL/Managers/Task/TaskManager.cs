@@ -194,6 +194,10 @@ public class TaskManager:ITaskManager
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 
-
-    
+    public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
+    {
+        var users = _taskRepo.GetTaskWithProjectId(projectId);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
+        return System.Threading.Tasks.Task.FromResult(tasks.ToList());
+    }
 }

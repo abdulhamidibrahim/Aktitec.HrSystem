@@ -150,39 +150,39 @@ public class EmployeeManager(
         return 0;
     }
 
-    public EmployeeReadDto? Get(int id)
+    public async Task<EmployeeReadDto>? Get(int id)
     {
-        var employee = employeeRepo.GetById(id);
-        if (employee.Result == null) return null;
-        var manager = employeeRepo.GetById(employee.Result.ManagerId);
+        var employee =await employeeRepo.GetById(id);
+        if (employee == null) return new EmployeeReadDto();
+        var manager = await employeeRepo.GetById(employee.ManagerId);
         return new EmployeeReadDto()
         {
             Id = employee.Id,
-            FullName = employee.Result.FullName,
-            Phone = employee.Result.Phone,
-            Email = employee.Result.Email,
-            Age = employee.Result.Age,
-            JobPosition = employee.Result.JobPosition,
-            JoiningDate = employee.Result.JoiningDate,
-            YearsOfExperience = employee.Result.YearsOfExperience,
-            Salary = employee.Result.Salary,
-            DepartmentId = employee.Result.DepartmentId,
-            ManagerId = employee.Result.ManagerId,
-            ImgUrl = employee.Result.ImgUrl,
-            Manager = manager.Result == null ? null : new EmployeeReadDto()
+            FullName = employee.FullName,
+            Phone = employee.Phone,
+            Email = employee.Email,
+            Age = employee.Age,
+            JobPosition = employee.JobPosition,
+            JoiningDate = employee.JoiningDate,
+            YearsOfExperience = employee.YearsOfExperience,
+            Salary = employee.Salary,
+            DepartmentId = employee.DepartmentId,
+            ManagerId = employee.ManagerId,
+            ImgUrl = employee.ImgUrl,
+            Manager = manager == null ? null : new EmployeeReadDto()
             {
-                Id = manager.Result.Id,
-                FullName = manager.Result.FullName,
-                Phone = manager.Result.Phone,
-                Email = manager.Result.Email,
-                Age = manager.Result.Age,
-                JobPosition = manager.Result.JobPosition,
-                JoiningDate = manager.Result.JoiningDate,
-                YearsOfExperience = manager.Result.YearsOfExperience,
-                Salary = manager.Result.Salary,
-                DepartmentId = manager.Result.DepartmentId,
-                ManagerId = manager.Result.ManagerId,
-                ImgUrl = manager.Result.ImgUrl
+                Id = manager.Id,
+                FullName = manager.FullName,
+                Phone = manager.Phone,
+                Email = manager.Email,
+                Age = manager.Age,
+                JobPosition = manager.JobPosition,
+                JoiningDate = manager.JoiningDate,
+                YearsOfExperience = manager.YearsOfExperience,
+                Salary = manager.Salary,
+                DepartmentId = manager.DepartmentId,
+                ManagerId = manager.ManagerId,
+                ImgUrl = manager.ImgUrl
             }
         };
     }
@@ -240,7 +240,7 @@ public class EmployeeManager(
 
     public async Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await employeeRepo.GetAll();
+        var users = await employeeRepo.GetEmployeeWithDepartment();
         
 
         // Check if column, value1, and operator1 are all null or empty
