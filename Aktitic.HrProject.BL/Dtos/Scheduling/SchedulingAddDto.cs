@@ -26,12 +26,7 @@ public class SchedulingAddDto
     public TimeOnly? BreakTime { get; set; }
 
     public short? RepeatEvery { get; set; }
-
-    public string? Note { get; set; }
-
-    public string? Status { get; set; }
-
-    public int? ApprovedBy { get; set; }
-
-
+    
+    public bool? Publish { get; set; }
+    public bool? ExtraHours { get; set; }
 }

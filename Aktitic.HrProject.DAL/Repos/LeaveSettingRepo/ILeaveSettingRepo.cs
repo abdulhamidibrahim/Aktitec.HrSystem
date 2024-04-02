@@ -6,5 +6,5 @@ public interface ILeaveSettingRepo :IGenericRepo<LeaveSettings>
 {
     // get leave setting with employee and ApprovedBy
     
-    List<Leaves> GetLeavesWithEmployee();
+    List<Leaves>? GetLeavesWithEmployee();
 }

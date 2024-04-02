@@ -22,6 +22,15 @@ public class TimesheetRepo :GenericRepo<TimeSheet>,ITimesheetRepo
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 searchKey = searchKey.Trim().ToLower();
+
+                if( DateOnly.TryParse(searchKey, out var searchDate))
+                {
+                    query = query
+                        .Where(x =>
+                               x.Date == searchDate
+                            || x.Date == searchDate);
+                    return query;
+                }
                 query = query
                     .Where(x =>
                         x.Date!.ToString().ToLower().Contains(searchKey) ||

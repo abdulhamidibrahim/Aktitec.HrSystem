@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
@@ -69,15 +68,16 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
     public virtual DbSet<TimeSheet>? Timesheets { get; set; }
     public virtual DbSet<Notes>? Notes { get; set; }
     public virtual DbSet<LeaveSettings>? LeaveSettings { get; set; }
-    // public virtual DbSet<Annual>? Annuals { get; set; }
-    // public virtual DbSet<Sick>? Sicks { get; set; }
-    // public virtual DbSet<Lop>? Lops { get; set; }
-    // public virtual DbSet<Hospitalisation>? Hospitalisations { get; set; }
-    // public virtual DbSet<Paternity>? Paternities { get; set; }
-    // public virtual DbSet<Maternity>? Maternities { get; set; }
-    
-    // public virtual DbSet<ApplicationUser>? ApplicationUsers { get; set; }
-    
+    public virtual DbSet<Permission>? Permissions { get; set; }
+    public virtual DbSet<EmployeeProjects>? EmployeeProjects { get; set; }
+    public virtual DbSet<Message>? Messages { get; set; }
+    public virtual DbSet<Estimate>? Estimates { get; set; }
+    public virtual DbSet<Item>? Items { get; set; }
+    public virtual DbSet<Invoice>? Invoices { get; set; }
+    public virtual DbSet<Expenses>? Expenses { get; set; }
+    public virtual DbSet<Payment>? Payments { get; set; }
+    public virtual DbSet<Tax>? Taxes { get; set; }
+   
 
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -89,7 +89,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             entity.Property(e => e.Break).HasColumnName("break");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.OvertimeId).HasColumnName("overtime_id");
+            // entity.Property(e => e.OvertimeId).HasColumnName("overtime_id");
             entity.Property(e => e.Production).HasColumnName("production");
             entity.Property(e => e.PunchIn)
                 .HasColumnType("datetime")
@@ -102,9 +102,9 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasForeignKey(d => d.EmployeeId)
                 .HasConstraintName("FK_Attendance_Employee");
 
-            entity.HasOne(d => d.Overtime).WithMany(p => p.Attendances)
-                .HasForeignKey(d => d.OvertimeId)
-                .HasConstraintName("FK_Attendance_Overtimes");
+            // entity.HasOne(d => d.Overtime).WithMany(p => p.Attendances)
+            //     .HasForeignKey(d => d.OvertimeId)
+            //     .HasConstraintName("FK_Attendance_Overtimes");
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -158,6 +158,14 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_Employee_Department_1");
         
+            //project relationship
+            // entity.HasOne(d => d.Project).WithMany(p => p.Employees)
+            //     .HasForeignKey(d => d.ProjectId)
+            //     .HasConstraintName("FK_Employee_Project");
+            
+            // entity.HasOne(d => d.Manager).WithMany(p => p.Employees)    
+            //     .HasForeignKey(d => d.ManagerId)
+            //     .HasConstraintName("FK_Employee_Employee");
             // entity.HasOne(d => d.Img).WithMany(p => p.Employees)
             //     .HasForeignKey(d => d.ImgId)
             //     .HasConstraintName("FK_Employee_File_1");
@@ -247,7 +255,6 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             entity.ToTable("scheduling", "employee");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
             entity.Property(e => e.BreakTime).HasColumnName("break_time");
             entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.DepartmentId).HasColumnName("department_Id");
@@ -257,19 +264,10 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             entity.Property(e => e.MaxStartTime).HasColumnName("max_start_time");
             entity.Property(e => e.MinEndTime).HasColumnName("min_end_time");
             entity.Property(e => e.MinStartTime).HasColumnName("min_start_time");
-            entity.Property(e => e.Note)
-                .HasColumnName("note");
+           
             entity.Property(e => e.RepeatEvery).HasColumnName("repeat_every");
             entity.Property(e => e.ShiftId).HasColumnName("shift_id");
             entity.Property(e => e.StartTime).HasColumnName("start_time");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.SchedulingApprovedByNavigations)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK_scheduling_Employee_2");
-
             entity.HasOne(d => d.Department).WithMany(p => p.Schedulings)
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_scheduling_Department");
@@ -369,13 +367,19 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasColumnName("email");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
-                .HasColumnName("name");
-            entity.Property(e => e.FirstName)
+                .HasColumnName("first_name");
+            entity.Property(e => e.LastName)
                 .HasMaxLength(50)
-                .HasColumnName("name");
+                .HasColumnName("last_name");
             entity.Property(e => e.Phone)
                 .HasMaxLength(50)
                 .HasColumnName("phone");
+            
+            // client permissions relationship
+
+            entity.HasMany(d => d.Permissions)
+                .WithOne(p => p.Client)
+                .HasForeignKey(e=>e.ClientId);
         });
         
         modelBuilder.Entity<Project>(entity=>
@@ -400,16 +404,22 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
         entity.Property(e => e.Rate).HasPrecision(5,2).HasColumnName("rate");
         entity.Property(e => e.Status).HasColumnName("status");
         entity.Property(e => e.Checked).HasColumnName("checked");
-        entity.HasOne(d => d.Client).WithOne(p => p.Project)
-            .HasForeignKey<Project>(d => d.ClientId)
+        
+        entity.HasOne(d => d.Client).WithMany(p => p.Projects)
+            .HasForeignKey(d => d.ClientId)
             .HasConstraintName("FK_Project_Client");
+        // leader id 
+        entity.HasOne(d => d.Leader).WithMany(p => p.Projects)
+            .HasForeignKey(d => d.LeaderId)
+            .HasConstraintName("FK_Project_Employee");
         });
+        
         modelBuilder.Entity<Task>(entity =>
         {
             entity.ToTable("Task", "project");
 
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Title)
+            entity.Property(e => e.Text)
                 .HasMaxLength(100)
                 .HasColumnName("title");
             entity.Property(e => e.Description)
@@ -506,6 +516,84 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             entity.ToTable("CustomPolicy", "employee");
             
             
+        });
+        
+        modelBuilder.Entity<Estimate>(entity => 
+        {
+            entity.ToTable("Estimate", "client");
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            entity.Property(e => e.ClientAddress)
+                
+                .HasColumnName("client_address");
+            entity.Property(e => e.BillingAddress)
+                
+                .HasColumnName("billing_address");
+            entity.Property(e => e.EstimateDate).HasColumnName("estimate_date");
+            entity.Property(e => e.ExpiryDate).HasColumnName("expiry_date");
+            entity.Property(e => e.OtherInformation)
+                .HasColumnName("other_information");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            entity.Property(e => e.EstimateNumber)
+                .HasMaxLength(50)
+                .HasColumnName("estimate_number");
+            entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
+            entity.Property(e => e.Discount).HasColumnName("discount");
+            entity.Property(e => e.Tax).HasColumnName("tax");
+            entity.Property(e => e.GrandTotal).HasColumnName("grand_total");
+            entity.Property(e => e.ClientId).HasColumnName("client_id");
+            entity.Property(e => e.ProjectId).HasColumnName("project_id");
+            // entity.HasOne(d => d.Client).WithMany(p => p.Estimates)
+            //     .HasForeignKey(d => d.ClientId)
+            //     .HasConstraintName("FK_Estimate_Client");
+            // entity.HasOne(d => d.Project).WithMany(p => p.Estimates)
+            //     .HasForeignKey(d => d.ProjectId)
+            //     .HasConstraintName("FK_Estimate_Project");
+            entity.HasMany(d => d.Items) 
+                .WithOne(p => p.Estimate)
+                .HasForeignKey(e=>e.EstimateId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<Invoice>(builder =>
+        {
+            builder.ToTable("Invoice", "client");
+            builder.Property(e => e.Id).ValueGeneratedOnAdd();
+            builder.Property(e => e.Email)
+                .HasMaxLength(100)
+                .HasColumnName("email");
+            builder.Property(e => e.ClientAddress)
+                .HasColumnName("client_address");
+            builder.Property(e => e.BillingAddress)
+                .HasColumnName("billing_address");
+            builder.Property(e => e.InvoiceDate).HasColumnName("invoice_date");
+            builder.Property(e => e.DueDate).HasColumnName("due_date");
+            builder.Property(e => e.OtherInformation)
+                .HasColumnName("other_information");
+            builder.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            builder.Property(e => e.Notes)
+                .HasColumnName("notes");
+            builder.Property(e => e.InvoiceNumber)
+                .HasMaxLength(50)
+                .HasColumnName("invoice_number");
+            builder.Property(e => e.TotalAmount).HasColumnName("total_amount");
+            builder.Property(e => e.Discount).HasColumnName("discount");
+            builder.Property(e => e.GrandTotal).HasColumnName("grand_total");
+            builder.Property(e => e.ClientId).HasColumnName("client_id");
+            builder.Property(e => e.ProjectId).HasColumnName("project_id");
+            // builder.HasOne(d => d.Client).WithMany(p => p.Invoices)
+            //     .HasForeignKey(d => d.ClientId)
+            //     .HasConstraintName("FK_Invoice_Client");
+            // builder.HasOne(d => d.Project).WithMany(p => p.Invoices)
+            //     .HasForeignKey(d => d.ProjectId)
+            //     .HasConstraintName("FK_Invoice_Project");
+            builder.HasMany(d => d.Items)
+                .WithOne(p => p.Invoice)
+                .HasForeignKey(e => e.InvoiceId).OnDelete(DeleteBehavior.Cascade);
         });
         OnModelCreatingPartial(modelBuilder);
     }

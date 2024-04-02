@@ -24,6 +24,7 @@ public class TaskDto
     
     
     public int? AssignedTo { get; set; }
+    public List<MessageDto>? Message { get; set; }=null!;
 
     public EmployeeDto? AssignEmployee { get; set; }=null!;
     //messages

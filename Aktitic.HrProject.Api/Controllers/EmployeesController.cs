@@ -38,13 +38,13 @@ public class EmployeesController: ControllerBase
     }
     
     [HttpGet("{id}")]
-    public Task<EmployeeReadDto?> Get(int id)
+    public ActionResult<Task<EmployeeReadDto?>> Get(int id)
     {
         var user = _employeeManager.Get(id);
         if (user == null) return Task.FromResult<EmployeeReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
-        user.Result.ImgUrl = hostUrl + user.Result.ImgUrl; 
-        return user!;
+        user.ImgUrl = hostUrl + user.ImgUrl; 
+        return Ok(user!);
     }
     
     [HttpGet("getEmployees")]
@@ -65,50 +65,12 @@ public class EmployeesController: ControllerBase
     // [EmployeeEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public async Task<ActionResult> Create([FromForm] EmployeeAddDto employeeAddDto,[FromForm] IFormFile? image)
+    public  ActionResult Create([FromForm] EmployeeAddDto employeeAddDto,[FromForm] IFormFile? image)
     {
         
-        // if (ModelState.IsValid)
-        // {
-            // var employee = new Employee()
-            // {
-            //     FullName = employeeAddDto.FullName,
-            //     Email = employeeAddDto.Email,
-            //     UserName = employeeAddDto.Email!.Substring(0, employeeAddDto.Email.IndexOf('@')),
-            //     // ImgUrl = employeeAddDto.ImgUrl,
-            //     Phone = employeeAddDto.Phone,
-            //     Age = employeeAddDto.Age,
-            //     JobPosition = employeeAddDto.JobPosition,
-            //     JoiningDate = employeeAddDto.JoiningDate,
-            //     YearsOfExperience = employeeAddDto.YearsOfExperience,
-            //     Salary = employeeAddDto.Salary,
-            //     // FileName = employeeAddDto.Image.FileName,
-            //     // FileContent = employeeAddDto.Image.FileName,
-            //     // FileExtension = employeeAddDto.Image.ContentType,
-            //     // DepartmentId = employeeAddDto.DepartmentId,
-            //     // ManagerId = employeeAddDto.ManagerId,
-            // };
-            // var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",employee.FullName!);
-            // if (Directory.Exists(path))
-            // {
-                // Directory.Delete(path);
-            // }else
-            // {
-                // Directory.CreateDirectory(path);
-            // }
-            // employee.ImgUrl = path+"/"+ employee.FileName+".png";
-            // await using FileStream fileStream = new(employee.ImgUrl, FileMode.Create);
-            // employeeAddDto.Image.CopyToAsync(fileStream);
-            // await employeeAddDto.Image.CopyToAsync(fileStream);
-            
-            
-            int result = await _employeeManager.Add(employeeAddDto,image);
-            if (result.Equals(0))
-            {
-                return BadRequest("Account Creation Failed");
-            }
-            
-            return Ok("Account Created Successfully ");
+        var result =_employeeManager.Add(employeeAddDto,image);
+        if (result.Result == 0) return BadRequest("Failed to create");
+        return Ok("Account Created Successfully ");
         // }
         
         // var errors = ModelState.Where (n => n.Value?.Errors.Count > 0).ToList ();
@@ -120,11 +82,8 @@ public class EmployeesController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id,[FromForm] IFormFile? image)
     {
-        var result = _employeeManager.Update(employeeUpdateDto,id,image);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Update Failed");
-        }
+        var result= _employeeManager.Update(employeeUpdateDto,id,image);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Account updated successfully !");
     }
     
@@ -132,11 +91,8 @@ public class EmployeesController: ControllerBase
     public ActionResult Delete(int id)
     {
         var result =_employeeManager.Delete(id);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Deletion Failed");
-        }
-        return Ok();
+        if (result.Result == 0) return BadRequest("Failed to delete");
+        return Ok("deleted successfully");
     }
     
     [HttpGet("GlobalSearch")]

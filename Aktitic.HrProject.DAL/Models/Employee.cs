@@ -40,11 +40,13 @@ public partial class Employee
 
     public int? DepartmentId { get; set; }
 
-    public int? ManagerId { get; set; } 
+    public int? ManagerId { get; set; }
+    public Employee? Manager { get; set; }
 
-    [ForeignKey(nameof(Project))]
+    // [ForeignKey(nameof(Projects))]
     public int? ProjectId { get; set; }
-    public Project? Project { get; set; } 
+    public List<Project>? Projects { get; set; } 
+    public ICollection<EmployeeProjects> EmployeeProjects { get; set; } = new List<EmployeeProjects>();
     public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
     public virtual Department? Department { get; set; }

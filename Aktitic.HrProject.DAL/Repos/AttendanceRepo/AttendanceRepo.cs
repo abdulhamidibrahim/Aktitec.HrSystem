@@ -2,6 +2,8 @@ using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
@@ -22,12 +24,25 @@ public class AttendanceRepo :GenericRepo<Attendance>,IAttendanceRepo
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 searchKey = searchKey.Trim().ToLower();
+                if(DateOnly.TryParse(searchKey,out var searchDate))
+                {
+                    query = query
+                        .Where(x =>
+                            x.Date == searchDate);
+                    return query;
+                }
+                if (DateTime.TryParse(searchKey,out var searchDateValue))
+                {
+                    query = query
+                        .Where(x =>
+                            x.PunchIn == searchDateValue ||
+                            x.PunchOut == searchDateValue);
+                    return query;
+                }
                 query = query
                     .Where(x =>
-                        x.Date!.ToString().ToLower().Contains(searchKey) ||
-                        x.PunchIn!.ToString().ToLower().Contains(searchKey) ||
-                        x.PunchOut!.ToString().ToLower().Contains(searchKey) ||
                         x.Production!.ToString().ToLower().Contains(searchKey) ||
+                        x.Overtime!.ToString().ToLower().Contains(searchKey) ||
                         x.Break!.ToString().ToLower().Contains(searchKey));
                        
                         
@@ -93,4 +108,13 @@ public class AttendanceRepo :GenericRepo<Attendance>,IAttendanceRepo
         return employeeAttendanceList;
     }
 
+    public List<Attendance> GetByEmployeeId(int employeeId)
+    {
+        return _context.Attendances!.Where(x => x.EmployeeId == employeeId).ToList();
+    }
+
+    public List<Attendance> GetAttendanceWithEmployee()
+    {
+        return _context.Attendances!.Include(x => x.Employee).ToList();
+    }
 }

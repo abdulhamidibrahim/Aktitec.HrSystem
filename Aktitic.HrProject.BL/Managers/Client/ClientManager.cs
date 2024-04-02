@@ -1,17 +1,21 @@
 
+using System.Text.Json.Serialization;
 using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.BL.Helpers;
 using Aktitic.HrProject.DAL.Helpers;
+using Aktitic.HrProject.DAL.Migrations;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
@@ -20,27 +24,38 @@ public class ClientManager(
     IClientRepo clientRepo,
     IWebHostEnvironment webHostEnvironment,
     IFileRepo fileRepo,
-    IMapper mapper)
+    IMapper mapper,
+    IPermissionsRepo permissionsRepo,
+    IUnitOfWork unitOfWork)
     : IClientManager
 {
     private readonly IFileRepo _fileRepo = fileRepo;
+
+    private readonly IPermissionsRepo _permissionsRepo = permissionsRepo;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     // private readonly UserManager<Client> _userManager;
 
     // _userManager = userManager;
 
-    public Task<int> Add(ClientAddDto clientAddDto, IFormFile? image)
+    public Task<int> Add(ClientAddDto clientAddDto)
     {
+       var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientAddDto.Permissions!);
+       var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
         var client = new Client()
         {
-            Phone = clientAddDto.Phone,
+            Phone = clientAddDto.Mobile,
             Email = clientAddDto.Email,
             FirstName = clientAddDto.FirstName,
-            FileName = image?.FileName,
-            FileExtension = image?.ContentType,
+            FileName = clientAddDto.Image?.FileName,
+            FileExtension = clientAddDto.Image?.ContentType,
             CompanyName = clientAddDto.CompanyName,
             LastName = clientAddDto.LastName,
-            
-            UserName = clientAddDto.Email?.Substring(0,clientAddDto.Email.IndexOf('@'))
+            Status = clientAddDto.Status,
+            ClientId = clientAddDto.ClientId,
+            Permissions = mappedPermissions,
+            Password = clientAddDto.Password,
+            ConfirmPassword = clientAddDto.ConfirmPassword,
+            UserName = clientAddDto.Email?.Substring(0, clientAddDto.Email.IndexOf('@'))
         };
         
 
@@ -55,97 +70,138 @@ public class ClientManager(
             Directory.CreateDirectory(path);
         }
         
-        var imgPath = Path.Combine(path, client.FileName!);
+        var imgPath = Path.Combine(path, clientAddDto.Image?.FileName!);
         using FileStream fileStream = new(imgPath, FileMode.Create);
-        image?.CopyToAsync(fileStream);
-        client.ImgUrl = Path.Combine("uploads/clients", client.UserName + unique, client.FileName!);
+        clientAddDto.Image?.CopyToAsync(fileStream);
+        client.PhotoUrl = Path.Combine("uploads/clients", client.UserName + unique, clientAddDto.Image?.FileName!);
         // _fileRepo.Add(file);
         
 
        
         
-        return  clientRepo.Add(client);
-        
-         
+          clientRepo.Add(client);
+          return unitOfWork.SaveChangesAsync();
     }
     
 
-    public async Task<int> Update(ClientUpdateDto clientUpdateDto,int id, IFormFile? image)
+    public async Task<Task<int>> Update(ClientUpdateDto clientUpdateDto, int id)
     {
-        var client = clientRepo.GetById(id);
-        
-        if (client.Result == null) return 0;
-        if(clientUpdateDto.FirstName != null) client.Result.FirstName = clientUpdateDto.FirstName;
-        if(clientUpdateDto.Phone != null) client.Result.Phone = clientUpdateDto.Phone;
-        if (clientUpdateDto.Email != null) client.Result.Email = clientUpdateDto.Email;
-        if (clientUpdateDto.CompanyName != null) client.Result.CompanyName = clientUpdateDto.CompanyName;
-        if (clientUpdateDto.ImgUrl != null) client.Result.ImgUrl = clientUpdateDto.ImgUrl;
-      
-        // client.Result.FileContent = clientUpdateDto.Image.ContentType;
-        if (image != null)
-        {
-            client.Result.FileExtension = image?.ContentType;
-            client.Result.FileName = image?.FileName;
-            client.Result.UserName = client.Result.Email?.Substring(0, client.Result.Email.IndexOf('@'));
+        var client = await clientRepo.GetClientWithPermissionsAsync(id);
+        if (client == null)
+            return Task.FromResult(0);
 
-            var unique = Guid.NewGuid();
-            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/clients", client.Result.UserName+unique);
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path,true);
-            }
-            else
-            {
-                Directory.CreateDirectory(path);
-            }
+        // Deserialize permissions
+        var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientUpdateDto.Permissions!);
+
+        // Update client properties
+        client.FirstName = clientUpdateDto.FirstName;
+        client.Phone = clientUpdateDto.Mobile;
+        if (clientUpdateDto.Email != null)
+            client.Email = clientUpdateDto.Email;
+        client.LastName = clientUpdateDto.LastName;
+        if (clientUpdateDto.Status != null)
+            client.Status = clientUpdateDto.Status;
+        if (clientUpdateDto.ClientId != null)
+            client.ClientId = clientUpdateDto.ClientId;
+        if (clientUpdateDto.CompanyName != null)
+            client.CompanyName = clientUpdateDto.CompanyName;
+        if (clientUpdateDto.ImgUrl != null)
+            client.PhotoUrl = clientUpdateDto.ImgUrl;
+        if (clientUpdateDto.Password != null)
+            client.Password = clientUpdateDto.Password;
+
+        // Update permissions
+        if (permissions != null)
+        {
+            // Clear existing permissions
+            // client.Permissions?.Clear();
+            // clear permissions from database
+            // var existingPermissions = permissionsRepo.GetByClientId(id);
             
-           
-            var imgPath = Path.Combine(path, client.Result.FileName!);
-            await using FileStream fileStream = new(imgPath, FileMode.Create);
-            image?.CopyToAsync(fileStream);
-            client.Result.ImgUrl = Path.Combine("uploads/clients", client.Result.UserName+unique, client.Result.FileName!);
+                permissionsRepo.DeleteRange(client.Permissions?.ToList());
+
+                // Map and add new permissions
+                var permissionEntities = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
+                client.Permissions = permissionEntities;
+            
+                permissionsRepo.AddRange(permissionEntities);
         }
 
-        return await clientRepo.Update(client.Result);
+         // Update image
+    if (clientUpdateDto?.Image != null)
+    {
+        client.FileExtension = clientUpdateDto.Image.ContentType;
+        client.FileName = clientUpdateDto.Image.FileName;
+        client.UserName = client.Email?.Substring(0, client.Email.IndexOf('@'));
+
+        var unique = Guid.NewGuid();
+        var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/clients", client.UserName + unique);
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
+        else
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        var imgPath = Path.Combine(path, client.FileName);
+        await using FileStream fileStream = new(imgPath, FileMode.Create);
+        await clientUpdateDto.Image.CopyToAsync(fileStream);
+        client.PhotoUrl = Path.Combine("uploads/clients", client.UserName + unique, client.FileName);
+    }
+    clientRepo.Update(client);
+    return unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<int> Delete(int id)
+
+    public Task<int> Delete(int id)
     {
-        var client = clientRepo.GetById(id);
-        if (client.Result != null) return await clientRepo.Delete(client.Result.Id);
-        return 0;
+        clientRepo.GetById(id);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public ClientReadDto? Get(int id)
     {
         var client = clientRepo.GetById(id);
-        if (client.Result == null) return null;
+        var permissions = permissionsRepo.GetByClientId(id);
+        var mappedPermissions = mapper.Map<List<Permission>, List<PermissionsDto>>(permissions);
+        if (client == null) return null;
         return new ClientReadDto()
         {
             Id = client.Id,
-            FirstName = client.Result.FirstName,
-            LastName = client.Result.LastName,
-            Phone = client.Result.Phone,
-            Email = client.Result.Email,
-            CompanyName = client.Result.CompanyName,
-            ImgUrl = client.Result.ImgUrl
+            FirstName = client.FirstName,
+            LastName = client.LastName,
+            Mobile = client.Phone,
+            Email = client.Email,
+            CompanyName = client.CompanyName,
+            PhotoUrl = client.PhotoUrl,
+            Status = client.Status,
+            UserName = client.UserName,
+            ClientId = client.ClientId,
+            Permissions = mappedPermissions,
+            Password = client.Password,
+            ConfirmPassword = client.ConfirmPassword
         };
     }
 
     public Task<List<ClientReadDto>> GetAll()
     {
-        var clients = clientRepo.GetAll();
+        var clients = clientRepo.GetAllWithPermissionsAsync();
         
         return  Task.FromResult(clients.Result.Select(client => new ClientReadDto()
         {
             Id = client.Id,
             FirstName = client.FirstName,
             LastName = client.LastName,
-            Phone = client.Phone,
+            Mobile = client.Phone,
             Email = client.Email,
             CompanyName = client.CompanyName,
-            ImgUrl = client.ImgUrl
-            
+            PhotoUrl = client.PhotoUrl,
+            Status = client.Status,
+            UserName = client.UserName,
+            ClientId = client.ClientId,
+            Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
         }).ToList());
     }
 
@@ -153,34 +209,13 @@ public class ClientManager(
     {
         var clients = clientRepo.GetClientsAsync(term, sort, page, limit);
         return clients;
-
-        #region commented
-
-        // Task.FromResult(clients.Result.Clients);
-        // .Clients.Select(client => new PagedClientResult()
-        // {
-        //     Id = client.Id,
-        //     FullName = client.FullName,
-        //     Phone = client.Phone,
-        //     Email = client.Email,
-        //     Age = client.Age,
-        //     JobPosition = client.JobPosition,
-        //     JoiningDate = client.JoiningDate,
-        //     YearsOfExperience = client.YearsOfExperience,
-        //     Salary = client.Salary,
-        //     DepartmentId = client.DepartmentId,
-        //     ManagerId = client.ManagerId,
-        //     ImgUrl = client.ImgUrl
-        // }));
-
-        #endregion
     }
 
    
 
     public async Task<FilteredClientDto> GetFilteredClientsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await clientRepo.GetAll();
+        var users = await clientRepo.GetAllWithPermissionsAsync();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -194,10 +229,29 @@ public class ClientManager(
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = mapper.Map<IEnumerable<Client>, IEnumerable<ClientDto>>(paginatedResults);
+            var mappedClients = new List<ClientDto>();
+
+            foreach (var client in paginatedResults)
+            {
+                mappedClients.Add(new ClientDto()
+                {
+                    Id = client.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Email = client.Email,
+                    Phone = client.Phone,
+                    CompanyName = client.CompanyName,
+                    Status = client.Status,
+                    photoUrl = client.PhotoUrl,
+                    ClientId = client.ClientId,
+                    Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
+                    
+                });
+            }
+            
             FilteredClientDto result = new()
             {
-                ClientDto = map,
+                ClientDto = mappedClients,
                 TotalCount = count,
                 TotalPages = pages
             };
@@ -222,15 +276,33 @@ public class ClientManager(
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var mappedClient = mapper.Map<IEnumerable<Client>, IEnumerable<ClientDto>>(paginatedResults);
+            var mappedClients = new List<ClientDto>();
 
-            FilteredClientDto filteredClientDto = new()
+            foreach (var client in paginatedResults)
             {
-                ClientDto = mappedClient,
+                mappedClients.Add(new ClientDto()
+                {
+                    Id = client.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Email = client.Email,
+                    Phone = client.Phone,
+                    CompanyName = client.CompanyName,
+                    Status = client.Status,
+                    photoUrl = client.PhotoUrl,
+                    ClientId = client.ClientId,
+                    Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
+                    
+                });
+            }
+            
+            FilteredClientDto result = new()
+            {
+                ClientDto = mappedClients,
                 TotalCount = totalCount,
                 TotalPages = totalPages
             };
-            return filteredClientDto;
+            return result;
         }
 
         return new FilteredClientDto();

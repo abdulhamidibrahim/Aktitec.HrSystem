@@ -31,21 +31,24 @@ public class LeaveSettingsController: ControllerBase
     [HttpPost("create")]
     public ActionResult Add([FromBody] LeaveSettingAddDto leaveSettingAddDto)
     {
-        _leaveSettingManager.Add(leaveSettingAddDto);
+        var result= _leaveSettingManager.Add(leaveSettingAddDto);
+        if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Leave setting added.");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] LeaveSettingUpdateDto leaveSettingUpdateDto,int id)
     {
-        _leaveSettingManager.Update(leaveSettingUpdateDto,id);
+        var result =_leaveSettingManager.Update(leaveSettingUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Leave setting updated.");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        _leaveSettingManager.Delete(id);
+        var result = _leaveSettingManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Leave setting deleted.");
     }
     

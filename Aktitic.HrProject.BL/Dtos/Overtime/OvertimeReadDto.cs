@@ -15,7 +15,8 @@ public class OvertimeReadDto
 
     public string? Status { get; set; }
 
-    public int? ApprovedBy { get; set; }
+    public string? ApprovedBy { get; set; }
 
-    public int? EmployeeId { get; set; }
+    public string? Employee { get; set; }
+    public EmployeeDto? EmployeeDto { get; set; }
 }

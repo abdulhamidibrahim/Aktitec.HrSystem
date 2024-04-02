@@ -33,24 +33,24 @@ public class HolidayController: ControllerBase
     [HttpPost("create")]
     public ActionResult Add([FromBody] HolidayAddDto holidayAddDto)
     {
-        var result = _holidayManager.Add(holidayAddDto);
-        if (result.Result == 0) return BadRequest("Holiday not added!");
+        var result =_holidayManager.Add(holidayAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
         return Ok("Holiday added!");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] HolidayUpdateDto holidayUpdateDto,int id)
-    {
-        var result =_holidayManager.Update(holidayUpdateDto,id);
-        if (result.Result == 0) return BadRequest("Holiday not updated!");
+    { 
+        var result=_holidayManager.Update(holidayUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Holiday updated!");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result = _holidayManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Holiday not deleted!");
+        var result= _holidayManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Holiday deleted!");
     }
     

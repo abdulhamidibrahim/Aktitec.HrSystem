@@ -4,6 +4,7 @@ using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,11 +13,13 @@ namespace Aktitic.HrProject.BL;
 public class DepartmentManager:IDepartmentManager
 {
     private readonly IDepartmentRepo _departmentRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public DepartmentManager(IDepartmentRepo departmentRepo, IMapper mapper)
+    public DepartmentManager(IDepartmentRepo departmentRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _departmentRepo = departmentRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(DepartmentAddDto departmentAddDto)
@@ -25,35 +28,37 @@ public class DepartmentManager:IDepartmentManager
         {
             Name = departmentAddDto.Name,
         };
-        return _departmentRepo.Add(department);
+         _departmentRepo.Add(department);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(DepartmentUpdateDto departmentUpdateDto,int id)
     {
         var department = _departmentRepo.GetById(id);
         
-        if (department.Result == null) return Task.FromResult(0);
-        if(departmentUpdateDto.Name!=null) department.Result.Name = departmentUpdateDto.Name;
+        if (department == null) return Task.FromResult(0);
+        if(departmentUpdateDto.Name!=null) department.Name = departmentUpdateDto.Name;
 
 
-        return _departmentRepo.Update(department.Result);
+         _departmentRepo.Update(department);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var department = _departmentRepo.GetById(id);
-        if (department.Result != null) return _departmentRepo.Delete(department.Result);
-        return Task.FromResult(0);
+        _departmentRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
+
 
     public DepartmentReadDto? Get(int id)
     {
         var department = _departmentRepo.GetById(id);
-        if (department.Result == null) return null;
+        if (department == null) return null;
         return new DepartmentReadDto()
         {
-            Id = department.Result.Id,
-            Name = department.Result.Name,
+            Id = department.Id,
+            Name = department.Name,
         };
     }
 

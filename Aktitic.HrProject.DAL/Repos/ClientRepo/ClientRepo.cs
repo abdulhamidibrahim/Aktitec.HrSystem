@@ -107,7 +107,7 @@ public class ClientRepo : GenericRepo<Client>, IClientRepo
                 searchKey = searchKey.Trim().ToLower();
                 query = query
                     .Where(x => 
-                                x.FullName!.ToLower().Contains(searchKey) ||
+                                // x.FullName!.ToLower().Contains(searchKey) ||
                                 x.Email!.ToLower().Contains(searchKey) ||
                                 x.Phone!.ToLower().Contains(searchKey) ||
                                 x.FirstName!.ToLower().Contains(searchKey) ||
@@ -121,5 +121,29 @@ public class ClientRepo : GenericRepo<Client>, IClientRepo
         return _context.Clients!.AsQueryable();
     }
 
+    public async Task<Client?> GetClientWithPermissionsAsync(int id)
+    {
+        if (_context.Clients != null)
+        {
+            return await _context.Clients
+                .Include(x => x.Permissions)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        return new Client();
+    }
+
+    public Task<IEnumerable<Client>> GetAllWithPermissionsAsync()
+    {
+        if (_context.Clients != null)
+        {
+            return Task.FromResult(
+                _context.Clients
+                .Include(x => x.Permissions)
+                .AsEnumerable());
+        }
+
+        return Task.FromResult(Enumerable.Empty<Client>());
+    }
 }
 

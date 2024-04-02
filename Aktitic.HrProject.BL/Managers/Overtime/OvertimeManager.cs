@@ -3,7 +3,9 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,12 +14,14 @@ namespace Aktitic.HrProject.BL;
 public class OvertimeManager:IOvertimeManager
 {
     private readonly IOvertimeRepo _overtimeRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public OvertimeManager(IOvertimeRepo overtimeRepo, IMapper mapper)
+    public OvertimeManager(IOvertimeRepo overtimeRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _overtimeRepo = overtimeRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(OvertimeAddDto overtimeAddDto)
@@ -33,12 +37,13 @@ public class OvertimeManager:IOvertimeManager
             EmployeeId = overtimeAddDto.EmployeeId,
             
         };
-        return _overtimeRepo.Add(overtime);
+          _overtimeRepo.Add(overtime);
+          return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(OvertimeUpdateDto overtimeUpdateDto,int id)
+    public Task<int> Update(OvertimeUpdateDto overtimeUpdateDto, int id)
     {
-        var overtime = _overtimeRepo.GetById(id);
+        var overtime = _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy(id);
         
         if (overtime.Result == null) return Task.FromResult(0);
         if(overtimeUpdateDto.OtHours != null) overtime.Result.OtHours = overtimeUpdateDto.OtHours;
@@ -49,19 +54,20 @@ public class OvertimeManager:IOvertimeManager
         if(overtimeUpdateDto.ApprovedBy != null) overtime.Result.ApprovedBy = overtimeUpdateDto.ApprovedBy;
         if(overtimeUpdateDto.EmployeeId != null) overtime.Result.EmployeeId = overtimeUpdateDto.EmployeeId;
 
-        return _overtimeRepo.Update(overtime.Result);
+         _overtimeRepo.Update(overtime.Result);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var overtime = _overtimeRepo.GetById(id);
-        if (overtime.Result != null) return _overtimeRepo.Delete(overtime.Result);
-        return Task.FromResult(0);
+        _overtimeRepo.Delete(id);
+        return _unitOfWork.SaveChangesAsync();
     }
+
 
     public async Task<OvertimeReadDto>? Get(int id)
     {
-        var overtime = await _overtimeRepo.GetById(id);
+        var overtime = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy(id);
         if (overtime == null) return null;
         return new OvertimeReadDto()
         {
@@ -71,14 +77,14 @@ public class OvertimeManager:IOvertimeManager
             OtType = overtime.OtType,
             Description = overtime.Description,
             Status = overtime.Status,
-            ApprovedBy = overtime.ApprovedBy,
-            EmployeeId = overtime.EmployeeId,
+            ApprovedBy = overtime.ApprovedByNavigation?.FullName,
+            EmployeeDto = _mapper.Map<Employee, EmployeeDto>(overtime.Employee)
         };
     }
 
     public async Task<List<OvertimeReadDto>> GetAll()
     {
-        var overtimes = await _overtimeRepo.GetAll();
+        var overtimes = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy();
         return overtimes.Select(overtime => new OvertimeReadDto()
         {
             Id = overtime.Id,
@@ -87,15 +93,15 @@ public class OvertimeManager:IOvertimeManager
             OtType = overtime.OtType,
             Description = overtime.Description,
             Status = overtime.Status,
-            ApprovedBy = overtime.ApprovedBy,
-            EmployeeId = overtime.EmployeeId,
+            ApprovedBy = overtime.ApprovedByNavigation?.FullName,
+            Employee = overtime.Employee?.FullName,
             
         }).ToList();
     }
     
      public async Task<FilteredOvertimeDto> GetFilteredOvertimesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _overtimeRepo.GetAll();
+        var users = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -109,10 +115,26 @@ public class OvertimeManager:IOvertimeManager
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Overtime>, IEnumerable<OvertimeDto>>(paginatedResults);
-            FilteredOvertimeDto result = new()
+            List<OvertimeDto> leavesDto = new();
+            foreach (var leaves in paginatedResults)
             {
-                OvertimeDto = map,
+                leavesDto.Add(new OvertimeDto()
+                {
+                    Id = leaves.Id,
+                    OtHours = leaves.OtHours,
+                    OtDate = leaves.OtDate,
+                    OtType = leaves.OtType,
+                    Description = leaves.Description,
+                    Status = leaves.Status,
+                    Employee = leaves.Employee?.FullName,
+                    ApprovedBy = leaves.ApprovedByNavigation?.FullName,
+                    
+                });
+            }
+
+            var result = new FilteredOvertimeDto()
+            {
+                OvertimeDto = leavesDto,
                 TotalCount = count,
                 TotalPages = pages
             };

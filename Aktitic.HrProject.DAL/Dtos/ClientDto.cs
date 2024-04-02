@@ -10,11 +10,14 @@ public class ClientDto
     public string LastName { get; set; } = string.Empty;
 
     public string FullName => $"{FirstName} {LastName}";
+    public string? ClientId { get; set; }
 
-    public string? FileName { get; set; }=string.Empty;
-    public byte[]? FileContent { get; set; }
-    public string? FileExtension { get; set; }=string.Empty;
+    // public string? FileName { get; set; }=string.Empty;
+    // public byte[]? FileContent { get; set; }
+    // public string? FileExtension { get; set; }=string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string? CompanyName { get; set; } = string.Empty;
-    
+    public string? photoUrl { get; set; } = string.Empty;
+    public bool? Status { get; set; }
+    public List<PermissionsDto>? Permissions { get; set; }
 }

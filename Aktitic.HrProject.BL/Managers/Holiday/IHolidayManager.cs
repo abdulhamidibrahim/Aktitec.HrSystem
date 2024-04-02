@@ -6,7 +6,7 @@ namespace Aktitic.HrProject.BL;
 public interface IHolidayManager
 {
     public Task<int> Add(HolidayAddDto holidayAddDto);
-    public Task<int> Update(HolidayUpdateDto holidayUpdateDto,int id);
+    public Task<int> Update(HolidayUpdateDto holidayUpdateDto, int id);
     public Task<int> Delete(int id);
     public HolidayReadDto? Get(int id);
     public List<HolidayReadDto> GetAll();

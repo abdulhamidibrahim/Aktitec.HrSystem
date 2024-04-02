@@ -6,6 +6,7 @@ public class CustomPolicyAddDto
 { 
     public string? Name { get; set; }
     public short? Days { get; set; }
+    public string? Type { get; set; }
     public int? EmployeeId { get; set; }
     // public EmployeeDto? Employee { get; set; }
 

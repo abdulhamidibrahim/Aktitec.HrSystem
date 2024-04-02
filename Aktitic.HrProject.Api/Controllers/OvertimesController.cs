@@ -25,32 +25,32 @@ public class OvertimesController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<OvertimeReadDto?>> Get(int id)
     {
-        var user =await _overtimeManager.Get(id);
-        if (user == null) return NotFound("User not found");
-        return Ok(user);
+        var overtime =await _overtimeManager.Get(id);
+        if (overtime == null) return NotFound("Overtime not found");
+        return Ok(overtime);
     }
     
     [HttpPost("create")]
     public ActionResult Add([FromBody] OvertimeAddDto overtimeAddDto)
     {
-        var result = _overtimeManager.Add(overtimeAddDto);
-        if (result.Result == 0) return BadRequest("Overtime not added");
+        var result =_overtimeManager.Add(overtimeAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
         return Ok("Overtime added successfully");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] OvertimeUpdateDto overtimeUpdateDto,int id)
     {
-        var result  = _overtimeManager.Update(overtimeUpdateDto,id);
-        if(result.Result == 0)return BadRequest("Overtime not updated");
+        var result =_overtimeManager.Update(overtimeUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Overtime updated Successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
-    {
-        var result = _overtimeManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Failed to delete Overtime");
+    { 
+        var result =_overtimeManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
     

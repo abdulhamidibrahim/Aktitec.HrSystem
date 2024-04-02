@@ -5,6 +5,7 @@ using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -13,12 +14,14 @@ namespace Aktitic.HrProject.BL;
 public class LeavesManager:ILeavesManager
 {
     private readonly ILeavesRepo _leavesRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public LeavesManager(ILeavesRepo leavesRepo, IMapper mapper)
+    public LeavesManager(ILeavesRepo leavesRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _leavesRepo = leavesRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(LeavesAddDto leavesAddDto)
@@ -35,50 +38,51 @@ public class LeavesManager:ILeavesManager
             Approved = leavesAddDto.Approved,
             Status = leavesAddDto.Status
             
-        };
-        return _leavesRepo.Add(leaves);
+        }; 
+        _leavesRepo.Add(leaves);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(LeavesUpdateDto leavesUpdateDto,int id)
+    public Task<int> Update(LeavesUpdateDto leavesUpdateDto, int id)
     {
         var leaves = _leavesRepo.GetById(id);
+
+        if (leaves == null) return Task.FromResult(0);
+        if(leavesUpdateDto.EmployeeId != null) leaves.EmployeeId = leavesUpdateDto.EmployeeId;
+        if(leavesUpdateDto.Type != null) leaves.Type = leavesUpdateDto.Type;
+        if(leavesUpdateDto.FromDate != null) leaves.FromDate = leavesUpdateDto.FromDate;
+        if(leavesUpdateDto.ToDate != null) leaves.ToDate = leavesUpdateDto.ToDate;
+        if(leavesUpdateDto.Reason != null) leaves.Reason = leavesUpdateDto.Reason;
+        if(leavesUpdateDto.ApprovedBy!=null) leaves.ApprovedBy = leavesUpdateDto.ApprovedBy;
+        if(leavesUpdateDto.Days != null) leaves.Days = leavesUpdateDto.Days;
+        if(leavesUpdateDto.Approved != null) leaves.Approved = leavesUpdateDto.Approved;
         
-        if (leaves.Result == null) return Task.FromResult(0);
-        if(leavesUpdateDto.EmployeeId != null) leaves.Result.EmployeeId = leavesUpdateDto.EmployeeId;
-        if(leavesUpdateDto.Type != null) leaves.Result.Type = leavesUpdateDto.Type;
-        if(leavesUpdateDto.FromDate != null) leaves.Result.FromDate = leavesUpdateDto.FromDate;
-        if(leavesUpdateDto.ToDate != null) leaves.Result.ToDate = leavesUpdateDto.ToDate;
-        if(leavesUpdateDto.Reason != null) leaves.Result.Reason = leavesUpdateDto.Reason;
-        if(leavesUpdateDto.ApprovedBy!=null) leaves.Result.ApprovedBy = leavesUpdateDto.ApprovedBy;
-        if(leavesUpdateDto.Days != null) leaves.Result.Days = leavesUpdateDto.Days;
-        if(leavesUpdateDto.Approved != null) leaves.Result.Approved = leavesUpdateDto.Approved;
-        
-        return _leavesRepo.Update(leaves.Result);
+        _leavesRepo.Update(leaves);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var leaves = _leavesRepo.GetById(id);
-        if (leaves.Result != null) return _leavesRepo.Delete(leaves.Result);
-        return Task.FromResult(0);
+        _leavesRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public LeavesReadDto? Get(int id)
     {
         var leaves = _leavesRepo.GetById(id);
-        if (leaves.Result == null) return null;
+        if (leaves == null) return null;
         return new LeavesReadDto()
         {
-            Id = leaves.Result.Id,
-            EmployeeId = leaves.Result.EmployeeId,
-            Type = leaves.Result.Type,
-            FromDate = leaves.Result.FromDate,
-            ToDate = leaves.Result.ToDate,
-            Reason = leaves.Result.Reason,
-            ApprovedBy = leaves.Result.ApprovedBy,
-            Days = leaves.Result.Days,
-            Approved = leaves.Result.Approved,
-            Status = leaves.Result.Status,
+            Id = leaves.Id,
+            EmployeeId = leaves.EmployeeId,
+            Type = leaves.Type,
+            FromDate = leaves.FromDate,
+            ToDate = leaves.ToDate,
+            Reason = leaves.Reason,
+            ApprovedBy = leaves.ApprovedBy,
+            Days = leaves.Days,
+            Approved = leaves.Approved,
+            Status = leaves.Status,
         };
     }
 

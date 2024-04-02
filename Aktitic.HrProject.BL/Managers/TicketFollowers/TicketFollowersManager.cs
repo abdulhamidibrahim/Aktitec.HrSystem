@@ -2,6 +2,7 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTicket.BL;
 
 using Task = System.Threading.Tasks.Task;
@@ -11,10 +12,12 @@ namespace Aktitic.HrTicket.BL;
 public class TicketFollowersManager:ITicketFollowersManager
 {
     private readonly ITicketFollowersRepo _ticketFollowersRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TicketFollowersManager(ITicketFollowersRepo ticketFollowersRepo)
+    public TicketFollowersManager(ITicketFollowersRepo ticketFollowersRepo, IUnitOfWork unitOfWork)
     {
         _ticketFollowersRepo = ticketFollowersRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(TicketFollowersAddDto ticketFollowersAddDto)
@@ -25,39 +28,41 @@ public class TicketFollowersManager:ITicketFollowersManager
             TicketId = ticketFollowersAddDto.TicketId,
             
         };
-        return _ticketFollowersRepo.Add(ticket);
+         _ticketFollowersRepo.Add(ticket);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(TicketFollowersUpdateDto ticketFollowersUpdateDto, int id)
     {
         var ticketFollowers = _ticketFollowersRepo.GetById(id);
-        
-        if (ticketFollowers.Result == null) return Task.FromResult(0);
+
+        if (ticketFollowers == null) return Task.FromResult(0);
         
         if(ticketFollowersUpdateDto.EmployeeId != null) 
-            ticketFollowers.Result.EmployeeId = ticketFollowersUpdateDto.EmployeeId;
+            ticketFollowers.EmployeeId = ticketFollowersUpdateDto.EmployeeId;
         if(ticketFollowersUpdateDto.TicketId != null) 
-            ticketFollowers.Result.TicketId = ticketFollowersUpdateDto.TicketId;
-
-        return _ticketFollowersRepo.Update(ticketFollowers.Result);
+            ticketFollowers.TicketId = ticketFollowersUpdateDto.TicketId;
+        
+        _ticketFollowersRepo.Update(ticketFollowers);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var ticketFollowers = _ticketFollowersRepo.GetById(id);
-        if (ticketFollowers.Result != null) return _ticketFollowersRepo.Delete(ticketFollowers.Result);
-        return Task.FromResult(0);
+
+        _ticketFollowersRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<TicketFollowersReadDto>? Get(int id)
     {
         var ticketFollowers = _ticketFollowersRepo.GetById(id);
-        if (ticketFollowers.Result == null) return null;
+        if (ticketFollowers == null) return null;
         return Task.FromResult(new TicketFollowersReadDto()
         {
-            Id = ticketFollowers.Result.Id,
-            EmployeeId = ticketFollowers.Result.EmployeeId,
-            TicketId = ticketFollowers.Result.TicketId,
+            Id = ticketFollowers.Id,
+            EmployeeId = ticketFollowers.EmployeeId,
+            TicketId = ticketFollowers.TicketId,
             
         });
     }

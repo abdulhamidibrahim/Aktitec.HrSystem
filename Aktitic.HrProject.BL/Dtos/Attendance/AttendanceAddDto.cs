@@ -2,7 +2,6 @@
 
 public class AttendanceAddDto
 {
-
     public DateOnly? Date { get; set; }
 
     public DateTime? PunchIn { get; set; }
@@ -13,7 +12,7 @@ public class AttendanceAddDto
 
     public string? Break { get; set; }
 
-    public int? Overtime { get; set; }
+    public string? Overtime { get; set; }
 
     public int? EmployeeId { get; set; }
 

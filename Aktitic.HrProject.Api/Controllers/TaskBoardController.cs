@@ -21,9 +21,9 @@ public class TaskBoardController: ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<Task<TaskBoardReadDto?>>> Get(int id)
+    public ActionResult<Task<TaskBoardReadDto?>> Get(int id)
     {
-        var task =await _taskBoardManager.Get(id);
+        var task = _taskBoardManager.Get(id);
         if (task == null) return NotFound("Task Not Found");
         return Ok(task);
     }
@@ -31,24 +31,24 @@ public class TaskBoardController: ControllerBase
     [HttpPost("create")]
     public ActionResult<Task> Add([FromForm] TaskBoardAddDto taskBoardAddDto)
     {
-        var task = _taskBoardManager.Add(taskBoardAddDto);
-        if (task.Result == 0) return BadRequest("Failed to create");
+        var result =_taskBoardManager.Add(taskBoardAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
         return Ok("TaskBoard Created Successfully");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] TaskBoardUpdateDto taskBoardUpdateDto,int id)
     {
-        var task = _taskBoardManager.Update(taskBoardUpdateDto,id);
-        if (task.Result == 0) return BadRequest("Failed to update");
+        var result =_taskBoardManager.Update(taskBoardUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated Successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
-    {
-        var task = _taskBoardManager.Delete(id);
-        if (task.Result == 0) return BadRequest("Failed to delete");
+    { 
+        var result =_taskBoardManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully");
     }
     

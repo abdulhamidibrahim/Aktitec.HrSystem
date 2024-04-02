@@ -19,11 +19,11 @@ public partial class Attendance
 
     public string? Break { get; set; }
 
-    public int? OvertimeId { get; set; }
+    // public int? OvertimeId { get; set; }
 
     public int? EmployeeId { get; set; }
 
-    public virtual Employee? Employee { get; set; }
+    public  Employee? Employee { get; set; }
 
-    public virtual Overtime? Overtime { get; set; }
+    public  string? Overtime { get; set; }
 }

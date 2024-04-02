@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrTask.BL;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,33 +32,51 @@ public class TasksController: ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult<Task> Add([FromForm] TaskAddDto taskAddDto)
+    public ActionResult<Task> Add(TaskAddDto taskAddDto)
     {
         var result =_taskManager.Add(taskAddDto);
-        if(result.Result ==0 ) return BadRequest("Failed to add task!");
+        if (result.Result == 0) return BadRequest("Failed to add");      
         return Ok("Task added successfully!");
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] TaskUpdateDto taskUpdateDto,int id)
+    public ActionResult Update(TaskUpdateDto taskUpdateDto,int id)
     {
         var result = _taskManager.Update(taskUpdateDto,id);
-        if(result.Result ==0 ) return BadRequest("Failed to update task!");
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Task updated successfully!");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        var task = _taskManager.Delete(id);
-        if (task.Result == 0) return NotFound("Task not found!");
+        var result =_taskManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Task deleted successfully!");
     }
     
-    [HttpGet("getFilteredTasks")]
-    public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    // [HttpGet("getFilteredTasks")]
+    // public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    // {
+    //     
+    //     return _taskManager.GetFilteredTasksAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+    // }
+    //
+    // [HttpGet("globalSearch")]
+    // public Task<List<TaskDto>> GlobalSearch(string searchKey,string? column)
+    // {
+    //     return _taskManager.GlobalSearch(searchKey,column);
+    // }
+    
+    [HttpGet("getTaskWithProjectId/{projectId}")]
+    public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
     {
-        
-        return _taskManager.GetFilteredTasksAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return _taskManager.GetTaskWithProjectId(projectId);
+    }
+    
+    [HttpGet("getTaskByCompleted/{completed}")]
+    public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
+    {
+        return _taskManager.GetTaskByCompleted(completed);
     }
 }

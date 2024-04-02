@@ -5,6 +5,7 @@ using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -14,12 +15,14 @@ public class DesignationManager:IDesignationManager
 {
     private readonly IDesignationRepo _designationRepo;
     private readonly IDepartmentRepo _departmentRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public DesignationManager(IDesignationRepo designationRepo, IMapper mapper, IDepartmentRepo departmentRepo)
+    public DesignationManager(IDesignationRepo designationRepo, IMapper mapper, IDepartmentRepo departmentRepo, IUnitOfWork unitOfWork)
     {
         _designationRepo = designationRepo;
         _mapper = mapper;
         _departmentRepo = departmentRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(DesignationAddDto designationAddDto)
@@ -28,35 +31,36 @@ public class DesignationManager:IDesignationManager
         {
             Name = designationAddDto.Name,
             DepartmentId = designationAddDto.DepartmentId
-        };
-        return _designationRepo.Add(designation);
+        }; 
+        _designationRepo.Add(designation);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(DesignationUpdateDto designationUpdateDto,int id)
     {
         var designation = _designationRepo.GetById(id);
         
-        if (designation.Result == null) return Task.FromResult(0);
-        if(designationUpdateDto.Name != null) designation.Result.Name = designationUpdateDto.Name;
-        if(designationUpdateDto.DepartmentId != null) designation.Result.DepartmentId = designationUpdateDto.DepartmentId;
-
-       return _designationRepo.Update(designation.Result);
+        if (designation == null) return Task.FromResult(0);
+        if(designationUpdateDto.Name != null) designation.Name = designationUpdateDto.Name;
+        if(designationUpdateDto.DepartmentId != null) designation.DepartmentId = designationUpdateDto.DepartmentId;
+        
+        _designationRepo.Update(designation);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var designation = _designationRepo.GetById(id);
-        if (designation.Result != null) return _designationRepo.Delete(designation.Result);
-        return Task.FromResult(0);
+        _designationRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<DesignationReadDto>? Get(int id)
+    public  DesignationReadDto? Get(int id)
     {
-        var designation = await _designationRepo.GetById(id);
+        var designation =  _designationRepo.GetById(id);
         if (designation == null)
             return new DesignationReadDto();
 
-        var department = await _departmentRepo.GetById(designation.DepartmentId);
+        var department =  _departmentRepo.GetById(designation.DepartmentId);
 
         var mappedDepartment = department != null
             ? _mapper.Map<Department, DepartmentDto>(department)
@@ -109,7 +113,7 @@ public class DesignationManager:IDesignationManager
                     Name = designation.Name,
                     Id = designation.Id,
                     DepartmentId = designation.DepartmentId,
-                    Department = designation.Department.Name,
+                    Department = designation.Department?.Name,
                 });
             }
             
@@ -152,7 +156,7 @@ public class DesignationManager:IDesignationManager
                     Name = designation.Name,
                     Id = designation.Id,
                     DepartmentId = designation.DepartmentId,
-                    Department = designation.Department.Name,
+                    Department = designation.Department?.Name,
                 });
             }
             FilteredDesignationDto filteredDesignationDto = new()

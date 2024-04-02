@@ -6,7 +6,7 @@ namespace Aktitic.HrProject.BL;
 public interface ILeavesManager
 {
     public Task<int> Add(LeavesAddDto leavesAddDto);
-    public Task<int> Update(LeavesUpdateDto leavesUpdateDto,int id);
+    public Task<int> Update(LeavesUpdateDto leavesUpdateDto, int id);
     public Task<int> Delete(int id);
     public LeavesReadDto? Get(int id);
     public List<LeavesReadDto> GetAll();

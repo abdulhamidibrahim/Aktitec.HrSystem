@@ -4,9 +4,9 @@ namespace Aktitic.HrProject.BL;
 
 public interface IFileManager
 {
-    public void Add(FileAddDto fileAddDto);
-    public void Update(FileUpdateDto fileUpdateDto,int id);
-    public void Delete(int id);
+    public Task<int> Add(FileAddDto fileAddDto);
+    public Task<int> Update(FileUpdateDto fileUpdateDto, int id);
+    public Task<int> Delete(int id);
     public FileReadDto? Get(int id);
     // public FileReadDto? GetByEmployeeId(int id);
     public List<FileReadDto> GetAll();

@@ -23,32 +23,35 @@ public class TicketController: ControllerBase
     }
     
     [HttpGet("{id}")]
-    public ActionResult<Task<TicketReadDto?>> Get(int id)
+    public ActionResult<TicketReadDto?> Get(int id)
     {
         var user = _ticketManager.Get(id);
         if (user == null) return NotFound();
-        return user;
+        return Ok(user);
     }
     
     [HttpPost("create")]
-    public ActionResult<Task> Add([FromForm] TicketAddDto ticketAddDto)
+    public ActionResult<Task> Add(TicketAddDto ticketAddDto)
     {
-        _ticketManager.Add(ticketAddDto);
-        return Ok();
+        var result = _ticketManager.Add(ticketAddDto);
+        if (result.Result == 0) return BadRequest("Failed to create");
+        return Ok("Added Successfully");
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] TicketUpdateDto ticketUpdateDto,int id)
+    public ActionResult<Task> Update(TicketUpdateDto ticketUpdateDto,int id)
     {
-        _ticketManager.Update(ticketUpdateDto,id);
-        return Ok();
+        var result= _ticketManager.Update(ticketUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
+        return Ok("Updated successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        _ticketManager.Delete(id);
-        return Ok();
+        var result= _ticketManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
+        return Ok("Deleted successfully");
     }
     
      

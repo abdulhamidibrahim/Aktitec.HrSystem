@@ -12,7 +12,10 @@ public class Ticket
     public string? Priority { get; set; }
     public string? Status { get; set; } 
     public string? Cc { get; set; }
-
+    public DateOnly? Date { get; set; }
+    public string? TicketId { get; set; }
+    public int[]? Followers { get; set; }
+    public DateOnly? LastReply { get; set; }
     public int?  AssignedToEmployeeId { get; set; }
     public virtual Employee? AssignedTo { get; set; }
 

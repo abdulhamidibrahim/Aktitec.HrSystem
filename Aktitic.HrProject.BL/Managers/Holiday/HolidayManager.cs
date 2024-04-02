@@ -4,6 +4,7 @@ using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,12 +13,14 @@ namespace Aktitic.HrProject.BL;
 public class HolidayManager:IHolidayManager
 {
     private readonly IHolidayRepo _holidayRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public HolidayManager(IHolidayRepo holidayRepo, IMapper mapper)
+    public HolidayManager(IHolidayRepo holidayRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _holidayRepo = holidayRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(HolidayAddDto holidayAddDto)
@@ -26,38 +29,39 @@ public class HolidayManager:IHolidayManager
         {
             Title = holidayAddDto.Title,
             Date = holidayAddDto.Date
-        };
-       return _holidayRepo.Add(holiday);
+        }; 
+        _holidayRepo.Add(holiday);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(HolidayUpdateDto holidayUpdateDto,int id )
+    public Task<int> Update(HolidayUpdateDto holidayUpdateDto, int id)
     {
         var holiday = _holidayRepo.GetById(id);
-        
-        if (holiday.Result == null) return Task.FromResult(0);
-        if(holidayUpdateDto.Title != null) holiday.Result.Title = holidayUpdateDto.Title;
-        if(holidayUpdateDto.Date != null) holiday.Result.Date = holidayUpdateDto.Date;
+
+        if (holiday == null) return Task.FromResult(0);
+        if(holidayUpdateDto.Title != null) holiday.Title = holidayUpdateDto.Title;
+        if(holidayUpdateDto.Date != null) holiday.Date = holidayUpdateDto.Date;
 
 
-       return _holidayRepo.Update(holiday.Result);
+        _holidayRepo.Update(holiday);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var holiday = _holidayRepo.GetById(id);
-        if (holiday.Result != null) return _holidayRepo.Delete(holiday.Result.Id);
-        return Task.FromResult(0);
+        _holidayRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public HolidayReadDto? Get(int id)
     {
         var holiday = _holidayRepo.GetById(id);
-        if (holiday.Result == null) return null;
+        if (holiday == null) return null;
         return new HolidayReadDto()
         {
-            Id = holiday.Result.Id,
-            Title = holiday.Result.Title,
-            Date = holiday.Result.Date
+            Id = holiday.Id,
+            Title = holiday.Title,
+            Date = holiday.Date
         };
     }
 

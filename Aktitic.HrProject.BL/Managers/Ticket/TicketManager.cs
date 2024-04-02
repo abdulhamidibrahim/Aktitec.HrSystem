@@ -3,7 +3,10 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTicket.BL;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
@@ -13,12 +16,16 @@ namespace Aktitic.HrTicket.BL;
 public class TicketManager:ITicketManager
 {
     private readonly ITicketRepo _ticketRepo;
+    private readonly IEmployeeRepo _employeeRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public TicketManager(ITicketRepo ticketRepo, IMapper mapper)
+    public TicketManager(ITicketRepo ticketRepo, IMapper mapper, IUnitOfWork unitOfWork, IEmployeeRepo employeeRepo)
     {
         _ticketRepo = ticketRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
+        _employeeRepo = employeeRepo;
     }
     
     public Task<int> Add(TicketAddDto ticketAddDto)
@@ -29,74 +36,97 @@ public class TicketManager:ITicketManager
            Description = ticketAddDto.Description,
            AssignedToEmployeeId = ticketAddDto.AssignedToEmployeeId,
            Cc = ticketAddDto.Cc,
+           Date = ticketAddDto.Date,
            ClientId = ticketAddDto.ClientId,
            CreatedByEmployeeId = ticketAddDto.CreatedByEmployeeId,
            Priority = ticketAddDto.Priority,
            Status = ticketAddDto.Status,
-            
+           TicketId = ticketAddDto.TicketId,
+           Followers = ticketAddDto.Followers,
+           LastReply = ticketAddDto.LastReply,
         };
-        return _ticketRepo.Add(ticket);
+         _ticketRepo.Add(ticket);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(TicketUpdateDto ticketUpdateDto, int id)
     {
         var ticket = _ticketRepo.GetById(id);
+
+        if (ticket == null) return Task.FromResult(0);
         
-        if (ticket.Result == null) return Task.FromResult(0);
+        if(ticketUpdateDto.Subject != null) ticket.Subject = ticketUpdateDto.Subject;
+        if(ticketUpdateDto.Description != null) ticket.Description = ticketUpdateDto.Description;
+        if(ticketUpdateDto.AssignedToEmployeeId != null) ticket.AssignedToEmployeeId = ticketUpdateDto.AssignedToEmployeeId;
+        if(ticketUpdateDto.Cc != null) ticket.Cc = ticketUpdateDto.Cc;
+        if(ticketUpdateDto.ClientId != null) ticket.ClientId = ticketUpdateDto.ClientId;
+        if(ticketUpdateDto.CreatedByEmployeeId != null) ticket.CreatedByEmployeeId = ticketUpdateDto.CreatedByEmployeeId;
+        if(ticketUpdateDto.Priority != null) ticket.Priority = ticketUpdateDto.Priority;
+        if(ticketUpdateDto.Status != null) ticket.Status = ticketUpdateDto.Status;
+        if(ticketUpdateDto.Date != null) ticket.Date = ticketUpdateDto.Date;
+        if(ticketUpdateDto.TicketId != null) ticket.TicketId = ticketUpdateDto.TicketId;
+        if(ticketUpdateDto.Followers != null) ticket.Followers = ticketUpdateDto.Followers;
+        if(ticketUpdateDto.LastReply != null) ticket.LastReply = ticketUpdateDto.LastReply;
         
-        if(ticketUpdateDto.Subject != null) ticket.Result.Subject = ticketUpdateDto.Subject;
-        if(ticketUpdateDto.Description != null) ticket.Result.Description = ticketUpdateDto.Description;
-        if(ticketUpdateDto.AssignedToEmployeeId != null) ticket.Result.AssignedToEmployeeId = ticketUpdateDto.AssignedToEmployeeId;
-        if(ticketUpdateDto.Cc != null) ticket.Result.Cc = ticketUpdateDto.Cc;
-        if(ticketUpdateDto.ClientId != null) ticket.Result.ClientId = ticketUpdateDto.ClientId;
-        if(ticketUpdateDto.CreatedByEmployeeId != null) ticket.Result.CreatedByEmployeeId = ticketUpdateDto.CreatedByEmployeeId;
-        if(ticketUpdateDto.Priority != null) ticket.Result.Priority = ticketUpdateDto.Priority;
-        if(ticketUpdateDto.Status != null) ticket.Result.Status = ticketUpdateDto.Status;
-        
-        return _ticketRepo.Update(ticket.Result);
+        _ticketRepo.Update(ticket);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var ticket = _ticketRepo.GetById(id);
-        if (ticket.Result != null) return _ticketRepo.Delete(ticket.Result);
-        return Task.FromResult(0);
+
+        _ticketRepo.Delete(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<TicketReadDto>? Get(int id)
+    public TicketReadDto Get(int id)
     {
-        var ticket = _ticketRepo.GetById(id);
-        if (ticket.Result == null) return null;
-        return Task.FromResult(new TicketReadDto()
+        var ticket = _ticketRepo.GetTicketsWithEmployeesAsync(id);
+        List<EmployeeDto> employees = new();
+        foreach (var employee in employees)
         {
-            Id = ticket.Result.Id,
-            Subject = ticket.Result.Subject,
-            Description = ticket.Result.Description,
-            AssignedToEmployeeId = ticket.Result.AssignedToEmployeeId,
-            Cc = ticket.Result.Cc,
-            ClientId = ticket.Result.ClientId,
-            CreatedByEmployeeId = ticket.Result.CreatedByEmployeeId,
-            Priority = ticket.Result.Priority,
-            Status = ticket.Result.Status,
+            var emp = _employeeRepo.GetById(id);
+            employees.Add(_mapper.Map<Employee, EmployeeDto>(emp));
             
-        });
+        }
+        
+        if (ticket.Result != null)
+            return new TicketReadDto()
+            {
+                Id = ticket.Result.Id,
+                Subject = ticket.Result.Subject,
+                Description = ticket.Result.Description,
+                AssignedToEmployeeId = ticket.Result.AssignedToEmployeeId,
+                Cc = ticket.Result.Cc,
+                Date = ticket.Result.Date,
+                ClientId = ticket.Result.ClientId,
+                CreatedByEmployeeId = ticket.Result.CreatedByEmployeeId,
+                Priority = ticket.Result.Priority,
+                Status = ticket.Result.Status,
+                TicketId = ticket.Result.TicketId,
+                Followers = employees,
+                LastReply = ticket.Result.LastReply,
+                AssignedTo = _mapper.Map<Employee, EmployeeDto>(ticket.Result.AssignedTo ?? new Employee()),
+                CreatedBy = _mapper.Map<Employee, EmployeeDto>(ticket.Result.CreatedBy ?? new Employee()),
+            };
+        return new TicketReadDto();
     }
 
     public Task<List<TicketReadDto>> GetAll()
     {
         var ticket = _ticketRepo.GetAll();
-        return Task.FromResult(ticket.Result.Select(note => new TicketReadDto()
+        return Task.FromResult(ticket.Result.Select(t => new TicketReadDto()
         {
-            Id = note.Id,
-            Subject = note.Subject,
-            Description = note.Description,
-            AssignedToEmployeeId = note.AssignedToEmployeeId,
-            Cc = note.Cc,
-            ClientId = note.ClientId,
-            CreatedByEmployeeId = note.CreatedByEmployeeId,
-            Priority = note.Priority,
-            Status = note.Status,
-            
+            Id = t.Id,
+            Subject = t.Subject,
+            Description = t.Description,
+            AssignedToEmployeeId = t.AssignedToEmployeeId,
+            Cc = t.Cc,
+            ClientId = t.ClientId,
+            CreatedByEmployeeId = t.CreatedByEmployeeId,
+            Priority = t.Priority,
+            Status = t.Status,
+            Date = t.Date,
             
         }).ToList());
     }
@@ -104,57 +134,103 @@ public class TicketManager:ITicketManager
      
      public async Task<FilteredTicketDto> GetFilteredTicketsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _ticketRepo.GetAll();
+        var ticketsWithEmployeesAsync =  _ticketRepo.GetTicketsWithEmployeesAsync();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = ticketsWithEmployeesAsync.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var userList = ticketsWithEmployeesAsync.ToList();
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(paginatedResults);
-            FilteredTicketDto result = new()
+            List<TicketDto> ticketDto = new();
+            foreach (var ticket in paginatedResults)
             {
-                TicketDto = map,
+                var assignedTo = _mapper.Map<Employee, EmployeeDto>(ticket.AssignedTo ?? new Employee());
+                var createdBy = _mapper.Map<Employee, EmployeeDto>(ticket.CreatedBy ?? new Employee());
+                ticketDto.Add(new TicketDto()
+                {
+                    Id = ticket.Id,
+                    Subject = ticket.Subject,
+                    Description = ticket.Description,
+                    AssignedToEmployeeId = ticket.AssignedToEmployeeId,
+                    Cc = ticket.Cc,
+                    ClientId = ticket.ClientId,
+                    CreatedByEmployeeId = ticket.CreatedByEmployeeId,
+                    Priority = ticket.Priority,
+                    Status = ticket.Status,
+                    Date = ticket.Date,
+                    TicketId = ticket.TicketId,
+                    Followers = ticket.Followers,
+                    LastReply = ticket.LastReply,
+                    AssignedTo = assignedTo.FullName,
+                    CreatedBy = createdBy.FullName,
+                   
+                });
+            }
+
+            return new FilteredTicketDto()
+            {
+                TicketDto = ticketDto,
                 TotalCount = count,
-                TotalPages = pages
+                TotalPages = pages,
             };
-            return result;
         }
 
-        if (users != null)
+        if (ticketsWithEmployeesAsync != null)
         {
             IEnumerable<Ticket> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(ticketsWithEmployeesAsync, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(ticketsWithEmployeesAsync, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
             var totalCount = enumerable.Count();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
-
-            var mappedTicket = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(paginatedResults);
-
-            FilteredTicketDto filteredTicketDto = new()
+            List<TicketDto> ticketDto = new();
+            foreach (var ticket in paginatedResults)
             {
-                TicketDto = mappedTicket,
+                var assignedTo = _mapper.Map<Employee, EmployeeDto>(ticket.AssignedTo ?? new Employee());
+                var createdBy = _mapper.Map<Employee, EmployeeDto>(ticket.CreatedBy ?? new Employee());
+                ticketDto.Add(new TicketDto()
+                {
+                    Id = ticket.Id,
+                    Subject = ticket.Subject,
+                    Description = ticket.Description,
+                    AssignedToEmployeeId = ticket.AssignedToEmployeeId,
+                    Cc = ticket.Cc,
+                    ClientId = ticket.ClientId,
+                    CreatedByEmployeeId = ticket.CreatedByEmployeeId,
+                    Priority = ticket.Priority,
+                    Status = ticket.Status,
+                    Date = ticket.Date,
+                    TicketId = ticket.TicketId,
+                    Followers = ticket.Followers,
+                    LastReply = ticket.LastReply,
+                    AssignedTo = assignedTo.FullName,
+                    CreatedBy = createdBy.FullName,
+                   
+                });
+            }
+
+            return new FilteredTicketDto()
+            {
+                TicketDto = ticketDto,
                 TotalCount = totalCount,
-                TotalPages = totalPages
+                TotalPages = totalPages,
             };
-            return filteredTicketDto;
         }
 
         return new FilteredTicketDto();

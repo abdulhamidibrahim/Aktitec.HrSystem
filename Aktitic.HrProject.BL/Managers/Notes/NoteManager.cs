@@ -3,6 +3,7 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
@@ -10,10 +11,12 @@ namespace Aktitic.HrProject.BL;
 public class NoteManager:INoteManager
 {
     private readonly INotesRepo _notesRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public NoteManager(INotesRepo notesRepo)
+    public NoteManager(INotesRepo notesRepo, IUnitOfWork unitOfWork)
     {
         _notesRepo = notesRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(NotesAddDto notesAddDto)
@@ -25,44 +28,45 @@ public class NoteManager:INoteManager
             Content = notesAddDto.Content,
             Starred = notesAddDto.Starred,
             Date = DateTime.Now
-        };
-        return _notesRepo.Add(notes);
+        }; 
+        _notesRepo.Add(notes);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(NotesUpdateDto notesUpdateDto, int id)
     {
         var notes = _notesRepo.GetById(id);
-        
-        if (notes.Result == null) return Task.FromResult(0);
-        if(notesUpdateDto.ReceiverId != null) notes.Result.ReceiverId = notesUpdateDto.ReceiverId;
-        if(notesUpdateDto.SenderId != null) notes.Result.SenderId = notesUpdateDto.SenderId;
-        if(notesUpdateDto.Content != null) notes.Result.Content = notesUpdateDto.Content;
-        if(notesUpdateDto.Starred != null) notes.Result.Starred = notesUpdateDto.Starred;
-        notes.Result.Date = DateTime.Now;
+
+        if (notes == null) return Task.FromResult(0);
+        if(notesUpdateDto.ReceiverId != null) notes.ReceiverId = notesUpdateDto.ReceiverId;
+        if(notesUpdateDto.SenderId != null) notes.SenderId = notesUpdateDto.SenderId;
+        if(notesUpdateDto.Content != null) notes.Content = notesUpdateDto.Content;
+        if(notesUpdateDto.Starred != null) notes.Starred = notesUpdateDto.Starred;
+        notes.Date = DateTime.Now;
 
 
-        return _notesRepo.Update(notes.Result);
+         _notesRepo.Update(notes);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var notes = _notesRepo.GetById(id);
-        if (notes.Result != null) return _notesRepo.Delete(notes.Result);
-        return Task.FromResult(0);
+        _notesRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<NotesReadDto>? Get(int id)
     {
         var notes = _notesRepo.GetById(id);
-        if (notes.Result == null) return null;
+        if (notes == null) return null;
         return Task.FromResult(new NotesReadDto()
         {
-            Id = notes.Result.Id,
-            SenderId = notes.Result.SenderId,
-            ReceiverId = notes.Result.ReceiverId,
-            Content = notes.Result.Content,
-            Starred = notes.Result.Starred,
-            Date = notes.Result.Date
+            Id = notes.Id,
+            SenderId = notes.SenderId,
+            ReceiverId = notes.ReceiverId,
+            Content = notes.Content,
+            Starred = notes.Starred,
+            Date = notes.Date
         });
     }
 

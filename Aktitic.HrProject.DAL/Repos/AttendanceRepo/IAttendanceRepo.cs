@@ -8,5 +8,6 @@ public interface IAttendanceRepo :IGenericRepo<Attendance>
 {
     IQueryable<Attendance> GlobalSearch(string? searchKey);
     public List<AttendanceRepo.EmployeeAttendanceDalDto> GetEmployeeAttendanceInCurrentMonth(List<AttendanceDto> attendance);
-    
+    List<Attendance> GetByEmployeeId(int employeeId);
+    List<Attendance> GetAttendanceWithEmployee();
 }
