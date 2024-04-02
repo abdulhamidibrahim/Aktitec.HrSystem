@@ -26,21 +26,20 @@ public class DesignationsController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<DesignationReadDto?>> Get(int id)
     {
-        var designation = await _designationManager.Get(id);
+        var designation =  _designationManager.Get(id);
 
         if (designation == null)
         {
-            return NotFound("Designation Not Found!");
+             NotFound("Designation Not Found!");
         }
-
         return Ok(designation);
     }
     
     [HttpPost("create")]
     public ActionResult Add([FromForm] DesignationAddDto designationAddDto)
     {
-        var result = _designationManager.Add(designationAddDto);
-        if (result.Result == 0) return BadRequest("Designation Already Exists!");
+        var result =_designationManager.Add(designationAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
         return Ok("Designation Added Successfully!");
     }
     
@@ -48,15 +47,15 @@ public class DesignationsController: ControllerBase
     public ActionResult Update([FromForm] DesignationUpdateDto designationUpdateDto,int id)
     {
         var result = _designationManager.Update(designationUpdateDto,id);
-        if (result.Result == 0) return BadRequest("Designation Not Found!");
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Designation Updated Successfully!");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result = _designationManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Designation Not Found!");
+         var result = _designationManager.Delete(id);
+         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Designation Deleted Successfully!");
     }
     

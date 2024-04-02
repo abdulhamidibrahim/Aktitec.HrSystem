@@ -32,26 +32,26 @@ public class ShiftsController: ControllerBase
     }
     
     [HttpPost("create")]
-    public async Task<ActionResult> Add([FromBody] ShiftAddDto shiftAddDto)
+    public ActionResult Add([FromBody] ShiftAddDto shiftAddDto)
     {
-        var result = await _shiftManager.Add(shiftAddDto);
-        if(result== null) return BadRequest("Shift not added");    
+        var result =_shiftManager.Add(shiftAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
         return Ok("Shift added");
     }
     
     [HttpPut("update/{id}")]
-    public async Task<ActionResult> Update([FromBody] ShiftUpdateDto shiftUpdateDto,int id)
+    public ActionResult Update([FromBody] ShiftUpdateDto shiftUpdateDto,int id)
     {
-        var result =await _shiftManager.Update(shiftUpdateDto,id);
-        if(result == null) return BadRequest("Shift not updated");
+        var result =_shiftManager.Update(shiftUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Shift updated");
     }
     
     [HttpDelete("delete/{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public ActionResult Delete(int id)
     {
-        var result =await _shiftManager.Delete(id);
-        if(result == null) return BadRequest("Shift not deleted");
+        var result =_shiftManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Shift deleted");
     }
     

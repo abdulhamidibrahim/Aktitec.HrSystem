@@ -42,16 +42,16 @@ public class ClientsController: ControllerBase
         var user = _clientManager.Get(id);
         if (user == null) return Task.FromResult<ClientReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
-        user.ImgUrl = hostUrl + user.ImgUrl; 
+        user.PhotoUrl = hostUrl + user.PhotoUrl; 
         return Task.FromResult(user)!;
     }
     
-    [HttpGet("getClients")]
-    public async Task<PagedClientResult> GetClientsAsync(string? term, string? sort, int page, int limit)
-    {
-        return await _clientManager.GetClientsAsync(term, sort, page, limit);
-    }
-    
+    // [HttpGet("getClients")]
+    // public async Task<PagedClientResult> GetClientsAsync(string? term, string? sort, int page, int limit)
+    // {
+    //     return await _clientManager.GetClientsAsync(term, sort, page, limit);
+    // }
+    //
     [HttpGet("getFilteredClients")]
     public Task<FilteredClientDto> GetFilteredClientsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
@@ -60,49 +60,35 @@ public class ClientsController: ControllerBase
     }
     
     // [ValidateAntiForgeryToken]
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]
     // [ClientEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public async Task<ActionResult> Create([FromForm] ClientAddDto clientAddDto,[FromForm] IFormFile? image)
+    public  ActionResult Create([FromForm] ClientAddDto clientAddDto)
     {
-        
-            
-            int result = await _clientManager.Add(clientAddDto,image);
-            if (result.Equals(0))
-            {
-                return BadRequest("Account Creation Failed");
-            }
-            
-            return Ok("Account Created Successfully ");
-        // }
-        
-        // var errors = ModelState.Where (n => n.Value?.Errors.Count > 0).ToList ();
-        // return BadRequest(errors);
+           var result = _clientManager.Add(clientAddDto);
+
+           if (result.Result == 0) return BadRequest("Failed to create");
+           return Ok("Created Successfully ");
+       
     }
     
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] ClientUpdateDto clientUpdateDto,int id,[FromForm] IFormFile? image)
+    public ActionResult Update([FromForm] ClientUpdateDto clientUpdateDto, int id)
     {
-        var result = _clientManager.Update(clientUpdateDto,id,image);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Update Failed");
-        }
-        return Ok("Account updated successfully !");
+         var result = _clientManager.Update(clientUpdateDto,id);
+        if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
+        return Ok("updated successfully !");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result =_clientManager.Delete(id);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Deletion Failed");
-        }
-        return Ok();
+           var result =  _clientManager.Delete(id);
+           if (result.Result == 0) return BadRequest("Failed to delete"); 
+           return Ok(" deleted successfully!");
     }
     
     [HttpGet("GlobalSearch")]

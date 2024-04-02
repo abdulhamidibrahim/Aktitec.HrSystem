@@ -25,7 +25,7 @@ public partial class Overtime
 
     public virtual Employee? ApprovedByNavigation { get; set; }
 
-    public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    // public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
 
     public virtual Employee? Employee { get; set; }
 }

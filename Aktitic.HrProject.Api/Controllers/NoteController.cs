@@ -52,14 +52,16 @@ public class NoteController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] NotesUpdateDto noteUpdateDto,int id)
     {
-        _noteManager.Update(noteUpdateDto,id);
+        var result =_noteManager.Update(noteUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Note updated successfully.");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        _noteManager.Delete(id);
+        var result= _noteManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Note deleted successfully.");
     }
     

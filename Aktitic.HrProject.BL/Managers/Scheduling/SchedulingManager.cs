@@ -3,7 +3,9 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,11 +14,13 @@ namespace Aktitic.HrProject.BL;
 public class SchedulingManager:ISchedulingManager
 {
     private readonly ISchedulingRepo _schedulingRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public SchedulingManager(ISchedulingRepo schedulingRepo, IMapper mapper)
+    public SchedulingManager(ISchedulingRepo schedulingRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _schedulingRepo = schedulingRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(SchedulingAddDto schedulingAddDto)
@@ -35,48 +39,48 @@ public class SchedulingManager:ISchedulingManager
             MaxEndTime = schedulingAddDto.MaxEndTime,
             BreakTime = schedulingAddDto.BreakTime,
             RepeatEvery = schedulingAddDto.RepeatEvery,
-            Note = schedulingAddDto.Note,
-            Status = schedulingAddDto.Status,
-            ApprovedBy = schedulingAddDto.ApprovedBy,
-            
-        };
-        return _schedulingRepo.Add(scheduling);
+            Publish = schedulingAddDto.Publish,
+            ExtraHours = schedulingAddDto.ExtraHours,
+        }; 
+        _schedulingRepo.Add(scheduling);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(SchedulingUpdateDto schedulingUpdateDto,int id)
+    public Task<int> Update(SchedulingUpdateDto schedulingUpdateDto, int id)
     {
         var scheduling = _schedulingRepo.GetById(id);
-        
-        if (scheduling.Result == null) return Task.FromResult(0);
-        if(schedulingUpdateDto.DepartmentId != null) scheduling.Result.DepartmentId = schedulingUpdateDto.DepartmentId;
-        if(schedulingUpdateDto.EmployeeId != null) scheduling.Result.EmployeeId = schedulingUpdateDto.EmployeeId;
-        if(schedulingUpdateDto.Date != null) scheduling.Result.Date = schedulingUpdateDto.Date;
-        if(schedulingUpdateDto.ShiftId != null) scheduling.Result.ShiftId = schedulingUpdateDto.ShiftId;
-        if(schedulingUpdateDto.MinStartTime != null) scheduling.Result.MinStartTime = schedulingUpdateDto.MinStartTime;
-        if(schedulingUpdateDto.MaxStartTime != null) scheduling.Result.MaxStartTime = schedulingUpdateDto.MaxStartTime;
-        if(schedulingUpdateDto.StartTime != null) scheduling.Result.StartTime = schedulingUpdateDto.StartTime;
-        if(schedulingUpdateDto.MaxEndTime != null) scheduling.Result.MinEndTime = schedulingUpdateDto.MinEndTime;
-        if(schedulingUpdateDto.EndTime != null) scheduling.Result.EndTime = schedulingUpdateDto.EndTime;
-        if(schedulingUpdateDto.MaxEndTime != null) scheduling.Result.MaxEndTime = schedulingUpdateDto.MaxEndTime;
-        if(schedulingUpdateDto.BreakTime != null) scheduling.Result.BreakTime = schedulingUpdateDto.BreakTime;
-        if(schedulingUpdateDto.RepeatEvery != null) scheduling.Result.RepeatEvery = schedulingUpdateDto.RepeatEvery;
-        if(schedulingUpdateDto.Note != null) scheduling.Result.Note = schedulingUpdateDto.Note;
-        if(schedulingUpdateDto.Status != null) scheduling.Result.Status = schedulingUpdateDto.Status;
-        if(schedulingUpdateDto.ApprovedBy != null) scheduling.Result.ApprovedBy = schedulingUpdateDto.ApprovedBy;
 
-        return _schedulingRepo.Update(scheduling.Result);
+        if (scheduling == null) return Task.FromResult(0);
+        if(schedulingUpdateDto.DepartmentId != null) scheduling.DepartmentId = schedulingUpdateDto.DepartmentId;
+        if(schedulingUpdateDto.EmployeeId != null) scheduling.EmployeeId = schedulingUpdateDto.EmployeeId;
+        if(schedulingUpdateDto.Date != null) scheduling.Date = schedulingUpdateDto.Date;
+        if(schedulingUpdateDto.ShiftId != null) scheduling.ShiftId = schedulingUpdateDto.ShiftId;
+        if(schedulingUpdateDto.MinStartTime != null) scheduling.MinStartTime = schedulingUpdateDto.MinStartTime;
+        if(schedulingUpdateDto.MaxStartTime != null) scheduling.MaxStartTime = schedulingUpdateDto.MaxStartTime;
+        if(schedulingUpdateDto.StartTime != null) scheduling.StartTime = schedulingUpdateDto.StartTime;
+        if(schedulingUpdateDto.MaxEndTime != null) scheduling.MinEndTime = schedulingUpdateDto.MinEndTime;
+        if(schedulingUpdateDto.EndTime != null) scheduling.EndTime = schedulingUpdateDto.EndTime;
+        if(schedulingUpdateDto.MaxEndTime != null) scheduling.MaxEndTime = schedulingUpdateDto.MaxEndTime;
+        if(schedulingUpdateDto.BreakTime != null) scheduling.BreakTime = schedulingUpdateDto.BreakTime;
+        if(schedulingUpdateDto.RepeatEvery != null) scheduling.RepeatEvery = schedulingUpdateDto.RepeatEvery;
+        if(schedulingUpdateDto.ExtraHours != null) scheduling.ExtraHours = schedulingUpdateDto.ExtraHours;
+        if(schedulingUpdateDto.Publish != null) scheduling.Publish = schedulingUpdateDto.Publish;
+        if(schedulingUpdateDto.RepeatEvery != null) scheduling.RepeatEvery = schedulingUpdateDto.RepeatEvery;
+
+         _schedulingRepo.Update(scheduling);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var scheduling = _schedulingRepo.GetById(id);
-        if (scheduling.Result != null) return _schedulingRepo.Delete(scheduling.Result);
-        return Task.FromResult(0);
+
+        _schedulingRepo.Delete(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<SchedulingReadDto>? Get(int id)
+    public  SchedulingReadDto? Get(int id)
     {
-        var scheduling =await _schedulingRepo.GetById(id);
+        var scheduling = _schedulingRepo.GetById(id);
         if (scheduling == null) return null;
         return new SchedulingReadDto()
         {
@@ -93,9 +97,8 @@ public class SchedulingManager:ISchedulingManager
             MaxEndTime = scheduling.MaxEndTime,
             BreakTime = scheduling.BreakTime,
             RepeatEvery = scheduling.RepeatEvery,
-            Note = scheduling.Note,
-            Status = scheduling.Status,
-            ApprovedBy = scheduling.ApprovedBy,
+            ExtraHours = scheduling.ExtraHours,
+            Publish = scheduling.Publish,
             
         };
     }
@@ -118,16 +121,16 @@ public class SchedulingManager:ISchedulingManager
             MaxEndTime = scheduling.MaxEndTime,
             BreakTime = scheduling.BreakTime,
             RepeatEvery = scheduling.RepeatEvery,
-            Note = scheduling.Note,
-            Status = scheduling.Status,
-            ApprovedBy = scheduling.ApprovedBy,
+            ExtraHours = scheduling.ExtraHours,
+            Publish = scheduling.Publish,
             
         }).ToList();
     }
 
-    public Task<List<FilteredSchedulingDto>> GetAllEmployeesScheduling(int page, int pageSize)
+    public List<FilteredSchedulingDto> GetAllEmployeesScheduling(int page, int pageSize)
     {
        var employee  =  _schedulingRepo.GetSchedulingWithEmployees();
+       if (employee.Count == 0) return new List<FilteredSchedulingDto>(); 
         var employeesMap = _mapper.Map<List<Scheduling>, List<ScheduleDto>>(employee);
         var totalCount = employeesMap.Count;
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
@@ -147,25 +150,103 @@ public class SchedulingManager:ISchedulingManager
             MaxEndTime = x.MaxEndTime,
             BreakTime = x.BreakTime,
             RepeatEvery = x.RepeatEvery,
-            Note = x.Note,
-            Status = x.Status,
-            ApprovedBy = x.ApprovedBy,
-            Employee = x.Employee
+            ExtraHours = x.ExtraHours,
+            Publish = x.Publish,
+            Employee = x.Employee,
+            // ApprovedByNavigation = x.ApprovedByNavigation,
         }).ToList());
-        return new Task<List<FilteredSchedulingDto>>(() => new List<FilteredSchedulingDto>
-        {
+        return
+        [
             new FilteredSchedulingDto
             {
                 TotalCount = totalCount,
                 TotalPages = totalPages,
-                SchedulingReadDto = readDto.Result,
+                ScheduleDto = readDto.Result,
             }
-        });
-        {
-            
-        }
-    }
+        ];
+        
+    } 
     
+    public List<FilteredSchedulingDto> GetAllEmployeesScheduling(int page, int pageSize,DateOnly? startDate)
+    {
+       var employee  =  _schedulingRepo.GetSchedulingWithEmployees(startDate);
+       if (employee.Count == 0) return new List<FilteredSchedulingDto>(); 
+        var employeesMap = _mapper.Map<List<Scheduling>, List<ScheduleDto>>(employee);
+        var totalCount = employeesMap.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        var employees = employeesMap.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var readDto = Task.FromResult(employees.Select(x => new SchedulingReadDto
+        {
+            Id = x.Id,
+            DepartmentId = x.DepartmentId,
+            EmployeeId = x.EmployeeId,
+            Date = x.Date,
+            ShiftId = x.ShiftId,
+            MinStartTime = x.MinStartTime,
+            MaxStartTime = x.MaxStartTime,
+            StartTime = x.StartTime,
+            MinEndTime = x.MinEndTime,
+            EndTime = x.EndTime,
+            MaxEndTime = x.MaxEndTime,
+            BreakTime = x.BreakTime,
+            RepeatEvery = x.RepeatEvery,
+            Publish = x.Publish,
+            ExtraHours = x.ExtraHours,
+            Employee = x.Employee
+        }).ToList());
+        return
+        [
+            new FilteredSchedulingDto
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                ScheduleDto = readDto.Result,
+            }
+        ];
+        
+    } 
+    
+    // public Task<List<FilteredSchedulingDto>> GetAllEmployeesScheduling(int page, int pageSize,DateTime startDate)
+    // {
+    //    var employee  =  _schedulingRepo.GetSchedulingWithEmployees(startDate);
+    //     var employeesMap = _mapper.Map<List<Scheduling>, List<ScheduleDto>>(employee);
+    //     var totalCount = employeesMap.Count;
+    //     var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+    //     var employees = employeesMap.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+    //     var readDto = Task.FromResult(employees.Select(x => new SchedulingReadDto
+    //     {
+    //         Id = x.Id,
+    //         DepartmentId = x.DepartmentId,
+    //         EmployeeId = x.EmployeeId,
+    //         Date = x.Date,
+    //         ShiftId = x.ShiftId,
+    //         MinStartTime = x.MinStartTime,
+    //         MaxStartTime = x.MaxStartTime,
+    //         StartTime = x.StartTime,
+    //         MinEndTime = x.MinEndTime,
+    //         EndTime = x.EndTime,
+    //         MaxEndTime = x.MaxEndTime,
+    //         BreakTime = x.BreakTime,
+    //         RepeatEvery = x.RepeatEvery,
+    //         Note = x.Note,
+    //         Status = x.Status,
+    //         ApprovedBy = x.ApprovedBy,
+    //         Employee = x.Employee
+    //     }).ToList());
+    //     return new Task<List<FilteredSchedulingDto>>(() => new List<FilteredSchedulingDto>
+    //     {
+    //         new FilteredSchedulingDto
+    //         {
+    //             TotalCount = totalCount,
+    //             TotalPages = totalPages,
+    //             SchedulingReadDto = readDto.Result,
+    //         }
+    //     });
+    //     {
+    //         
+    //     }
+    // }
+    //
     public Task<List<ScheduleDto>> GlobalSearch(string searchKey, string? column)
     {
         
@@ -179,6 +260,9 @@ public class SchedulingManager:ISchedulingManager
 
         var  users = _schedulingRepo.GlobalSearch(searchKey);
         var shifts = _mapper.Map<IEnumerable<Scheduling>, IEnumerable<ScheduleDto>>(users);
+        // var emp = _mapper
+        //     .Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>
+        //     (users.Select(s => s.Employee).ToList());
         return Task.FromResult(shifts.ToList());
     }
 

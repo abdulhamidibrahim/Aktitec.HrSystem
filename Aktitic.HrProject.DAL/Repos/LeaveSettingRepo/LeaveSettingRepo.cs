@@ -13,9 +13,9 @@ public class LeaveSettingRepo :GenericRepo<LeaveSettings>,ILeaveSettingRepo
         _context = context;
     }
 
-    public List<Leaves> GetLeavesWithEmployee()
+    public List<Leaves>? GetLeavesWithEmployee()
     {
-        return _context.Leaves
+        return _context.Leaves?
             .Include(x => x.Employee)
             .Include(x => x.ApprovedByNavigation)
             .ToList();

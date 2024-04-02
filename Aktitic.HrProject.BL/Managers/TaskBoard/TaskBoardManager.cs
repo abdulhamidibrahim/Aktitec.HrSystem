@@ -2,6 +2,7 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTaskBoard.BL;
 
 using Task = System.Threading.Tasks.Task;
@@ -11,10 +12,12 @@ namespace Aktitic.HrTaskBoard.BL;
 public class TaskBoardManager:ITaskBoardManager
 {
     private readonly ITaskBoardRepo _taskBoardRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TaskBoardManager(ITaskBoardRepo taskBoardRepo)
+    public TaskBoardManager(ITaskBoardRepo taskBoardRepo, IUnitOfWork unitOfWork)
     {
         _taskBoardRepo = taskBoardRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(TaskBoardAddDto taskBoardAddDto)
@@ -23,35 +26,37 @@ public class TaskBoardManager:ITaskBoardManager
         {
             ProjectId = taskBoardAddDto.ProjectId,
         };
-        return _taskBoardRepo.Add(taskBoard);
+         _taskBoardRepo.Add(taskBoard);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(TaskBoardUpdateDto taskBoardUpdateDto, int id)
     {
         var taskBoard = _taskBoardRepo.GetById(id);
-        
-        if (taskBoard.Result == null) return Task.FromResult(0);
-        
-        if(taskBoardUpdateDto.ProjectId != null) taskBoard.Result.ProjectId = taskBoardUpdateDto.ProjectId;
 
-        return _taskBoardRepo.Update(taskBoard.Result);
+        if (taskBoard == null) return Task.FromResult(0);
+        
+        if(taskBoardUpdateDto.ProjectId != null) taskBoard.ProjectId = taskBoardUpdateDto.ProjectId;
+        
+        _taskBoardRepo.Update(taskBoard);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var taskBoard = _taskBoardRepo.GetById(id);
-        if (taskBoard.Result != null) return _taskBoardRepo.Delete(taskBoard.Result);
-        return Task.FromResult(0);
+
+        _taskBoardRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<TaskBoardReadDto>? Get(int id)
     {
         var taskBoard = _taskBoardRepo.GetById(id);
-        if (taskBoard.Result == null) return null;
+        if (taskBoard == null) return null;
         return Task.FromResult(new TaskBoardReadDto()
         {
-            Id = taskBoard.Result.Id,
-            ProjectId = taskBoard.Result.ProjectId,
+            Id = taskBoard.Id,
+            ProjectId = taskBoard.ProjectId,
         });
     }
 

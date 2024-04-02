@@ -5,8 +5,8 @@ namespace Aktitic.HrProject.BL;
 
 public interface ITimesheetManager
 {
-    public Task<int> Add(TimesheetAddDto timesheetAddDto);
-    public Task<int> Update(TimesheetUpdateDto timesheetUpdateDto,int id);
+    public Task<Task<int>> Add(TimesheetAddDto timesheetAddDto);
+    public Task<Task<int>> Update(TimesheetUpdateDto timesheetUpdateDto, int id);
     public Task<int> Delete(int id);
     public Task<TimesheetReadDto?> Get(int id);
     public Task<List<TimesheetReadDto>> GetAll();

@@ -21,12 +21,19 @@ public class Project
     // public Team? Team { get; set; } = null!;
     
     public string? RateSelect { get; set; }
-    public decimal? Rate { get; set; }
+    public string? Rate { get; set; }
     public bool? Status { get; set; }
     public bool? Checked { get; set; }
     
+    [ForeignKey(nameof(Employee))]
+    public int? LeaderId { get; set; }
+
+    public string? ProjectId { get; set; }
+    public int[]? Team { get; set; }
+    public Employee? Leader { get; set; }
     public List<Task> Tasks { get; set; } = new();
-    public List<Employee> Employees { get; set; } = new();
+    // public List<Employee> Employees { get; set; } = new();
+    public List<EmployeeProjects>? EmployeesProject { get; set; }
     public List<Department> Departments { get; set; } = new();
     public ICollection<File> Files { get; set; }   = new List<File>();
     

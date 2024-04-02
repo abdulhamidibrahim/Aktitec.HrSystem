@@ -1,13 +1,15 @@
-﻿namespace Aktitic.HrProject.BL;
+﻿using Aktitic.HrProject.DAL.Pagination.Client;
+
+namespace Aktitic.HrProject.BL;
 
 public class TaskAddDto
 {
     
-    public string Title { get; set; }=string.Empty;
+    public string Text { get; set; }=string.Empty;
     
     public string? Description { get; set; }=string.Empty;
     
-    public DateOnly? Date { get; set; }
+    public DateOnly Date { get; set; }
     
     public string? Priority { get; set; }=string.Empty;
 
@@ -16,6 +18,8 @@ public class TaskAddDto
     public int? ProjectId { get; set; }
     
     public int? AssignedTo { get; set; }
+    
+    // public List<MessageDto>? Messages { get; set; }
 
     //messages
 

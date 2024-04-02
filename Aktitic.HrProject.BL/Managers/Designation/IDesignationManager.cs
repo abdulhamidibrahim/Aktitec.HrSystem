@@ -6,9 +6,9 @@ namespace Aktitic.HrProject.BL;
 public interface IDesignationManager
 {
     public Task<int> Add(DesignationAddDto designationAddDto);
-    public Task<int> Update(DesignationUpdateDto designationUpdateDto,int id);
+    public Task<int> Update(DesignationUpdateDto designationUpdateDto, int id);
     public Task<int> Delete(int id);
-    public Task<DesignationReadDto>? Get(int id);
+    public DesignationReadDto? Get(int id);
     public Task<List<DesignationReadDto>> GetAll();
     public Task<FilteredDesignationDto> GetFilteredDesignationsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 

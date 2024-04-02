@@ -9,6 +9,7 @@ using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -20,15 +21,17 @@ public class TimesheetManager:ITimesheetManager
     private readonly IEmployeeRepo _employeeRepo;
     private readonly IProjectRepo _projectRepo;
     private readonly IMapper _mapper;
-    public TimesheetManager(ITimesheetRepo timesheetRepo, IMapper mapper, IEmployeeRepo employeeRepo, IProjectRepo projectRepo)
+    private readonly IUnitOfWork _unitOfWork;
+    public TimesheetManager(ITimesheetRepo timesheetRepo, IMapper mapper, IEmployeeRepo employeeRepo, IProjectRepo projectRepo, IUnitOfWork unitOfWork)
     {
         _timesheetRepo = timesheetRepo;
         _mapper = mapper;
         _employeeRepo = employeeRepo;
         _projectRepo = projectRepo;
+        _unitOfWork = unitOfWork;
     }
     
-    public async Task<int> Add(TimesheetAddDto timesheetAddDto)
+    public async Task<Task<int>> Add(TimesheetAddDto timesheetAddDto)
     {
         var timesheet = new TimeSheet()
         {
@@ -41,14 +44,15 @@ public class TimesheetManager:ITimesheetManager
             Description = timesheetAddDto.Description,
             
         };
-       return await _timesheetRepo.Add(timesheet);
+        _timesheetRepo.Add(timesheet);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<int> Update(TimesheetUpdateDto timesheetUpdateDto,int id)
+    public async Task<Task<int>> Update(TimesheetUpdateDto timesheetUpdateDto, int id)
     {
-        var timesheet =await _timesheetRepo.GetById(id);
+        var timesheet = _timesheetRepo.GetById(id);
 
-        if (timesheet == null) return 0;
+        if (timesheet == null) return Task.FromResult(0);
         if(timesheetUpdateDto.Date != null) 
             timesheet.Date = timesheetUpdateDto.Date;
         if(timesheetUpdateDto.EmployeeId != null) 
@@ -64,23 +68,24 @@ public class TimesheetManager:ITimesheetManager
         if(timesheetUpdateDto.Description != null) 
             timesheet.Description = timesheetUpdateDto.Description;
         
-        return await _timesheetRepo.Update(timesheet);
+        _timesheetRepo.Update(timesheet);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var timesheet = _timesheetRepo.GetById(id);
-        if (timesheet.Result != null) return _timesheetRepo.Delete(timesheet.Result);
-        return Task.FromResult(0);
+
+        _timesheetRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<TimesheetReadDto?> Get(int id)
     {
-        var timesheet = await _timesheetRepo.GetById(id);
+        var timesheet = _timesheetRepo.GetById(id);
         if (timesheet == null) return new TimesheetReadDto();
 
-        var employee = await _employeeRepo.GetById(timesheet.EmployeeId);
-        var project = await _projectRepo.GetById(timesheet.ProjectId);
+        var employee =  _employeeRepo.GetById(timesheet.EmployeeId);
+        var project =  _projectRepo.GetById(timesheet.ProjectId);
 
         // Check if employee or project is null
         // if (employee == null || project == null)

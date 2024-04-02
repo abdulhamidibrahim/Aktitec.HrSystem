@@ -1,3 +1,4 @@
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 
 namespace Aktitic.HrProject.DAL.Dtos;
@@ -12,14 +13,16 @@ public class AttendanceDto
 
     public DateTime? PunchOut { get; set; }
 
-    public TimeOnly? Production { get; set; }
+    public string? Production { get; set; }
 
-    public TimeOnly? Break { get; set; }
+    public string? Break { get; set; }
 
-    public int? OvertimeId { get; set; }
+    // public int? OvertimeId { get; set; }
 
     public int? EmployeeId { get; set; }
 
-    public virtual EmployeeDto? Employee { get; set; }
+    public  EmployeeDto? Employee { get; set; }
+
+    public  string? Overtime { get; set; }
     
 }

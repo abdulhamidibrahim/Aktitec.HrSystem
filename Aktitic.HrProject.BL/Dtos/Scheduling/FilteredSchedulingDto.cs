@@ -6,8 +6,8 @@ namespace Aktitic.HrProject.BL;
 
 public class FilteredSchedulingDto
 {
-    public IEnumerable<SchedulingReadDto> SchedulingReadDto { get; set; }
-    public IEnumerable<ScheduleDto> ScheduleDto { get; set; }
+    public IEnumerable<SchedulingReadDto> ScheduleDto { get; set; }
+    // public IEnumerable<ScheduleDto> ScheduleDto { get; set; }
     public int TotalCount { get; set; }
     public int TotalPages { get; set; }
 }

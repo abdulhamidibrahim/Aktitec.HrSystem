@@ -23,12 +23,18 @@ public class LeavesRepo :GenericRepo<Leaves>,ILeavesRepo
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
                 searchKey = searchKey.Trim().ToLower();
+                if(DateOnly.TryParse(searchKey,out var searchDate))
+                {
+                    query = query
+                        .Where(x =>
+                            x.FromDate == searchDate ||
+                            x.ToDate == searchDate);
+                    return query;
+                }
                 query = query
                     .Where(x =>
                         x.Type!.ToLower().Contains(searchKey) ||
-                        x.Reason!.ToLower().Contains(searchKey) ||
-                        x.FromDate!.ToString().ToLower().Contains(searchKey) ||
-                        x.ToDate!.ToString().ToLower().Contains(searchKey));
+                        x.Reason!.ToLower().Contains(searchKey) );
                        
                         
                 return query;

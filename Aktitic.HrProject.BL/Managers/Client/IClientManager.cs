@@ -9,8 +9,8 @@ namespace Aktitic.HrProject.BL;
 
 public interface IClientManager
 {
-    public Task<int> Add(ClientAddDto employeeAddDto, IFormFile? image);
-    public Task<int> Update(ClientUpdateDto employeeUpdateDto,int id, IFormFile? image);
+    public Task<int> Add(ClientAddDto employeeAddDto);
+    public Task<Task<int>> Update(ClientUpdateDto employeeUpdateDto, int id);
     public Task<int> Delete(int id);
     public ClientReadDto? Get(int id);
     public Task<List<ClientReadDto>> GetAll();

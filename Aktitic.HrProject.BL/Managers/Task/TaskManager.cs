@@ -1,12 +1,14 @@
 
-using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using AutoMapper;
+using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.BL;
@@ -14,86 +16,99 @@ namespace Aktitic.HrProject.BL;
 public class TaskManager:ITaskManager
 {
     private readonly ITaskRepo _taskRepo;
+    private readonly IMessageRepo _messageRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public TaskManager(ITaskRepo taskRepo, IMapper mapper)
+    public TaskManager(ITaskRepo taskRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _taskRepo = taskRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(TaskAddDto taskAddDto)
     {
         var task = new Task
         {
-            
-            Date = DateTime.Now
+            Text = taskAddDto.Text,
+            Description = taskAddDto.Description,
+            Priority = taskAddDto.Priority,
+            Completed = taskAddDto.Completed,
+            AssignedTo = taskAddDto.AssignedTo,
+            ProjectId = taskAddDto.ProjectId,
+            Date = DateTime.Now,
         };
-        return _taskRepo.Add(task);
+        
+        _taskRepo.Add(task);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(TaskUpdateDto taskUpdateDto, int id)
     {
         var task = _taskRepo.GetById(id);
         
-        if (task.Result == null) return System.Threading.Tasks.Task.FromResult(0);
+        _unitOfWork.SaveChangesAsync();
+        if (task == null) return System.Threading.Tasks.Task.FromResult(0);
         
-        if(taskUpdateDto.Title != null) task.Result.Title = taskUpdateDto.Title;
-        if(taskUpdateDto.Description != null) task.Result.Description = taskUpdateDto.Description;
-        if(taskUpdateDto.Priority != null) task.Result.Priority = taskUpdateDto.Priority;
-        if(taskUpdateDto.Completed != null) task.Result.Completed = taskUpdateDto.Completed;
-        if(taskUpdateDto.AssignedTo != null) task.Result.AssignedTo = taskUpdateDto.AssignedTo;
-        task.Result.Date = DateTime.Now;
-        if(taskUpdateDto.ProjectId != null) task.Result.ProjectId = taskUpdateDto.ProjectId;
-        
+        if(taskUpdateDto.Text != null) task.Text = taskUpdateDto.Text;
+        if(taskUpdateDto.Description != null) task.Description = taskUpdateDto.Description;
+        if(taskUpdateDto.Priority != null) task.Priority = taskUpdateDto.Priority;
+        if(taskUpdateDto.Completed != null) task.Completed = taskUpdateDto.Completed;
+        if(taskUpdateDto.AssignedTo != null) task.AssignedTo = taskUpdateDto.AssignedTo;
+        task.Date = DateTime.Now;
+        if(taskUpdateDto.ProjectId != null) task.ProjectId = taskUpdateDto.ProjectId;
 
-        return _taskRepo.Update(task.Result);
+        
+        _taskRepo.Update(task);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var task = _taskRepo.GetById(id);
-        if (task.Result != null) return _taskRepo.Delete(task.Result);
-        return System.Threading.Tasks.Task.FromResult(0);
+        _taskRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<TaskReadDto>? Get(int id)
+    public TaskReadDto Get(int id)
     {
         var task = _taskRepo.GetById(id);
-        if (task.Result == null) return null;
-        return System.Threading.Tasks.Task.FromResult(new TaskReadDto()
+        if (task == null) return new TaskReadDto();
+        return new TaskReadDto()
         {
-            Id = task.Result.Id,
-            Title = task.Result.Title,
-            Description = task.Result.Description,
-            Completed = task.Result.Completed,
-            AssignedTo = task.Result.AssignedTo,
-            Priority = task.Result.Priority,
-            ProjectId = task.Result.ProjectId,
-            Date = task.Result.Date
-        });
+            Id = task.Id,
+            Text = task.Text,
+            Description = task.Description,
+            Completed = task.Completed,
+            AssignedTo = task.AssignedTo,
+            Priority = task.Priority,
+            ProjectId = task.ProjectId,
+            Date = task.Date,
+            Messages = _mapper.Map<IEnumerable<Message>,IEnumerable<MessageDto>>(task.Messages).ToList(),
+        };
     }
 
     public Task<List<TaskReadDto>> GetAll()
     {
         var task = _taskRepo.GetAll();
-        return System.Threading.Tasks.Task.FromResult(task.Result.Select(note => new TaskReadDto()
+        return System.Threading.Tasks.Task.FromResult(task.Result.Select(t => new TaskReadDto()
         {
-            Id = note.Id,
-            Description = note.Description,
-            Completed = note.Completed,
-            AssignedTo = note.AssignedTo,
-            ProjectId = note.ProjectId,
-            Priority = note.Priority,
-            Title = note.Title,
-            Date = note.Date
+            Id = t.Id,
+            Description = t.Description,
+            Completed = t.Completed,
+            AssignedTo = t.AssignedTo,
+            ProjectId = t.ProjectId,
+            Priority = t.Priority,
+            Text = t.Text,
+            Date = t.Date,
+            Messages = _mapper.Map<IEnumerable<Message>,IEnumerable<MessageDto>>(t.Messages).ToList(),
         }).ToList());
     }
     
      
-     public async Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+     public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _taskRepo.GetAll();
+        var users =  _taskRepo.GetAllTasksWithEmployeeAndProject();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -107,14 +122,30 @@ public class TaskManager:ITaskManager
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(paginatedResults);
+            List<TaskDto> taskDto = new();
+            foreach (var task in paginatedResults)
+            {
+                taskDto.Add(new TaskDto()
+                {
+                    Id = task.Id,
+                    Title = task.Text,
+                    Description = task.Description,
+                    Completed = task.Completed,
+                    Date = task.Date,
+                    Priority = task.Priority,
+                    Project = _mapper.Map<Project,ProjectDto>(task.Project),
+                    AssignEmployee = _mapper.Map<Employee,EmployeeDto>(task.AssignEmployee),
+                    Message = _mapper.Map<IEnumerable<Message>,IEnumerable<MessageDto>>(task.Messages).ToList(),
+                });
+            }
+            
             FilteredTaskDto result = new()
             {
-                TaskDto = map,
+                TaskDto = taskDto,
                 TotalCount = count,
                 TotalPages = pages
             };
-            return result;
+            return System.Threading.Tasks.Task.FromResult(result);
         }
 
         if (users != null)
@@ -135,18 +166,34 @@ public class TaskManager:ITaskManager
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var mappedTask = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(paginatedResults);
 
-            FilteredTaskDto filteredTaskDto = new()
+            List<TaskDto> taskDto = new();
+            foreach (var task in paginatedResults)
             {
-                TaskDto = mappedTask,
+                taskDto.Add(new TaskDto()
+                {
+                    Id = task.Id,
+                    Title = task.Text,
+                    Description = task.Description,
+                    Completed = task.Completed,
+                    Date = task.Date,
+                    Priority = task.Priority,
+                    Project = _mapper.Map<Project,ProjectDto>(task.Project),
+                    AssignEmployee = _mapper.Map<Employee,EmployeeDto>(task.AssignEmployee),
+                    Message = _mapper.Map<IEnumerable<Message>,IEnumerable<MessageDto>>(task.Messages).ToList(),
+                });
+            }
+            
+            FilteredTaskDto result = new()
+            {
+                TaskDto = taskDto,
                 TotalCount = totalCount,
                 TotalPages = totalPages
             };
-            return filteredTaskDto;
+            return System.Threading.Tasks.Task.FromResult(result);
         }
 
-        return new FilteredTaskDto();
+        return System.Threading.Tasks.Task.FromResult(new FilteredTaskDto());
     }
     private IEnumerable<Task> ApplyFilter(IEnumerable<Task> users, string? column, string? value, string? operatorType)
     {
@@ -196,7 +243,14 @@ public class TaskManager:ITaskManager
 
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
     {
-        var users = _taskRepo.GetTaskWithProjectId(projectId);
+        var users = _taskRepo.GetTaskByProjectId(projectId);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
+        return System.Threading.Tasks.Task.FromResult(tasks.ToList());
+    }
+
+    public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
+    {
+        var users = _taskRepo.GetTaskByCompleted(completed);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }

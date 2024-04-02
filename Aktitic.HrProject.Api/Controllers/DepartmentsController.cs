@@ -33,16 +33,16 @@ public class DepartmentsController: ControllerBase
     [HttpPost("create")]
     public ActionResult Add([FromForm] DepartmentAddDto departmentAddDto)
     {
-        var result = _departmentManager.Add(departmentAddDto);
-        if (result.Result == 0) return BadRequest("Failed to Add!");
-        return Ok("Added Successfully!");
+         var result = _departmentManager.Add(departmentAddDto);
+         if (result.Result == 0) return BadRequest("Failed to add");
+         return Ok("Added Successfully!");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] DepartmentUpdateDto departmentUpdateDto,int id)
     {
-        var result = _departmentManager.Update(departmentUpdateDto,id);
-        if (result.Result == 0) return BadRequest("Failed to Update!");
+        var result  =_departmentManager.Update(departmentUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated Successfully!");
     }
     
@@ -50,7 +50,7 @@ public class DepartmentsController: ControllerBase
     public ActionResult Delete(int id)
     {
         var result = _departmentManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Failed to Delete!");
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully!");
     }
     

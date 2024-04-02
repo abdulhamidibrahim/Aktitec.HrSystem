@@ -7,6 +7,8 @@ using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.ClientRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using Aktitic.HrTaskBoard.BL;
 using Aktitic.HrTaskList.BL;
@@ -25,6 +27,7 @@ builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSwaggerGen(options =>
@@ -55,6 +58,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //add connection string
+
 builder.Services.AddDbContext<HrSystemDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
@@ -142,6 +146,7 @@ var mapperConfig = new MapperConfiguration(mc =>
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 #region resolving dependencies
 builder.Services.AddScoped<IAttendanceManager, AttendanceManager>();
@@ -165,6 +170,10 @@ builder.Services.AddScoped<ITaskBoardManager, TaskBoardManager>();
 builder.Services.AddScoped<IProjectManager, ProjectManager>();
 builder.Services.AddScoped<ITicketManager, TicketManager>();
 builder.Services.AddScoped<ITicketFollowersManager, TicketFollowersManager>();
+builder.Services.AddScoped<IEstimateManager, EstimateManager>();
+builder.Services.AddScoped<IExpensesManager, ExpensesManager>();
+builder.Services.AddScoped<IInvoiceManager, InvoiceManager>();
+builder.Services.AddScoped<IPaymentManager, PaymentManager>();
 
 #endregion
 
@@ -186,16 +195,20 @@ builder.Services.AddScoped<INotesRepo, NotesRepo>();
 builder.Services.AddScoped<IClientRepo, ClientRepo>();
 builder.Services.AddScoped<ICustomPolicyRepo, CustomPolicyRepo>();
 builder.Services.AddScoped<IProjectRepo, ProjectRepo>();
+builder.Services.AddScoped<IPermissionsRepo, PermissionsRepo>();
 builder.Services.AddScoped<ITaskRepo, TaskRepo>();
 builder.Services.AddScoped<ITaskBoardRepo, TaskBoardRepo>();
 builder.Services.AddScoped<ITaskListRepo, TaskListRepo>();
 builder.Services.AddScoped<ITicketRepo, TicketRepo>();
-// builder.Services.AddScoped<IAnnualRepo, AnnualRepo>();
-// builder.Services.AddScoped<ISickRepo, SickRepo>();
-// builder.Services.AddScoped<IHospitalisationRepo, HospitalisationRepo>();
-// builder.Services.AddScoped<IMaternityRepo, MaternityRepo>();
-// builder.Services.AddScoped<IPaternityRepo, PaternityRepo>();
-// builder.Services.AddScoped<ILopRepo, LopRepo>();
+builder.Services.AddScoped<IEmployeeProjectsRepo, EmployeeProjectsRepo>();
+builder.Services.AddScoped<IMessageRepo, MessageRepo>();
+builder.Services.AddScoped<IEstimateRepo, EstimateRepo>();
+builder.Services.AddScoped<IInvoiceRepo, InvoiceRepo>();
+builder.Services.AddScoped<IExpensesRepo, ExpensesRepo>();
+builder.Services.AddScoped<IItemRepo, ItemRepo>();
+builder.Services.AddScoped<IPaymentRepo, PaymentRepo>();
+builder.Services.AddScoped<ITaxRepo, TaxRepo>();
+
 builder.Services.AddScoped<ITicketFollowersRepo, TicketFollowersRepo>();
 
 #endregion

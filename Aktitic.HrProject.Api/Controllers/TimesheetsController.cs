@@ -36,23 +36,23 @@ public class TimesheetsController: ControllerBase
     public ActionResult Add([FromBody] TimesheetAddDto timesheetAddDto)
     {
         var result = _timesheetManager.Add(timesheetAddDto);
-        if (result.Result == 0) return BadRequest("Invalid data");
+        if (result.Result == Task.FromResult(0)) return BadRequest("Failed to create");
         return Ok("Created successfully");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] TimesheetUpdateDto timesheetUpdateDto,int id)
     {
-        var result = _timesheetManager.Update(timesheetUpdateDto,id);
-        if(result.Result == 0)return BadRequest("Invalid data");
+        var result =_timesheetManager.Update(timesheetUpdateDto,id);
+        if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
         return Ok("Updated successfully");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result = _timesheetManager.Delete(id);
-        if(result.Result==0) return BadRequest("Invalid data");
+        var result =_timesheetManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
     [HttpGet("getFilteredTimeSheets")]

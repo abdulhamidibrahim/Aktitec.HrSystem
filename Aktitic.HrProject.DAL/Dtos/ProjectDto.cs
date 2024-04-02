@@ -1,4 +1,5 @@
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 
 namespace Aktitic.HrProject.DAL.Dtos;
 
@@ -13,8 +14,8 @@ public class ProjectDto
     public int? ClientId { get; set; }
     public ClientDto? Client { get; set; } = null!;
     public string Priority { get; set; }=string.Empty;
-    
-    
+
+    public int? LeaderId { get; set; }
     // public int TeamId { get; set; }
     // public Team? Team { get; set; } = null!;
     
@@ -22,5 +23,7 @@ public class ProjectDto
     public decimal? Rate { get; set; }
     public bool? Status { get; set; }
     public bool? Checked { get; set; }
+    public EmployeeDto? Leader { get; set; }
+    public List<EmployeeDto>? Team { get; set; }
 
 }

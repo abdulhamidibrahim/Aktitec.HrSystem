@@ -7,6 +7,7 @@ using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,19 +21,18 @@ public class EmployeeManager(
     IEmployeeRepo employeeRepo,
     IWebHostEnvironment webHostEnvironment,
     IFileRepo fileRepo,
-    IMapper mapper)
+    IMapper mapper,
+    IUnitOfWork unitOfWork)
     : IEmployeeManager
 {
     private readonly IFileRepo _fileRepo = fileRepo;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     // private readonly UserManager<Employee> _userManager;
 
     // _userManager = userManager;
 
     public Task<int> Add(EmployeeAddDto employeeAddDto, IFormFile? image)
     {
-        
-       
-        
         var employee = new Employee()
         {
             FullName = employeeAddDto.FullName!,
@@ -82,7 +82,7 @@ public class EmployeeManager(
 
        
         
-         var result = employeeRepo.Add(employee);
+         employeeRepo.Add(employee);
          if (employee.ManagerId.HasValue)
          {
              var manager = employeeRepo.GetById(employee.ManagerId.Value);
@@ -95,35 +95,35 @@ public class EmployeeManager(
              }
          }
 
-         return result;
+         return unitOfWork.SaveChangesAsync();
     }
     
 
-    public async Task<int> Update(EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image)
+    public Task<int> Update(EmployeeUpdateDto employeeUpdateDto, int id, IFormFile? image)
     {
         var employee = employeeRepo.GetById(id);
         
-        if (employee.Result == null) return 0;
-        if (employeeUpdateDto.FullName != null) employee.Result.FullName = employeeUpdateDto.FullName;
-        if (employeeUpdateDto.Phone != null) employee.Result.Phone = employeeUpdateDto.Phone;
-        if (employeeUpdateDto.Email != null) employee.Result.Email = employeeUpdateDto.Email;
-        if (employeeUpdateDto.DepartmentId != null) employee.Result.DepartmentId = employeeUpdateDto.DepartmentId;
-        if (employeeUpdateDto.JoiningDate != null) employee.Result.JoiningDate = employeeUpdateDto.JoiningDate;
-        if (employeeUpdateDto.Salary != null) employee.Result.Salary = employeeUpdateDto.Salary;
-        if (employeeUpdateDto.JobPosition != null) employee.Result.JobPosition = employeeUpdateDto.JobPosition;
-        if (employeeUpdateDto.YearsOfExperience != null) employee.Result.YearsOfExperience = employeeUpdateDto.YearsOfExperience;
-        if (employeeUpdateDto.ManagerId != null) employee.Result.ManagerId = employeeUpdateDto.ManagerId;
-        if (employeeUpdateDto.Gender != null) employee.Result.Gender = employeeUpdateDto.Gender;
-        if (employeeUpdateDto.Age != null) employee.Result.Age = employeeUpdateDto.Age;
+        if (employee == null) return Task.FromResult(0);
+        if (employeeUpdateDto.FullName != null) employee.FullName = employeeUpdateDto.FullName;
+        if (employeeUpdateDto.Phone != null) employee.Phone = employeeUpdateDto.Phone;
+        if (employeeUpdateDto.Email != null) employee.Email = employeeUpdateDto.Email;
+        if (employeeUpdateDto.DepartmentId != null) employee.DepartmentId = employeeUpdateDto.DepartmentId;
+        if (employeeUpdateDto.JoiningDate != null) employee.JoiningDate = employeeUpdateDto.JoiningDate;
+        if (employeeUpdateDto.Salary != null) employee.Salary = employeeUpdateDto.Salary;
+        if (employeeUpdateDto.JobPosition != null) employee.JobPosition = employeeUpdateDto.JobPosition;
+        if (employeeUpdateDto.YearsOfExperience != null) employee.YearsOfExperience = employeeUpdateDto.YearsOfExperience;
+        if (employeeUpdateDto.ManagerId != null) employee.ManagerId = employeeUpdateDto.ManagerId;
+        if (employeeUpdateDto.Gender != null) employee.Gender = employeeUpdateDto.Gender;
+        if (employeeUpdateDto.Age != null) employee.Age = employeeUpdateDto.Age;
         // employee.Result.FileContent = employeeUpdateDto.Image.ContentType;
         if (image != null)
         {
-            employee.Result.FileExtension = image?.ContentType;
-            employee.Result.FileName = image?.FileName;
-            employee.Result.UserName = employee.Result.Email?.Substring(0, employee.Result.Email.IndexOf('@'));
+            employee.FileExtension = image?.ContentType;
+            employee.FileName = image?.FileName;
+            employee.UserName = employee.Email?.Substring(0, employee.Email.IndexOf('@'));
 
             var unique = Guid.NewGuid();
-            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/employees", employee.Result.UserName+unique);
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/employees", employee.UserName+unique);
             if (Directory.Exists(path))
             {
                 Directory.Delete(path,true);
@@ -134,27 +134,26 @@ public class EmployeeManager(
             }
             
            
-            var imgPath = Path.Combine(path, employee.Result.FileName!);
-            await using FileStream fileStream = new(imgPath, FileMode.Create);
+            var imgPath = Path.Combine(path, employee.FileName!); 
+            using FileStream fileStream = new(imgPath, FileMode.Create);
             image?.CopyToAsync(fileStream);
-            employee.Result.ImgUrl = Path.Combine("uploads/employees", employee.Result.UserName+unique, employee.Result.FileName!);
+            employee.ImgUrl = Path.Combine("uploads/employees", employee.UserName+unique, employee.FileName!);
         }
-
-        return await employeeRepo.Update(employee.Result);
+        employeeRepo.Update(employee);
+        return unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<int> Delete(int id)
+    public Task<int> Delete(int id)
+    {
+        employeeRepo.GetById(id);
+        return unitOfWork.SaveChangesAsync();
+    }
+
+    public EmployeeReadDto? Get(int id)
     {
         var employee = employeeRepo.GetById(id);
-        if (employee.Result != null) return await employeeRepo.Delete(employee.Result);
-        return 0;
-    }
-
-    public async Task<EmployeeReadDto>? Get(int id)
-    {
-        var employee =await employeeRepo.GetById(id);
         if (employee == null) return new EmployeeReadDto();
-        var manager = await employeeRepo.GetById(employee.ManagerId);
+        var manager =  employeeRepo.GetById(employee.ManagerId);
         return new EmployeeReadDto()
         {
             Id = employee.Id,
@@ -255,9 +254,14 @@ public class EmployeeManager(
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
             var map = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>(paginatedResults);
+            var employeeDtos = map as EmployeeDto[] ?? map.ToArray();
+            foreach (var emp in employeeDtos)
+            {
+                emp.Department = emp.DepartmentDto?.Name;
+            }
             FilteredEmployeeDto result = new()
             {
-                EmployeeDto = map,
+                EmployeeDto = employeeDtos,
                 TotalCount = count,
                 TotalPages = pages
             };

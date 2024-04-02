@@ -8,6 +8,7 @@ using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 
@@ -17,13 +18,15 @@ public class AttendanceManager:IAttendanceManager
 {
     private readonly IAttendanceRepo _attendanceRepo;
     private readonly IEmployeeRepo _employeeRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public AttendanceManager(IAttendanceRepo attendanceRepo, IMapper mapper, IEmployeeRepo employeeRepo)
+    public AttendanceManager(IAttendanceRepo attendanceRepo, IMapper mapper, IEmployeeRepo employeeRepo, IUnitOfWork unitOfWork)
     {
         _attendanceRepo = attendanceRepo;
         _mapper = mapper;
         _employeeRepo = employeeRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public Task<int> Add(AttendanceAddDto attendanceAddDto)
@@ -33,52 +36,53 @@ public class AttendanceManager:IAttendanceManager
            EmployeeId = attendanceAddDto.EmployeeId,
            Break = attendanceAddDto.Break,
            Date = attendanceAddDto.Date,
-           OvertimeId = attendanceAddDto.Overtime,
+           Overtime = attendanceAddDto.Overtime,
            Production = attendanceAddDto.Production,
            PunchIn = attendanceAddDto.PunchIn,
            PunchOut = attendanceAddDto.PunchOut,
         };
-        return _attendanceRepo.Add(attendance);
+         _attendanceRepo.Add(attendance);
+         return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(AttendanceUpdateDto attendanceUpdateDto,int id)
+    public Task<int> Update(AttendanceUpdateDto attendanceUpdateDto, int id)
     {
         var attendance = _attendanceRepo.GetById(id);
         
-        if (attendance.Result == null) return Task.FromResult(0);
-        if(attendanceUpdateDto.EmployeeId!=null) attendance.Result.EmployeeId = attendanceUpdateDto.EmployeeId;
-        if(attendanceUpdateDto.Break!=null) attendance.Result.Break = attendanceUpdateDto.Break;
-        if(attendanceUpdateDto.Date!=null) attendance.Result.Date = attendanceUpdateDto.Date;
-        if(attendanceUpdateDto.Overtime!=null) attendance.Result.OvertimeId = attendanceUpdateDto.Overtime;
-        if(attendanceUpdateDto.Production!=null) attendance.Result.Production = attendanceUpdateDto.Production;
-        if(attendanceUpdateDto.PunchIn!=null) attendance.Result.PunchIn = attendanceUpdateDto.PunchIn;
-        if(attendanceUpdateDto.PunchOut!=null) attendance.Result.PunchOut = attendanceUpdateDto.PunchOut;
+        if (attendance == null) return Task.FromResult(0);
+        if(attendanceUpdateDto.EmployeeId!=null) attendance.EmployeeId = attendanceUpdateDto.EmployeeId;
+        if(attendanceUpdateDto.Break!=null) attendance.Break = attendanceUpdateDto.Break;
+        if(attendanceUpdateDto.Date!=null) attendance.Date = attendanceUpdateDto.Date;
+        if(attendanceUpdateDto.Overtime!=null) attendance.Overtime = attendanceUpdateDto.Overtime;
+        if(attendanceUpdateDto.Production!=null) attendance.Production = attendanceUpdateDto.Production;
+        if(attendanceUpdateDto.PunchIn!=null) attendance.PunchIn = attendanceUpdateDto.PunchIn;
+        if(attendanceUpdateDto.PunchOut!=null) attendance.PunchOut = attendanceUpdateDto.PunchOut;
         
 
-       return _attendanceRepo.Update(attendance.Result);
+        _attendanceRepo.Update(attendance);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var attendance = _attendanceRepo.GetById(id);
-        if (attendance.Result != null) return _attendanceRepo.Delete(attendance.Result.Id);
-        return Task.FromResult(0);
+         _attendanceRepo.GetById(id);
+         return _unitOfWork.SaveChangesAsync();
     }
 
     public AttendanceReadDto? Get(int id)
     {
         var attendance = _attendanceRepo.GetById(id);
-        if (attendance.Result == null) return null;
+        if (attendance == null) return null;
         return new AttendanceReadDto()
         {
-            Id = attendance.Result.Id,
-            EmployeeId = attendance.Result.EmployeeId,
-            Break = attendance.Result.Break,
-            Date = attendance.Result.Date,
-            Overtime = attendance.Result.OvertimeId,
-            Production = attendance.Result.Production,
-            PunchIn = attendance.Result.PunchIn,
-            PunchOut = attendance.Result.PunchOut,
+            Id = attendance.Id,
+            EmployeeId = attendance.EmployeeId,
+            Break = attendance.Break,
+            Date = attendance.Date,
+            Overtime = attendance.Overtime,
+            Production = attendance.Production,
+            PunchIn = attendance.PunchIn,
+            PunchOut = attendance.PunchOut,
         };
     }
 
@@ -91,7 +95,7 @@ public class AttendanceManager:IAttendanceManager
             EmployeeId = attendance.EmployeeId,
             Break = attendance.Break,
             Date = attendance.Date,
-            Overtime = attendance.OvertimeId,
+            Overtime = attendance.Overtime,
             Production = attendance.Production,
             PunchIn = attendance.PunchIn,
             PunchOut = attendance.PunchOut,
@@ -99,9 +103,11 @@ public class AttendanceManager:IAttendanceManager
         }).ToList();
     }
     
-     public async Task<FilteredAttendanceDto> GetFilteredAttendancesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+      public async Task<FilteredAttendanceDto> GetFilteredAttendancesAsync
+          (string? column, string? value1, string? operator1, string? value2,
+              string? operator2, int page, int pageSize)
     {
-        var users = await _attendanceRepo.GetAll();
+        var users = _attendanceRepo.GetAttendanceWithEmployee();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -115,13 +121,32 @@ public class AttendanceManager:IAttendanceManager
 
             var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Attendance>, IEnumerable<AttendanceDto>>(paginatedResults);
+            List<AttendanceDto> attendanceDto = new();
+            foreach (var attendance in paginatedResults)
+            {
+                attendanceDto.Add(new AttendanceDto()
+                {
+                    Id = attendance.Id,
+                    Date = attendance.Date,
+                    PunchIn = attendance.PunchIn,
+                    PunchOut = attendance.PunchOut,
+                    Production = attendance.Production,
+                    Break = attendance.Break,
+                    Overtime = attendance.Overtime,
+                    Employee = _mapper.Map<Employee,EmployeeDto>(attendance.Employee),
+                });
+            }
+            
             FilteredAttendanceDto result = new()
             {
-                AttendanceDto = map,
+                AttendanceDto = attendanceDto,
                 TotalCount = count,
                 TotalPages = pages
             };
+            // foreach (var attendance in result.AttendanceDto)
+            // {
+            //     attendance.Department = _mapper.Map<Department, DepartmentDto>(attendance.Department);
+            // }
             return result;
         }
 
@@ -143,11 +168,25 @@ public class AttendanceManager:IAttendanceManager
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var mappedAttendance = _mapper.Map<IEnumerable<Attendance>, IEnumerable<AttendanceDto>>(paginatedResults);
-
+            List<AttendanceDto> attendanceDto = new();
+            foreach (var attendance in paginatedResults)
+            {
+                attendanceDto.Add(new AttendanceDto()
+                {
+                        Id = attendance.Id,
+                        Date = attendance.Date,
+                        PunchIn = attendance.PunchIn,
+                        PunchOut = attendance.PunchOut,
+                        Production = attendance.Production,
+                        Break = attendance.Break,
+                        Overtime = attendance.Overtime,
+                        Employee = _mapper.Map<Employee,EmployeeDto>(attendance.Employee),
+                        
+                });
+            }
             FilteredAttendanceDto filteredAttendanceDto = new()
             {
-                AttendanceDto = mappedAttendance,
+                AttendanceDto = attendanceDto,
                 TotalCount = totalCount,
                 TotalPages = totalPages
             };
@@ -166,7 +205,7 @@ public class AttendanceManager:IAttendanceManager
             "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
             "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
             "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(users, column, projectValue, operatorType),
+            _ when decimal.TryParse(value, out var attendanceValue) => ApplyNumericFilter(users, column, attendanceValue, operatorType),
             _ => users
         };
     }
@@ -175,12 +214,12 @@ public class AttendanceManager:IAttendanceManager
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
+        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue == value),
+        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue != value),
+        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue >= value),
+        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue > value),
+        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue <= value),
+        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var attendanceValue) && attendanceValue < value),
         _ => users
     };
 }
@@ -217,21 +256,31 @@ public class AttendanceManager:IAttendanceManager
 
         foreach (var element in employeeAttendance)
         {
-            var employee = await _employeeRepo.GetById(element.EmployeeId);
-            var employeeDto = _mapper.Map<Employee, EmployeeDto>(employee);
-
-            // Map attendance records to AttendanceDto
-            var attendanceDto = _mapper.Map<List<AttendanceDto>>(element.Attendance);
-
-            result.Add(new EmployeeAttendanceDto()
+            var employee =  _employeeRepo.GetById(element.EmployeeId);
+            if (employee != null)
             {
-                EmployeeDto = employeeDto,
-                AttendanceDto = attendanceDto,
-                Date = element.Date,
-                Attended = element.Attended
-            });
+                var employeeDto = _mapper.Map<Employee, EmployeeDto>(employee);
+
+                // Map attendance records to AttendanceDto
+                var attendanceDto = _mapper.Map<List<AttendanceDto>>(element.Attendance);
+
+                result.Add(new EmployeeAttendanceDto()
+                {
+                    EmployeeDto = employeeDto,
+                    AttendanceDto = attendanceDto,
+                    Date = element.Date,
+                    Attended = element.Attended
+                });
+            }
         }
 
         return result;
+    }
+
+    public Task<List<AttendanceDto>> GetByEmployeeId(int employeeId)
+    {
+        var attendance = _attendanceRepo.GetByEmployeeId(employeeId);
+        var mappedAttendance = _mapper.Map<IEnumerable<Attendance>, IEnumerable<AttendanceDto>>(attendance);
+        return Task.FromResult(mappedAttendance.ToList());
     }
 }

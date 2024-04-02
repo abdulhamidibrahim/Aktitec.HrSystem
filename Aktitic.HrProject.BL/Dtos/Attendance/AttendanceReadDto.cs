@@ -13,7 +13,7 @@ public class AttendanceReadDto
 
     public string? Break { get; set; }
 
-    public int? Overtime { get; set; }
+    public string? Overtime { get; set; }
 
     public int? EmployeeId { get; set; }
 }

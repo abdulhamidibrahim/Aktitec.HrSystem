@@ -45,46 +45,33 @@ public class ProjectsController: ControllerBase
     }
     
     // [ValidateAntiForgeryToken]
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]
     // [ProjectEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public async Task<ActionResult> Create([FromForm] ProjectAddDto projectAddDto)
+    public  ActionResult Create(ProjectAddDto projectAddDto)
     {
-        
-            
-            int result = await _projectManager.Add(projectAddDto);
-            if (result.Equals(0))
-            {
-                return BadRequest("Account Creation Failed");
-            }
-            
-            return Ok("Account Created Successfully ");
-       
+         var result =_projectManager.Add(projectAddDto);
+         if (result.Result == 0) return BadRequest("Failed to add");
+         return Ok(" Created Successfully ");
     }
     
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] ProjectUpdateDto projectUpdateDto,int id)
+    public ActionResult Update( ProjectUpdateDto projectUpdateDto,int id)
     {
         var result = _projectManager.Update(projectUpdateDto,id);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Update Failed");
-        }
-        return Ok("Account updated successfully !");
+        if (result.Result == 0) return BadRequest("Failed to update");
+        return Ok(" updated successfully !");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
         var result =_projectManager.Delete(id);
-        if (result.Result.Equals(0))
-        {
-            return BadRequest("Account Deletion Failed");
-        }
-        return Ok();
+        if (result.Result == 0) return BadRequest("Failed to delete");
+        return Ok("Deleted Successfully");
     }
     
     [HttpGet("GlobalSearch")]

@@ -32,29 +32,29 @@ public class AttendancesController: ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromBody] AttendanceAddDto attendanceAddDto)
+    public ActionResult Add( AttendanceAddDto attendanceAddDto)
     {
-        var result = _attendanceManager.Add(attendanceAddDto);
-        if (result.Result == 0) return BadRequest("Failed to Create!");
+        var result =  _attendanceManager.Add(attendanceAddDto);
+        if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Create Successfully!");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] AttendanceUpdateDto attendanceUpdateDto,int id)
     {
-        var result = _attendanceManager.Update(attendanceUpdateDto,id);
-        if (result.Result == 0) return BadRequest("Failed to Update!");
+        var result =  _attendanceManager.Update(attendanceUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated successfully!");
     }
-    
+
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result = _attendanceManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Failed to delete!");
-        return Ok("Deleted successfully!");
+       var result = _attendanceManager.Delete(id);
+       if (result.Result == 0) return BadRequest("Failed to delete");
+       return Ok("deleted successfully");
     }
-    
+
     [HttpGet("getFilteredAttendances")]
     public Task<FilteredAttendanceDto> GetFilteredAttendancesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {

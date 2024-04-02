@@ -19,39 +19,23 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
             .ToList());
     }
 
-    public Task<T?> GetById(int? id)
-    {
-        return Task.FromResult(
-            _context.Set<T>()
-            .Find(id));        
-    }
+    public T? GetById(int? id) => _context.Set<T>().Find(id);
+                 
+    
 
-    public async Task<int> Add(T entity)
-    {
-        _context.Set<T>().Add(entity);
-        return await _context.SaveChangesAsync();        
-    }
+    public void Add(T entity) =>_context.Set<T>().Add(entity);
+         
+    
 
-    public async Task<int> Update(T entity)
-    {
-        _context.Set<T>().Update(entity);
-        return await _context.SaveChangesAsync();
-    }
-
-    public async Task<int> Delete(T entity)
-    {
-        _context.Remove(entity);
-        return await _context.SaveChangesAsync();
-    }
-
-    public async Task<int> Delete(int id)
-    {
-        var entity = await _context.Set<T>().FindAsync(id);
+    public void Update(T entity) => _context.Set<T>().Update(entity);
         
-        if (entity == null) return 0;
+    public async void Delete(T entity) => _context.Remove(entity);
         
-        _context.Remove(entity);
-        return await _context.SaveChangesAsync();        
-    }
+
+    public void Delete(int id) =>  _context.Set<T>()
+        .Remove(GetById(id) 
+                ?? throw new InvalidOperationException
+                    ("Entity not found"));
+    
     
 }

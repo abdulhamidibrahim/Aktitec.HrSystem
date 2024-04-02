@@ -4,7 +4,9 @@ using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
@@ -12,15 +14,17 @@ namespace Aktitic.HrProject.BL;
 public class ShiftManager:IShiftManager
 {
     private readonly IShiftRepo _shiftRepo;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ShiftManager(IShiftRepo shiftRepo, IMapper mapper)
+    public ShiftManager(IShiftRepo shiftRepo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _shiftRepo = shiftRepo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
     
-    public async Task<int> Add(ShiftAddDto shiftAddDto)
+    public  Task<int> Add(ShiftAddDto shiftAddDto)
     {
         var shift = new Shift()
         {
@@ -41,46 +45,48 @@ public class ShiftManager:IShiftManager
             StartTime = shiftAddDto.StartTime,
             EndTime = shiftAddDto.EndTime,
             Days = shiftAddDto.Days
-        };
-        return await _shiftRepo.Add(shift);
+        }; 
+        _shiftRepo.Add(shift);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<int> Update(ShiftUpdateDto shiftUpdateDto,int id)
+    public Task<int> Update(ShiftUpdateDto shiftUpdateDto, int id)
     {
         var shift = _shiftRepo.GetById(id);
 
-        if (shift.Result == null) return 0;
-        if(shiftUpdateDto.Name != null) shift.Result.Name = shiftUpdateDto.Name;
-        if(shiftUpdateDto.MinStartTime != null) shift.Result.MinStartTime = shiftUpdateDto.MinStartTime;
-        if(shiftUpdateDto.MaxStartTime != null) shift.Result.MaxStartTime = shiftUpdateDto.MaxStartTime;
-        if(shiftUpdateDto.MinEndTime != null) shift.Result.MinEndTime = shiftUpdateDto.MinEndTime;
-        if(shiftUpdateDto.MaxEndTime != null) shift.Result.MaxEndTime = shiftUpdateDto.MaxEndTime;
-        if(shiftUpdateDto.BreakeTime != null) shift.Result.BreakeTime = shiftUpdateDto.BreakeTime;
-        if(shiftUpdateDto.EndDate != null) shift.Result.EndDate = shiftUpdateDto.EndDate;
-        if(shiftUpdateDto.RepeatEvery != null) shift.Result.RepeatEvery = shiftUpdateDto.RepeatEvery;
-        if(shiftUpdateDto.RecurringShift != null) shift.Result.RecurringShift = shiftUpdateDto.RecurringShift;
-        if(shiftUpdateDto.Indefinate != null) shift.Result.Indefinate = shiftUpdateDto.Indefinate;
-        if(shiftUpdateDto.Tag != null) shift.Result.Tag = shiftUpdateDto.Tag;
-        if(shiftUpdateDto.Note != null) shift.Result.Note = shiftUpdateDto.Note;
-        if(shiftUpdateDto.Status != null) shift.Result.Status = shiftUpdateDto.Status;
-        if(shiftUpdateDto.ApprovedBy != null) shift.Result.ApprovedBy = shiftUpdateDto.ApprovedBy;
-        if(shiftUpdateDto.StartTime != null) shift.Result.StartTime = shiftUpdateDto.StartTime;
-        if(shiftUpdateDto.EndDate != null) shift.Result.EndTime = shiftUpdateDto.EndTime;
-        if(shiftUpdateDto.Days != null) shift.Result.Days = shiftUpdateDto.Days;
+        if (shift == null) return Task.FromResult(0);
+        if(shiftUpdateDto.Name != null) shift.Name = shiftUpdateDto.Name;
+        if(shiftUpdateDto.MinStartTime != null) shift.MinStartTime = shiftUpdateDto.MinStartTime;
+        if(shiftUpdateDto.MaxStartTime != null) shift.MaxStartTime = shiftUpdateDto.MaxStartTime;
+        if(shiftUpdateDto.MinEndTime != null) shift.MinEndTime = shiftUpdateDto.MinEndTime;
+        if(shiftUpdateDto.MaxEndTime != null) shift.MaxEndTime = shiftUpdateDto.MaxEndTime;
+        if(shiftUpdateDto.BreakeTime != null) shift.BreakeTime = shiftUpdateDto.BreakeTime;
+        if(shiftUpdateDto.EndDate != null) shift.EndDate = shiftUpdateDto.EndDate;
+        if(shiftUpdateDto.RepeatEvery != null) shift.RepeatEvery = shiftUpdateDto.RepeatEvery;
+        if(shiftUpdateDto.RecurringShift != null) shift.RecurringShift = shiftUpdateDto.RecurringShift;
+        if(shiftUpdateDto.Indefinate != null) shift.Indefinate = shiftUpdateDto.Indefinate;
+        if(shiftUpdateDto.Tag != null) shift.Tag = shiftUpdateDto.Tag;
+        if(shiftUpdateDto.Note != null) shift.Note = shiftUpdateDto.Note;
+        if(shiftUpdateDto.Status != null) shift.Status = shiftUpdateDto.Status;
+        if(shiftUpdateDto.ApprovedBy != null) shift.ApprovedBy = shiftUpdateDto.ApprovedBy;
+        if(shiftUpdateDto.StartTime != null) shift.StartTime = shiftUpdateDto.StartTime;
+        if(shiftUpdateDto.EndDate != null) shift.EndTime = shiftUpdateDto.EndTime;
+        if(shiftUpdateDto.Days != null) shift.Days = shiftUpdateDto.Days;
         
-       return await _shiftRepo.Update(shift.Result);
+        _shiftRepo.Update(shift);
+        return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var shift = _shiftRepo.GetById(id);
-        if (shift.Result != null) return _shiftRepo.Delete(shift.Result);
-        return Task.FromResult(0);
+
+        _shiftRepo.GetById(id);
+        return _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<ShiftReadDto?> Get(int id)
+    public  ShiftReadDto? Get(int id)
     {
-        var shift = await _shiftRepo.GetById(id);
+        var shift =  _shiftRepo.GetById(id);
         if (shift == null) return null;
         return new ShiftReadDto()
         {

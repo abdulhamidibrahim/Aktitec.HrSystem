@@ -31,22 +31,25 @@ public class TicketFollowersController: ControllerBase
     [HttpPost("create")]
     public ActionResult<Task> Add([FromForm] TicketFollowersAddDto ticketFollowersAddDto)
     {
-        _ticketFollowersManager.Add(ticketFollowersAddDto);
-        return Ok();
+        var result =_ticketFollowersManager.Add(ticketFollowersAddDto);
+        if (result.Result == 0) return BadRequest("Failed to add");
+        return Ok("TicketFollower added");
     }
     
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] TicketFollowersUpdateDto ticketFollowersUpdateDto,int id)
     {
-        _ticketFollowersManager.Update(ticketFollowersUpdateDto,id);
-        return Ok();
+        var result =_ticketFollowersManager.Update(ticketFollowersUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
+        return Ok("TicketFollower updated");
     }
     
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        _ticketFollowersManager.Delete(id);
-        return Ok();
+        var result =_ticketFollowersManager.Delete(id);
+        if (result.Result == 0) return BadRequest("Failed to delete");
+        return Ok("TicketFollower deleted");
     }
     
 }
