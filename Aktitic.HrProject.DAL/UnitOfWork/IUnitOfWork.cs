@@ -37,6 +37,11 @@ public interface IUnitOfWork : IDisposable
     IGenericRepo<Message> Message { get; }
     IGenericRepo<Expenses> Expenses { get; }
     IGenericRepo<Payment> Payment { get; }
+    IGenericRepo<Tax> Tax { get; }
+    IGenericRepo<ProvidentFunds> ProvidentFunds { get; }
+    IGenericRepo<Category> Category { get; }
+    IGenericRepo<BudgetRevenue> BudgetsRevenue { get; }
+    IGenericRepo<Budget> Budget { get; }
     
     
 }

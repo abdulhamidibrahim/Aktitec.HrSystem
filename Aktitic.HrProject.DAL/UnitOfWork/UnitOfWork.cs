@@ -12,6 +12,11 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(HrSystemDbContext context)
     {
         _context = context;
+        Budget= new GenericRepo<Budget>(context);
+        BudgetsRevenue= new GenericRepo<BudgetRevenue>(context);
+        Category= new GenericRepo<Category>(context);
+        ProvidentFunds= new GenericRepo<ProvidentFunds>(context);
+        Tax= new GenericRepo<Tax>(context);
         Payment= new GenericRepo<Payment>(context);
         Expenses= new GenericRepo<Expenses>(context);
         Estimate = new GenericRepo<Estimate>(context);
@@ -82,4 +87,9 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepo<Message> Message { get; }
     public IGenericRepo<Expenses> Expenses { get; }
     public IGenericRepo<Payment> Payment { get; }
+    public IGenericRepo<Tax> Tax { get; }
+    public IGenericRepo<ProvidentFunds> ProvidentFunds { get; }
+    public IGenericRepo<Category> Category { get; }
+    public IGenericRepo<BudgetRevenue> BudgetsRevenue { get; }
+    public IGenericRepo<Budget> Budget { get; }
 }

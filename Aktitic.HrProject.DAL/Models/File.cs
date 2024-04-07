@@ -20,4 +20,6 @@ public partial class File
     public int? TicketId { get; set; }
     public Ticket? Ticket { get; set; }
 
+    public int? ExpensesId { get; set; }
+    public Expenses? Expenses { get; set; }
 }

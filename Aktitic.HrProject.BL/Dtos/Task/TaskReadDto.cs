@@ -1,4 +1,5 @@
 ﻿using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 
 namespace Aktitic.HrProject.BL;
 
@@ -21,4 +22,5 @@ public class TaskReadDto
     public int? AssignedTo { get; set; }
     
     public List<MessageDto>? Messages { get; set; }
+    public List<EmployeeDto>? Followers { get; set; }
 }

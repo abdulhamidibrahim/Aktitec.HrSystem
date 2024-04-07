@@ -10,7 +10,7 @@ public class ExpensesReadDto
     public string? ItemName { get; set; }
     public string? PurchaseFrom { get; set; }
     public DateOnly? PurchaseDate { get; set; }
-    public string? PurchasedBy { get; set; }
+    public int? PurchasedBy { get; set; }
     public float? Amount { get; set; }
     public string? PaidBy { get; set; }
     public string? Status { get; set; }

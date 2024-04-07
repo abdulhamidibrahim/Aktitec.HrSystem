@@ -77,6 +77,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
     public virtual DbSet<Expenses>? Expenses { get; set; }
     public virtual DbSet<Payment>? Payments { get; set; }
     public virtual DbSet<Tax>? Taxes { get; set; }
+    public virtual DbSet<ProvidentFunds>? ProvidentFunds{ get; set; }
+    public virtual DbSet<Category>? Categories{ get; set; }
+    public virtual DbSet<BudgetRevenue>? BudgetsRevenues{ get; set; }
+    public virtual DbSet<Budget>? Budgets { get; set; }
+    public virtual DbSet<Revenue>? Revenues { get; set; }
    
 
     
@@ -272,9 +277,9 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_scheduling_Department");
 
-            entity.HasOne(d => d.Employee).WithMany(p => p.SchedulingEmployees)
-                .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK_scheduling_Employee_1");
+            // entity.HasOne(d => d.Employee).WithMany(p => p.SchedulingEmployees)
+            //     .HasForeignKey(d => d.EmployeeId)
+            //     .HasConstraintName("FK_scheduling_Employee_1");
         });
 
         modelBuilder.Entity<Shift>(entity =>
@@ -594,6 +599,32 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             builder.HasMany(d => d.Items)
                 .WithOne(p => p.Invoice)
                 .HasForeignKey(e => e.InvoiceId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<Expenses>(entity =>
+        {
+            entity.ToTable("Expenses", "client");
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.ItemName)
+                .HasMaxLength(100)
+                .HasColumnName("item_name");
+            entity.Property(e => e.PurchaseFrom)
+                .HasMaxLength(100)
+                .HasColumnName("purchase_from");
+            entity.Property(e => e.PurchaseDate).HasColumnName("purchase_date");
+            // entity.Property(e => e.PurchasedBy).HasColumnName("purchased_by");
+            entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.PaidBy)
+                .HasMaxLength(100)
+                .HasColumnName("paid_by");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            // entity.HasOne(d => d.Client).WithMany(p => p.Expenses)
+            //     .HasForeignKey(d => d.ClientId)
+            //     .HasConstraintName("FK_Expenses_Client");
+            entity.HasMany(d => d.Attachments)
+                .WithOne(p => p.Expenses)
+                .HasForeignKey(e => e.ExpensesId).OnDelete(DeleteBehavior.Cascade);
         });
         OnModelCreatingPartial(modelBuilder);
     }

@@ -83,13 +83,14 @@ public class TicketManager:ITicketManager
     {
         var ticket = _ticketRepo.GetTicketsWithEmployeesAsync(id);
         List<EmployeeDto> employees = new();
-        foreach (var employee in employees)
-        {
-            var emp = _employeeRepo.GetById(id);
-            employees.Add(_mapper.Map<Employee, EmployeeDto>(emp));
-            
-        }
-        
+
+        if (ticket.Result.Followers != null)
+            foreach (var employee in ticket.Result.Followers)
+            {
+                var emp = _employeeRepo.GetById(employee);
+                if(emp!=null) employees.Add(_mapper.Map<Employee, EmployeeDto>(emp));
+            }
+
         if (ticket.Result != null)
             return new TicketReadDto()
             {

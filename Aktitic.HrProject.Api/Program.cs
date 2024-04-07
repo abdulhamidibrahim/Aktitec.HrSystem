@@ -174,6 +174,10 @@ builder.Services.AddScoped<IEstimateManager, EstimateManager>();
 builder.Services.AddScoped<IExpensesManager, ExpensesManager>();
 builder.Services.AddScoped<IInvoiceManager, InvoiceManager>();
 builder.Services.AddScoped<IPaymentManager, PaymentManager>();
+builder.Services.AddScoped<ITaxManager, TaxManager>();
+builder.Services.AddScoped<IProvidentFundsManager, ProvidentFundsManager>();
+builder.Services.AddScoped<IBudgetRevenuesManager, BudgetRevenuesManager>();
+builder.Services.AddScoped<IBudgetManager, BudgetManager>();
 
 #endregion
 
@@ -208,8 +212,10 @@ builder.Services.AddScoped<IExpensesRepo, ExpensesRepo>();
 builder.Services.AddScoped<IItemRepo, ItemRepo>();
 builder.Services.AddScoped<IPaymentRepo, PaymentRepo>();
 builder.Services.AddScoped<ITaxRepo, TaxRepo>();
-
+builder.Services.AddScoped<IProvidentFundsRepo, ProvidentFundsRepo>();
 builder.Services.AddScoped<ITicketFollowersRepo, TicketFollowersRepo>();
+builder.Services.AddScoped<IBudgetRevenuesRepo, BudgetRevenuesRepo>();
+builder.Services.AddScoped<IBudgetRepo, BudgetRepo>();
 
 #endregion
 

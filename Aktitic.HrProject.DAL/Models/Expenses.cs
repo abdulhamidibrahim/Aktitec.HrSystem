@@ -13,5 +13,5 @@ public class Expenses
     public float? Amount { get; set; }
     public string? PaidBy { get; set; }
     public string? Status { get; set; }
-    public IEnumerable<File>? Attachments { get; set; }
+    public ICollection<File>? Attachments { get; set; }
 }

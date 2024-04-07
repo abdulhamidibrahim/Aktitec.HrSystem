@@ -4,13 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Scheduling
+public class Scheduling
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-
+    
+    [ForeignKey(nameof(Department))]
     public int? DepartmentId { get; set; }
 
+    
+    [ForeignKey(nameof(Employee))]
     public int? EmployeeId { get; set; }
 
     public DateOnly? Date { get; set; }
@@ -36,7 +39,7 @@ public partial class Scheduling
     public bool? ExtraHours { get; set; }
     public bool? Publish { get; set; }
 
-    public virtual Department? Department { get; set; }
+    public  Department? Department { get; set; }
 
-    public virtual Employee? Employee { get; set; }
+    public  Employee? Employee { get; set; }
 }

@@ -3,7 +3,6 @@ namespace Aktitic.HrProject.DAL.Models;
 public class Payment
 {
     public int? Id { get; set; }
-    public string? InvoiceNumber { get; set; }
     public DateOnly? PaidDate { get; set; }
     public float? PaidAmount { get; set; }
     public float? TotalAmount { get; set; }

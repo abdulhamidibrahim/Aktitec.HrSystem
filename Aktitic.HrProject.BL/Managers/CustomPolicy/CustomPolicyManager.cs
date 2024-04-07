@@ -60,7 +60,7 @@ public class CustomPolicyManager:ICustomPolicyManager
 
     public  CustomPolicyReadDto Get(int id)
     {
-        var customPolicy =  _customPolicyRepo.GetById(id);
+        var customPolicy =  _customPolicyRepo.GetWithEmployee(id);
         if (customPolicy == null) return new CustomPolicyReadDto();
         var employee =  _employeeRepo.GetById(customPolicy.EmployeeId);
         var employeeMapped = _mapper.Map<Employee,EmployeeDto>(employee!);
@@ -78,7 +78,6 @@ public class CustomPolicyManager:ICustomPolicyManager
     public List<CustomPolicyReadDto>? GetByType(string type)
     {
         var customPolicys = _customPolicyRepo.GetByType(type);
-        
         if (customPolicys != null)
         {
             return customPolicys.Select(customPolicy => new CustomPolicyReadDto()
@@ -87,8 +86,8 @@ public class CustomPolicyManager:ICustomPolicyManager
                 Name = customPolicy.Name,
                 EmployeeId = customPolicy.EmployeeId,
                 Days = customPolicy.Days,
-                Type = customPolicy.Type
-                
+                Type = customPolicy.Type,
+                Employee = _employeeRepo.GetById(customPolicy.EmployeeId)?.FullName,
             }).ToList();
         }
         return null;
@@ -96,15 +95,15 @@ public class CustomPolicyManager:ICustomPolicyManager
 
     public async Task<List<CustomPolicyReadDto>> GetAll()
     {
-        var customPolicys = await _customPolicyRepo.GetAll();
+        var customPolicys =await  _customPolicyRepo.GetAllWithEmployee();
         return customPolicys.Select(customPolicy => new CustomPolicyReadDto()
         {
             Id = customPolicy.Id,
             Name = customPolicy.Name,
             EmployeeId = customPolicy.EmployeeId,
             Days = customPolicy.Days,
-            Type = customPolicy.Type
-            
+            Type = customPolicy.Type,
+            Employee = customPolicy.Employee?.FullName,
         }).ToList();
     }
 }

@@ -61,7 +61,7 @@ public partial class Employee
 
     public virtual ICollection<Overtime> OvertimeEmployees { get; set; } = new List<Overtime>();
 
-    public virtual ICollection<Scheduling> SchedulingApprovedByNavigations { get; set; } = new List<Scheduling>();
+    // public virtual ICollection<Scheduling> SchedulingApprovedByNavigations { get; set; } = new List<Scheduling>();
 
     public virtual ICollection<Scheduling> SchedulingEmployees { get; set; } = new List<Scheduling>();
 

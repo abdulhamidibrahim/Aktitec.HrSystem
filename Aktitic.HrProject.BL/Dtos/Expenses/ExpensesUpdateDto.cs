@@ -16,6 +16,6 @@ public class ExpensesUpdateDto
     public float? Amount { get; set; }
     public string? PaidBy { get; set; }
     public string? Status { get; set; }
-    public IEnumerable<FileDto> Attachments { get; set; }
+    public ICollection<FileDto> Attachments { get; set; }
     public int? PurchasedById { get; set; }
 }
