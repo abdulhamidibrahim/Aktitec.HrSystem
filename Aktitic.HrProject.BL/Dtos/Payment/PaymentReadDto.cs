@@ -22,5 +22,4 @@ public class PaymentReadDto
     public string? Client { get; set; }
     
     public int? InvoiceId { get; set; }
-    public InvoiceDto? Invoice { get; set; }
 }

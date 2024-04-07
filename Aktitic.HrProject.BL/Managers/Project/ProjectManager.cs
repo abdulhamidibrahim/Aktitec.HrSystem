@@ -136,7 +136,7 @@ public class ProjectManager:IProjectManager
     public Task<int> Delete(int id)
     {
 
-        _projectRepo.GetById(id);
+        _projectRepo.Delete(id);
         return _unitOfWork.SaveChangesAsync();
     }
 
@@ -180,7 +180,7 @@ public class ProjectManager:IProjectManager
             return projectDto;
         }
             
-        return new ProjectReadDto();
+        return null;
     }
 
 
@@ -254,10 +254,9 @@ public class ProjectManager:IProjectManager
 
         if (users != null)
         {
-            IEnumerable<Project> filteredResults;
-        
-            // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            IEnumerable<Project> filteredResults =
+                // Apply the first filter
+                ApplyFilter(users, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))

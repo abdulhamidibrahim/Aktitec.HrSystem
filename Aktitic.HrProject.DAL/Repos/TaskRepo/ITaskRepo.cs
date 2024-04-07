@@ -11,4 +11,6 @@ public interface ITaskRepo :IGenericRepo<Task>
     
     IEnumerable<Task>? GetAllTasksWithEmployeeAndProject();
     Task? GetTaskWithMessages(int id);
+
+    Task? GetTaskWithEmployee(int id);
 }

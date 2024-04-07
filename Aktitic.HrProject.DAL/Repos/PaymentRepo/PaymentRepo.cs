@@ -21,6 +21,7 @@ public class PaymentRepo :GenericRepo<Payment>,IPaymentRepo
             var query = 
                 _context.Payments
                 .Include(x=>x.Client)
+                .Include(x=>x.Invoice)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -37,7 +38,7 @@ public class PaymentRepo :GenericRepo<Payment>,IPaymentRepo
                 searchKey = searchKey.Trim().ToLower();
                 query = query
                     .Where(x =>
-                        x.InvoiceNumber!.ToLower().Contains(searchKey) ||
+                        x.Invoice!.InvoiceNumber!.ToLower().Contains(searchKey) ||
                         x.BankName!.ToLower().Contains(searchKey) ||
                         x.Status!.ToLower().Contains(searchKey) ||
                         x.PaymentType!.ToLower().Contains(searchKey) ||
@@ -48,8 +49,6 @@ public class PaymentRepo :GenericRepo<Payment>,IPaymentRepo
                         x.PaidAmount!.ToString().Contains(searchKey) ||
                         x.TotalAmount!.ToString().Contains(searchKey) ||
                         x.City!.ToLower().Contains(searchKey) );
-                       
-                        
                 return query;
             }
            
@@ -62,6 +61,7 @@ public class PaymentRepo :GenericRepo<Payment>,IPaymentRepo
     {
         return _context.Payments!
             .Include(x => x.Client)
+            .Include(x=>x.Invoice)
             .FirstOrDefault(x => x.Id == id);
     }
 
@@ -70,6 +70,7 @@ public class PaymentRepo :GenericRepo<Payment>,IPaymentRepo
         return
             _context.Payments!
                 .Include(x => x.Client)
+                .Include(x=>x.Invoice)
                 .ToListAsync();
     }
 }

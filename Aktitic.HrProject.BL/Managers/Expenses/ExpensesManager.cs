@@ -38,7 +38,7 @@ public class ExpensesManager:IExpensesManager
             Amount = expensesAddDto.Amount,
             PaidBy = expensesAddDto.PaidBy,
             Status = expensesAddDto.Status,
-            Attachments = _mapper.Map<IEnumerable<FileDto>, IEnumerable<File>>(expensesAddDto.Attachments)
+            Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesAddDto.Attachments)
             
             
         }; 
@@ -60,7 +60,7 @@ public class ExpensesManager:IExpensesManager
         if(expensesUpdateDto.Amount!=null) expenses.Amount = expensesUpdateDto.Amount;
         if(expensesUpdateDto.PaidBy!=null) expenses.PaidBy = expensesUpdateDto.PaidBy;
         if(expensesUpdateDto.Status!=null) expenses.Status = expensesUpdateDto.Status;
-        if(expensesUpdateDto.Attachments !=null) expenses.Attachments = _mapper.Map<IEnumerable<FileDto>, IEnumerable<File>>(expensesUpdateDto.Attachments);
+        if(expensesUpdateDto.Attachments !=null) expenses.Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesUpdateDto.Attachments);
         
         _expensesRepo.Update(expenses);
         return _unitOfWork.SaveChangesAsync();
@@ -82,7 +82,7 @@ public class ExpensesManager:IExpensesManager
             ItemName = expenses.ItemName,
             PurchaseFrom = expenses.PurchaseFrom,
             PurchaseDate = expenses.PurchaseDate,
-            PurchasedBy = expenses.PurchasedBy?.FullName,
+            PurchasedBy = expenses.PurchasedById,
             Amount = expenses.Amount,
             PaidBy = expenses.PaidBy,
             Status = expenses.Status,
@@ -99,7 +99,7 @@ public class ExpensesManager:IExpensesManager
             ItemName = note.ItemName,
             PurchaseFrom = note.PurchaseFrom,
             PurchaseDate = note.PurchaseDate,
-            PurchasedBy = note.PurchasedBy?.FullName,
+            PurchasedBy = note.PurchasedById,
             Amount = note.Amount,
             PaidBy = note.PaidBy,
             Status = note.Status,

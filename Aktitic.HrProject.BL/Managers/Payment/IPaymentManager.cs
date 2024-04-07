@@ -10,7 +10,7 @@ public interface IPaymentManager
     public Task<int> Add(PaymentAddDto paymentAddDto);
     public Task<int> Update(PaymentUpdateDto paymentUpdateDto, int id);
     public Task<int> Delete(int id);
-    public Task<PaymentReadDto>? Get(int id);
+    public PaymentReadDto? Get(int id);
     public Task<List<PaymentReadDto>> GetAll();
     public Task<FilteredPaymentDto> GetFilteredPaymentsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 

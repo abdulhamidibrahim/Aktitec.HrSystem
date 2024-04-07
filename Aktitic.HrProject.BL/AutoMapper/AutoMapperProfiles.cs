@@ -53,6 +53,7 @@ public class AutoMapperProfiles : Profile
             {
                 Name = src.Project.Name!,
             }));
+        CreateMap<Tax, TaxDto>();
         CreateMap<Ticket, TicketDto>();
         CreateMap<Department, DepartmentDto>();
         CreateMap<Designation, DesignationDto>().ForMember(dest => 
@@ -125,7 +126,13 @@ public class AutoMapperProfiles : Profile
         CreateMap<ItemDto, Item>();
         CreateMap<Message, MessageDto>();
         CreateMap<Estimate, EstimateDto>();
+        CreateMap<Revenue, RevenueDto>();
+        CreateMap<Revenue, RevenuesBudget>();
+        CreateMap<RevenuesCreateDto,Revenue>();
+        CreateMap<ProvidentFunds, ProvidentFundsDto>();
         //map all expenses properties without purchasedBy   
+        CreateMap<ExpensesCreateDto,Expenses >();
+        CreateMap<Expenses,ExpensesBudget >();
         CreateMap<Expenses, ExpensesDto>().ForMember(dest=> 
             dest.PurchasedBy ,opt =>
             opt.MapFrom(src =>src.PurchasedBy == null? null: new EmployeeDto

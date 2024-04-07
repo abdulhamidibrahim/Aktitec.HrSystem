@@ -5,7 +5,7 @@ namespace Aktitic.HrProject.BL;
 
 public class PaymentAddDto
 {
-    public string? InvoiceNumber { get; set; }
+   
     public DateOnly? PaidDate { get; set; }
     public float? PaidAmount { get; set; }
     public float? TotalAmount { get; set; }

@@ -69,4 +69,12 @@ public class TaskRepo :GenericRepo<Task>,ITaskRepo
             .Include(x=>x.Messages)
             .FirstOrDefault(x => x.Id == id);
     }
+
+    public Task? GetTaskWithEmployee(int id)
+    {
+        return _context.Tasks?
+            .Include(x=>x.AssignEmployee)
+            .FirstOrDefault(x => x.Id == id);
+    }
+    
 }

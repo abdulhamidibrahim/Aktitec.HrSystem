@@ -9,7 +9,7 @@ public interface ITaskManager
     public Task<int> Add(TaskAddDto taskAddDto);
     public Task<int> Update(TaskUpdateDto taskUpdateDto, int id);
     public Task<int> Delete(int id);
-    public TaskReadDto Get(int id);
+    public TaskReadSingleDto Get(int id);
     public Task<List<TaskReadDto>> GetAll();
     
     public Task<FilteredTaskDto> GetFilteredTasksAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);

@@ -76,7 +76,7 @@ public class AttendanceManager:IAttendanceManager
         return new AttendanceReadDto()
         {
             Id = attendance.Id,
-            EmployeeId = attendance.EmployeeId,
+            // EmployeeId = attendance.EmployeeId,
             Break = attendance.Break,
             Date = attendance.Date,
             Overtime = attendance.Overtime,
@@ -99,7 +99,6 @@ public class AttendanceManager:IAttendanceManager
             Production = attendance.Production,
             PunchIn = attendance.PunchIn,
             PunchOut = attendance.PunchOut,
-            
         }).ToList();
     }
     

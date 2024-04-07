@@ -31,7 +31,6 @@ public class PaymentManager:IPaymentManager
     {
         var payment = new Payment()
         {
-            InvoiceNumber = paymentAddDto.InvoiceNumber,
             PaidDate = paymentAddDto.PaidDate,
             PaidAmount = paymentAddDto.PaidAmount,
             TotalAmount = paymentAddDto.TotalAmount,
@@ -57,7 +56,7 @@ public class PaymentManager:IPaymentManager
         
         if (payment == null) return Task.FromResult(0);
         
-        if(paymentUpdateDto.InvoiceNumber != null) payment.InvoiceNumber = paymentUpdateDto.InvoiceNumber;
+        // if(paymentUpdateDto.InvoiceNumber != null) payment.InvoiceNumber = paymentUpdateDto.InvoiceNumber;
         if(paymentUpdateDto.PaidDate != null) payment.PaidDate = paymentUpdateDto.PaidDate;
         if(paymentUpdateDto.PaidAmount != null) payment.PaidAmount = paymentUpdateDto.PaidAmount;
         if(paymentUpdateDto.TotalAmount != null) payment.TotalAmount = paymentUpdateDto.TotalAmount;
@@ -83,14 +82,13 @@ public class PaymentManager:IPaymentManager
         return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<PaymentReadDto>? Get(int id)
+    public PaymentReadDto? Get(int id)
     {
         var payment = _paymentRepo.GetPaymentWithClient(id);
         if (payment == null) return null;
-        return Task.FromResult(new PaymentReadDto()
+        return new PaymentReadDto()
         {
             Id = payment.Id,
-            InvoiceNumber = payment.InvoiceNumber,
             PaidDate = payment.PaidDate,
             PaidAmount = payment.PaidAmount,
             TotalAmount = payment.TotalAmount,
@@ -104,8 +102,10 @@ public class PaymentManager:IPaymentManager
             Status = payment.Status,
             ClientId = payment.ClientId,
             InvoiceId = payment.InvoiceId,
-            Client = _mapper.Map<Client,ClientDto>(payment.Client!).FullName,
-        });
+            Client = _mapper.Map<Client,ClientDto>(payment.Client!)?.FullName,
+            InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(payment.Invoice!)?.InvoiceNumber,
+            
+        };
     }
 
     public Task<List<PaymentReadDto>> GetAll()
@@ -114,7 +114,6 @@ public class PaymentManager:IPaymentManager
         return Task.FromResult(payment.Result.Select(p => new PaymentReadDto()
         {
             Id = p.Id,
-            InvoiceNumber = p.InvoiceNumber,
             PaidDate = p.PaidDate,
             PaidAmount = p.PaidAmount,
             TotalAmount = p.TotalAmount,
@@ -128,7 +127,8 @@ public class PaymentManager:IPaymentManager
             Status = p.Status,
             ClientId = p.ClientId,
             InvoiceId = p.InvoiceId,
-            Client = _mapper.Map<Client,ClientDto>(p.Client!).FullName
+            Client = _mapper.Map<Client,ClientDto>(p.Client!)?.FullName,
+            InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(p.Invoice!)?.InvoiceNumber,
 
         }).ToList());
     }
@@ -155,7 +155,6 @@ public class PaymentManager:IPaymentManager
                 mappedPayments.Add(new PaymentDto()
                 {
                     Id = payment.Id,
-                    InvoiceNumber = payment.InvoiceNumber,
                     PaidDate = payment.PaidDate,
                     PaidAmount = payment.PaidAmount,
                     TotalAmount = payment.TotalAmount,
@@ -169,7 +168,8 @@ public class PaymentManager:IPaymentManager
                     Status = payment.Status,
                     ClientId = payment.ClientId,
                     InvoiceId = payment.InvoiceId,
-                    Client = _mapper.Map<Client,ClientDto>(payment.Client!).FullName,
+                    Client = _mapper.Map<Client,ClientDto>(payment.Client!)?.FullName,
+                    InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(payment.Invoice!)?.InvoiceNumber,
                 });
             }
             FilteredPaymentDto filteredPaymentDto = new()
@@ -210,7 +210,6 @@ public class PaymentManager:IPaymentManager
                 mappedPayments.Add(new PaymentDto()
                 {
                     Id = payment.Id,
-                    InvoiceNumber = payment.InvoiceNumber,
                     PaidDate = payment.PaidDate,
                     PaidAmount = payment.PaidAmount,
                     TotalAmount = payment.TotalAmount,
@@ -224,7 +223,8 @@ public class PaymentManager:IPaymentManager
                     Status = payment.Status,
                     ClientId = payment.ClientId,
                     InvoiceId = payment.InvoiceId,
-                    Client = _mapper.Map<Client,ClientDto>(payment.Client!).FullName,
+                    Client = _mapper.Map<Client,ClientDto>(payment.Client!)?.FullName,
+                    InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(payment.Invoice!)?.InvoiceNumber,
                 });
             }
             FilteredPaymentDto filteredPaymentDto = new()
@@ -274,13 +274,59 @@ public class PaymentManager:IPaymentManager
         if(column!=null)
         {
             IEnumerable<Payment> user;
-            user = _paymentRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var payment = _mapper.Map<IEnumerable<Payment>, IEnumerable<PaymentDto>>(user);
-            return Task.FromResult(payment.ToList());
+            user = _paymentRepo.GetAllPaymentWithClients().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var pays = new List<PaymentDto>();
+            foreach (var payment in user)
+            {
+                
+                pays.Add(new PaymentDto()
+                {
+                    Id = payment.Id,
+                    PaidDate = payment.PaidDate,
+                    PaidAmount = payment.PaidAmount,
+                    TotalAmount = payment.TotalAmount,
+                    BankName = payment.BankName,
+                    PaymentType = payment.PaymentType,
+                    Address = payment.Address,
+                    Country = payment.Country,
+                    City = payment.City,
+                    Iban = payment.Iban,
+                    SwiftCode = payment.SwiftCode,
+                    Status = payment.Status,
+                    ClientId = payment.ClientId,
+                    InvoiceId = payment.InvoiceId,
+                    Client = _mapper.Map<Client,ClientDto>(payment.Client!)?.FullName,
+                    InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(payment.Invoice!)?.InvoiceNumber,
+                });
+            }           
+            return Task.FromResult(pays.ToList());
         }
 
         var  users = _paymentRepo.GlobalSearch(searchKey);
-        var payments = _mapper.Map<IEnumerable<Payment>, IEnumerable<PaymentDto>>(users);
+        var payments = new List<PaymentDto>();
+        foreach (var payment in users)
+        {
+                
+            payments.Add(new PaymentDto()
+            {
+                Id = payment.Id,
+                PaidDate = payment.PaidDate,
+                PaidAmount = payment.PaidAmount,
+                TotalAmount = payment.TotalAmount,
+                BankName = payment.BankName,
+                PaymentType = payment.PaymentType,
+                Address = payment.Address,
+                Country = payment.Country,
+                City = payment.City,
+                Iban = payment.Iban,
+                SwiftCode = payment.SwiftCode,
+                Status = payment.Status,
+                ClientId = payment.ClientId,
+                InvoiceId = payment.InvoiceId,
+                Client = _mapper.Map<Client,ClientDto>(payment.Client!)?.FullName,
+                InvoiceNumber = _mapper.Map<Invoice,InvoiceDto>(payment.Invoice!)?.InvoiceNumber,
+            });
+        }           
         return Task.FromResult(payments.ToList());
     }
 

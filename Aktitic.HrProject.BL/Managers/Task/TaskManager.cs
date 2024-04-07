@@ -66,21 +66,21 @@ public class TaskManager:ITaskManager
 
     public Task<int> Delete(int id)
     {
-        _taskRepo.GetById(id);
+        _taskRepo.Delete(id);
         return _unitOfWork.SaveChangesAsync();
     }
 
-    public TaskReadDto Get(int id)
+    public TaskReadSingleDto Get(int id)
     {
-        var task = _taskRepo.GetById(id);
-        if (task == null) return new TaskReadDto();
-        return new TaskReadDto()
+        var task = _taskRepo.GetTaskWithEmployee(id);
+        if (task == null) return new TaskReadSingleDto();
+        return new TaskReadSingleDto()
         {
             Id = task.Id,
             Text = task.Text,
             Description = task.Description,
             Completed = task.Completed,
-            AssignedTo = task.AssignedTo,
+            AssignedTo = _mapper.Map<Employee,EmployeeDto>(task.AssignEmployee),
             Priority = task.Priority,
             ProjectId = task.ProjectId,
             Date = task.Date,
@@ -128,7 +128,7 @@ public class TaskManager:ITaskManager
                 taskDto.Add(new TaskDto()
                 {
                     Id = task.Id,
-                    Title = task.Text,
+                    Text = task.Text,
                     Description = task.Description,
                     Completed = task.Completed,
                     Date = task.Date,
@@ -173,7 +173,7 @@ public class TaskManager:ITaskManager
                 taskDto.Add(new TaskDto()
                 {
                     Id = task.Id,
-                    Title = task.Text,
+                    Text = task.Text,
                     Description = task.Description,
                     Completed = task.Completed,
                     Date = task.Date,
