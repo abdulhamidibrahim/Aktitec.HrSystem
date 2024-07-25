@@ -27,9 +27,9 @@ public class ProvidentFundsController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ProvidentFundsReadDto?> Get(int id)
     {
-        var user = _paymentManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _paymentManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

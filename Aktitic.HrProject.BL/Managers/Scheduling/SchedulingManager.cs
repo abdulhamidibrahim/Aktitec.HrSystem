@@ -13,12 +13,10 @@ namespace Aktitic.HrProject.BL;
 
 public class SchedulingManager:ISchedulingManager
 {
-    private readonly ISchedulingRepo _schedulingRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public SchedulingManager(ISchedulingRepo schedulingRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public SchedulingManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _schedulingRepo = schedulingRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -41,14 +39,15 @@ public class SchedulingManager:ISchedulingManager
             RepeatEvery = schedulingAddDto.RepeatEvery,
             Publish = schedulingAddDto.Publish,
             ExtraHours = schedulingAddDto.ExtraHours,
+            CreatedAt = DateTime.Now,
         }; 
-        _schedulingRepo.Add(scheduling);
+        _unitOfWork.Scheduling.Add(scheduling);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(SchedulingUpdateDto schedulingUpdateDto, int id)
     {
-        var scheduling = _schedulingRepo.GetById(id);
+        var scheduling = _unitOfWork.Scheduling.GetById(id);
 
         if (scheduling == null) return Task.FromResult(0);
         if(schedulingUpdateDto.DepartmentId != null) scheduling.DepartmentId = schedulingUpdateDto.DepartmentId;
@@ -67,20 +66,23 @@ public class SchedulingManager:ISchedulingManager
         if(schedulingUpdateDto.Publish != null) scheduling.Publish = schedulingUpdateDto.Publish;
         if(schedulingUpdateDto.RepeatEvery != null) scheduling.RepeatEvery = schedulingUpdateDto.RepeatEvery;
 
-         _schedulingRepo.Update(scheduling);
+         _unitOfWork.Scheduling.Update(scheduling);
          return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-
-        _schedulingRepo.Delete(id);
+        var scheduling = _unitOfWork.Scheduling.GetById(id);
+        if (scheduling==null) return Task.FromResult(0);
+        scheduling.IsDeleted = true;
+        scheduling.DeletedAt = DateTime.Now;
+        _unitOfWork.Scheduling.Update(scheduling);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public  SchedulingReadDto? Get(int id)
     {
-        var scheduling = _schedulingRepo.GetById(id);
+        var scheduling = _unitOfWork.Scheduling.GetById(id);
         if (scheduling == null) return null;
         return new SchedulingReadDto()
         {
@@ -105,7 +107,7 @@ public class SchedulingManager:ISchedulingManager
 
     public async Task<List<SchedulingReadDto>> GetAll()
     {
-        var schedulings = await _schedulingRepo.GetAll();
+        var schedulings = await _unitOfWork.Scheduling.GetAll();
         return schedulings.Select(scheduling => new SchedulingReadDto()
         {
             Id = scheduling.Id,
@@ -129,7 +131,7 @@ public class SchedulingManager:ISchedulingManager
 
     public List<FilteredSchedulingDto> GetAllEmployeesScheduling(int page, int pageSize)
     {
-       var employee  =  _schedulingRepo.GetSchedulingWithEmployees();
+       var employee  =  _unitOfWork.Scheduling.GetSchedulingWithEmployees();
        if (employee.Count == 0) return new List<FilteredSchedulingDto>(); 
         var employeesMap = _mapper.Map<List<Scheduling>, List<ScheduleDto>>(employee);
         var totalCount = employeesMap.Count;
@@ -169,7 +171,7 @@ public class SchedulingManager:ISchedulingManager
     
     public List<FilteredSchedulingDto> GetAllEmployeesScheduling(int page, int pageSize,DateOnly? startDate)
     {
-       var employee  =  _schedulingRepo.GetSchedulingWithEmployees(startDate);
+       var employee  =  _unitOfWork.Scheduling.GetSchedulingWithEmployees(startDate);
        if (employee.Count == 0) return new List<FilteredSchedulingDto>(); 
         var employeesMap = _mapper.Map<List<Scheduling>, List<ScheduleDto>>(employee);
         var totalCount = employeesMap.Count;
@@ -252,17 +254,17 @@ public class SchedulingManager:ISchedulingManager
         
         if(column!=null)
         {
-            IEnumerable<Scheduling> user;
-            user = _schedulingRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var Schedule = _mapper.Map<IEnumerable<Scheduling>, IEnumerable<ScheduleDto>>(user);
+            IEnumerable<Scheduling> scheduling;
+            scheduling = _unitOfWork.Scheduling.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var Schedule = _mapper.Map<IEnumerable<Scheduling>, IEnumerable<ScheduleDto>>(scheduling);
             return Task.FromResult(Schedule.ToList());
         }
 
-        var  users = _schedulingRepo.GlobalSearch(searchKey);
-        var shifts = _mapper.Map<IEnumerable<Scheduling>, IEnumerable<ScheduleDto>>(users);
+        var  schedulings = _unitOfWork.Scheduling.GlobalSearch(searchKey);
+        var shifts = _mapper.Map<IEnumerable<Scheduling>, IEnumerable<ScheduleDto>>(schedulings);
         // var emp = _mapper
         //     .Map<IEnumerable<Employee>, IEnumerable<EmployeeDto>>
-        //     (users.Select(s => s.Employee).ToList());
+        //     (schedulings.Select(s => s.Employee).ToList());
         return Task.FromResult(shifts.ToList());
     }
 

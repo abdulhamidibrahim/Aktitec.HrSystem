@@ -15,12 +15,9 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<Employee, EmployeeDto>().ForMember(dest =>
-            dest.DepartmentDto, opt =>
-            opt.MapFrom(src => src.Department == null ? null : new DepartmentDto
-            {
-                Id = src.Department.Id,
-                Name = src.Department.Name!
-            }));
+            dest.Department, opt =>
+            opt.MapFrom(src => src.Department == null ? null : src.Department.Name));
+        
         CreateMap<Holiday, HolidayDto>();
         CreateMap<Client, ClientDto>()
             .ForMember(dest => dest.Permissions, opt => opt.MapFrom(src =>
@@ -35,6 +32,7 @@ public class AutoMapperProfiles : Profile
                     Export = permission.Export
                 }).ToList()));
         
+        CreateMap<FileDto,File>();
         CreateMap<Project,ProjectDto>();
         CreateMap<Task, TaskDto>().ForMember(dest =>
             dest.AssignEmployee, opt =>
@@ -44,16 +42,18 @@ public class AutoMapperProfiles : Profile
                 Email = src.AssignEmployee.Email,
                 ImgUrl = src.AssignEmployee.ImgUrl,
                 JobPosition = src.AssignEmployee.JobPosition,
-                // DepartmentDto = src.AssignEmployee.Department == null ? null : new DepartmentDto
+                // DepartmentDto = src.AssignEmployee.DepartmentId == null ? null : new DepartmentDto
                 // {
-                //     Name = src.AssignEmployee.Department.Name!
+                //     Name = src.AssignEmployee.DepartmentId.Name!
                 // }
             })).ForMember(dest => dest.Project, opt =>
                 opt.MapFrom(src => src.Project == null ? null : new ProjectDto
             {
                 Name = src.Project.Name!,
             }));
+        CreateMap<ApplicationUser, ApplicationUserDto>();
         CreateMap<Tax, TaxDto>();
+        CreateMap<Contact, ContactDto>();
         CreateMap<Ticket, TicketDto>();
         CreateMap<Department, DepartmentDto>();
         CreateMap<Designation, DesignationDto>().ForMember(dest => 
@@ -121,28 +121,52 @@ public class AutoMapperProfiles : Profile
                                 LastName = src.Project.Client.LastName!
                             }
                         }));
+        CreateMap<TaskList, TaskListDto>();
+        CreateMap<Salary, SalaryDto>();
         CreateMap<Shift, ShiftDto>();
         CreateMap<Item, ItemDto>();
         CreateMap<ItemDto, Item>();
         CreateMap<Message, MessageDto>();
         CreateMap<Estimate, EstimateDto>();
+        CreateMap<Budget, BudgetDto>();
+        CreateMap<BudgetRevenue, BudgetRevenuesSearchDto>();
+        CreateMap<BudgetRevenue, BudgetRevenuesDto>();
+        CreateMap<BudgetExpenses, BudgetExpensesDto>();
+        CreateMap<BudgetExpenses, BudgetExpensesSearchDto>();
+        CreateMap<Category, CategoryDto>();
         CreateMap<Revenue, RevenueDto>();
         CreateMap<Revenue, RevenuesBudget>();
         CreateMap<RevenuesCreateDto,Revenue>();
+        CreateMap<Revenue,RevenuesCreateDto>();
         CreateMap<ProvidentFunds, ProvidentFundsDto>();
         //map all expenses properties without purchasedBy   
-        CreateMap<ExpensesCreateDto,Expenses >();
-        CreateMap<Expenses,ExpensesBudget >();
+        CreateMap<ExpensesOfBudget,ExpensesCreateDto >();
+        CreateMap<ExpensesCreateDto,ExpensesOfBudget>();
+        CreateMap<ExpensesOfBudget,ExpensesBudget >();
         CreateMap<Expenses, ExpensesDto>().ForMember(dest=> 
             dest.PurchasedBy ,opt =>
             opt.MapFrom(src =>src.PurchasedBy == null? null: new EmployeeDto
             {
                 FullName = src.PurchasedBy.FullName!,
             }));
+        CreateMap<PayrollDeduction, PayrollDeductionDto>();
+        CreateMap<PayrollAddition, PayrollAdditionDto>();
         CreateMap<Payment, PaymentDto>();
+        CreateMap<Policies, PolicyDto>();
         CreateMap<Invoice, InvoiceDto>();
         CreateMap<Scheduling, ScheduleDto>();
           
+        CreateMap<PerformanceAppraisal, PerformanceAppraisalDto>();
+        CreateMap<PerformanceIndicator, PerformanceIndicatorDto>();
+        CreateMap<GoalList, GoalListDto>();
+        CreateMap<GoalType, GoalTypeDto>();
+        CreateMap<Trainer, TrainerDto>();
+        CreateMap<TaskList, MappedTaskList>();
+        CreateMap<TrainingType, TrainingTypeDto>();
+        CreateMap<TrainingList, TrainingListDto>();
+        CreateMap<Resignation, ResignationDto>();
+        CreateMap<Promotion, PromotionDto>();
+        CreateMap<Termination, TerminationDto>();
         CreateMap<Overtime, OvertimeDto>();
         CreateMap<FileDto, File>();
         CreateMap<Permission, PermissionsDto>()

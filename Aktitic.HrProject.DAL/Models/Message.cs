@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Message
+public class Message : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }

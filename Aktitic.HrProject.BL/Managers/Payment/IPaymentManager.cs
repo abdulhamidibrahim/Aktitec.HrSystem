@@ -12,7 +12,7 @@ public interface IPaymentManager
     public Task<int> Delete(int id);
     public PaymentReadDto? Get(int id);
     public Task<List<PaymentReadDto>> GetAll();
-    public Task<FilteredPaymentDto> GetFilteredPaymentsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredPaymentDto> GetFilteredPaymentsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<PaymentDto>> GlobalSearch(string searchKey,string? column);
   

@@ -11,7 +11,7 @@ public interface INoteManager
     public Task<int> Delete(int id);
     public Task<NotesReadDto>? Get(int id);
     public Task<List<NotesReadDto>> GetAll();
-    public Task<List<NotesReadDto>> GetByReceiver(int receiverId);
+    public List<NotesReadDto> GetByReceiver(int receiverId);
     public Task<List<NotesReadDto>> GetBySender(int senderId);
     public Task<List<NotesReadDto>> GetStarred(int userId);
 }

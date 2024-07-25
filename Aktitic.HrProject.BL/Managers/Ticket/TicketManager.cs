@@ -15,17 +15,13 @@ namespace Aktitic.HrTicket.BL;
 
 public class TicketManager:ITicketManager
 {
-    private readonly ITicketRepo _ticketRepo;
-    private readonly IEmployeeRepo _employeeRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public TicketManager(ITicketRepo ticketRepo, IMapper mapper, IUnitOfWork unitOfWork, IEmployeeRepo employeeRepo)
+    public TicketManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _ticketRepo = ticketRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _employeeRepo = employeeRepo;
     }
     
     public Task<int> Add(TicketAddDto ticketAddDto)
@@ -44,14 +40,15 @@ public class TicketManager:ITicketManager
            TicketId = ticketAddDto.TicketId,
            Followers = ticketAddDto.Followers,
            LastReply = ticketAddDto.LastReply,
+           CreatedAt = DateTime.Now,
         };
-         _ticketRepo.Add(ticket);
+         _unitOfWork.Ticket.Add(ticket);
          return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(TicketUpdateDto ticketUpdateDto, int id)
     {
-        var ticket = _ticketRepo.GetById(id);
+        var ticket = _unitOfWork.Ticket.GetById(id);
 
         if (ticket == null) return Task.FromResult(0);
         
@@ -67,27 +64,32 @@ public class TicketManager:ITicketManager
         if(ticketUpdateDto.TicketId != null) ticket.TicketId = ticketUpdateDto.TicketId;
         if(ticketUpdateDto.Followers != null) ticket.Followers = ticketUpdateDto.Followers;
         if(ticketUpdateDto.LastReply != null) ticket.LastReply = ticketUpdateDto.LastReply;
+
+        ticket.UpdatedAt = DateTime.Now;
         
-        _ticketRepo.Update(ticket);
+        _unitOfWork.Ticket.Update(ticket);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-
-        _ticketRepo.Delete(id);
+        var ticket = _unitOfWork.Ticket.GetById(id);
+        if (ticket==null) return Task.FromResult(0);
+        ticket.IsDeleted = true;
+        ticket.DeletedAt = DateTime.Now;
+        _unitOfWork.Ticket.Update(ticket);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public TicketReadDto Get(int id)
     {
-        var ticket = _ticketRepo.GetTicketsWithEmployeesAsync(id);
+        var ticket = _unitOfWork.Ticket.GetTicketsWithEmployeesAsync(id);
         List<EmployeeDto> employees = new();
 
         if (ticket.Result.Followers != null)
             foreach (var employee in ticket.Result.Followers)
             {
-                var emp = _employeeRepo.GetById(employee);
+                var emp = _unitOfWork.Employee.GetById(employee);
                 if(emp!=null) employees.Add(_mapper.Map<Employee, EmployeeDto>(emp));
             }
 
@@ -115,7 +117,7 @@ public class TicketManager:ITicketManager
 
     public Task<List<TicketReadDto>> GetAll()
     {
-        var ticket = _ticketRepo.GetAll();
+        var ticket = _unitOfWork.Ticket.GetAll();
         return Task.FromResult(ticket.Result.Select(t => new TicketReadDto()
         {
             Id = t.Id,
@@ -135,7 +137,7 @@ public class TicketManager:ITicketManager
      
      public async Task<FilteredTicketDto> GetFilteredTicketsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var ticketsWithEmployeesAsync =  _ticketRepo.GetTicketsWithEmployeesAsync();
+        var ticketsWithEmployeesAsync =  _unitOfWork.Ticket.GetTicketsWithEmployeesAsync();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -145,9 +147,9 @@ public class TicketManager:ITicketManager
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = ticketsWithEmployeesAsync.ToList();
+            var ticketList = ticketsWithEmployeesAsync.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = ticketList.Skip((page - 1) * pageSize).Take(pageSize);
 
             List<TicketDto> ticketDto = new();
             foreach (var ticket in paginatedResults)
@@ -236,32 +238,32 @@ public class TicketManager:ITicketManager
 
         return new FilteredTicketDto();
     }
-    private IEnumerable<Ticket> ApplyFilter(IEnumerable<Ticket> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Ticket> ApplyFilter(IEnumerable<Ticket> tickets, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(users, column, projectValue, operatorType),
-            _ => users
+            "contains" => tickets.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => tickets.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => tickets.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => tickets.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(tickets, column, projectValue, operatorType),
+            _ => tickets
         };
     }
 
-    private IEnumerable<Ticket> ApplyNumericFilter(IEnumerable<Ticket> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Ticket> ApplyNumericFilter(IEnumerable<Ticket> tickets, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
-        _ => users
+        "eq" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
+        "neq" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
+        "gte" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
+        "gt" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
+        "lte" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
+        "lt" => tickets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
+        _ => tickets
     };
 }
 
@@ -271,14 +273,14 @@ public class TicketManager:ITicketManager
         
         if(column!=null)
         {
-            IEnumerable<Ticket> user;
-            user = _ticketRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var project = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(user);
+            IEnumerable<Ticket> ticket;
+            ticket = _unitOfWork.Ticket.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var project = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(ticket);
             return Task.FromResult(project.ToList());
         }
 
-        var  users = _ticketRepo.GlobalSearch(searchKey);
-        var projects = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(users);
+        var  tickets = _unitOfWork.Ticket.GlobalSearch(searchKey);
+        var projects = _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDto>>(tickets);
         return Task.FromResult(projects.ToList());
     }
 

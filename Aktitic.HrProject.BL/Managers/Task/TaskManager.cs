@@ -15,19 +15,16 @@ namespace Aktitic.HrProject.BL;
 
 public class TaskManager:ITaskManager
 {
-    private readonly ITaskRepo _taskRepo;
-    private readonly IMessageRepo _messageRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public TaskManager(ITaskRepo taskRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public TaskManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _taskRepo = taskRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
     
-    public Task<int> Add(TaskAddDto taskAddDto)
+    public async Task<int> Add(TaskAddDto taskAddDto)
     {
         var task = new Task
         {
@@ -38,18 +35,19 @@ public class TaskManager:ITaskManager
             AssignedTo = taskAddDto.AssignedTo,
             ProjectId = taskAddDto.ProjectId,
             Date = DateTime.Now,
+            CreatedAt = DateTime.Now,
         };
         
-        _taskRepo.Add(task);
-        return _unitOfWork.SaveChangesAsync();
+        _unitOfWork.Task.Add(task);
+        return await _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(TaskUpdateDto taskUpdateDto, int id)
+    public async Task<int> Update(TaskUpdateDto taskUpdateDto, int id)
     {
-        var task = _taskRepo.GetById(id);
+        var task = _unitOfWork.Task.GetById(id);
         
-        _unitOfWork.SaveChangesAsync();
-        if (task == null) return System.Threading.Tasks.Task.FromResult(0);
+        // await _unitOfWork.SaveChangesAsync();
+        if (task == null) return await System.Threading.Tasks.Task.FromResult(0);
         
         if(taskUpdateDto.Text != null) task.Text = taskUpdateDto.Text;
         if(taskUpdateDto.Description != null) task.Description = taskUpdateDto.Description;
@@ -59,20 +57,24 @@ public class TaskManager:ITaskManager
         task.Date = DateTime.Now;
         if(taskUpdateDto.ProjectId != null) task.ProjectId = taskUpdateDto.ProjectId;
 
-        
-        _taskRepo.Update(task);
-        return _unitOfWork.SaveChangesAsync();
+        task.UpdatedAt = DateTime.Now;
+        _unitOfWork.Task.Update(task);
+        return await _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _taskRepo.Delete(id);
+        var task = _unitOfWork.Task.GetById(id);
+        if (task==null) return System.Threading.Tasks.Task.FromResult(0);
+        task.IsDeleted = true;
+        task.DeletedAt = DateTime.Now;
+        _unitOfWork.Task.Update(task);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public TaskReadSingleDto Get(int id)
     {
-        var task = _taskRepo.GetTaskWithEmployee(id);
+        var task = _unitOfWork.Task.GetTaskWithEmployee(id);
         if (task == null) return new TaskReadSingleDto();
         return new TaskReadSingleDto()
         {
@@ -90,7 +92,7 @@ public class TaskManager:ITaskManager
 
     public Task<List<TaskReadDto>> GetAll()
     {
-        var task = _taskRepo.GetAll();
+        var task = _unitOfWork.Task.GetAll();
         return System.Threading.Tasks.Task.FromResult(task.Result.Select(t => new TaskReadDto()
         {
             Id = t.Id,
@@ -108,19 +110,19 @@ public class TaskManager:ITaskManager
      
      public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users =  _taskRepo.GetAllTasksWithEmployeeAndProject();
+        var Tasks =  _unitOfWork.Task.GetAllTasksWithEmployeeAndProject();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = Tasks.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var TaskList = Tasks.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = TaskList.Skip((page - 1) * pageSize).Take(pageSize);
 
             List<TaskDto> taskDto = new();
             foreach (var task in paginatedResults)
@@ -148,17 +150,17 @@ public class TaskManager:ITaskManager
             return System.Threading.Tasks.Task.FromResult(result);
         }
 
-        if (users != null)
+        if (Tasks != null)
         {
             IEnumerable<Task> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(Tasks, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(Tasks, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -195,32 +197,32 @@ public class TaskManager:ITaskManager
 
         return System.Threading.Tasks.Task.FromResult(new FilteredTaskDto());
     }
-    private IEnumerable<Task> ApplyFilter(IEnumerable<Task> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Task> ApplyFilter(IEnumerable<Task> Tasks, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var taskValue) => ApplyNumericFilter(users, column, taskValue, operatorType),
-            _ => users
+            "contains" => Tasks.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => Tasks.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => Tasks.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => Tasks.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var taskValue) => ApplyNumericFilter(Tasks, column, taskValue, operatorType),
+            _ => Tasks
         };
     }
 
-    private IEnumerable<Task> ApplyNumericFilter(IEnumerable<Task> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Task> ApplyNumericFilter(IEnumerable<Task> Tasks, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue < value),
-        _ => users
+        "eq" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue == value),
+        "neq" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue != value),
+        "gte" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue >= value),
+        "gt" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue > value),
+        "lte" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue <= value),
+        "lt" => Tasks.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var taskValue) && taskValue < value),
+        _ => Tasks
     };
 }
 
@@ -230,28 +232,28 @@ public class TaskManager:ITaskManager
         
         if(column!=null)
         {
-            IEnumerable<Task> user;
-            user = _taskRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var task = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(user);
+            IEnumerable<Task> Task;
+            Task = _unitOfWork.Task.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var task = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Task);
             return System.Threading.Tasks.Task.FromResult(task.ToList());
         }
 
-        var  users = _taskRepo.GlobalSearch(searchKey);
-        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
+        var  Tasks = _unitOfWork.Task.GlobalSearch(searchKey);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
     {
-        var users = _taskRepo.GetTaskByProjectId(projectId);
-        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
+        var Tasks = _unitOfWork.Task.GetTaskByProjectId(projectId);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 
     public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
     {
-        var users = _taskRepo.GetTaskByCompleted(completed);
-        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(users);
+        var Tasks = _unitOfWork.Task.GetTaskByCompleted(completed);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 }

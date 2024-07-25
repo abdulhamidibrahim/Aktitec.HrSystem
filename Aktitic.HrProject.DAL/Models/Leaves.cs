@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Leaves
+public partial class Leaves : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }

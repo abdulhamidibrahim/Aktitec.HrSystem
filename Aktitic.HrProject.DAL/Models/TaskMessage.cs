@@ -1,6 +1,6 @@
 namespace Aktitic.HrProject.DAL.Models;
 
-public class TaskMessage
+public class TaskMessage : BaseEntity
 {
     public int? TaskId { get; set; }
     public Task? Task { get; set; }

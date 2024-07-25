@@ -2,9 +2,9 @@ using Aktitic.HrProject.DAL.Dtos;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Invoice
+public class Invoice : BaseEntity
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
     public string? Email { get; set; }
     public float? Tax { get; set; }
     public string? ClientAddress { get; set; }

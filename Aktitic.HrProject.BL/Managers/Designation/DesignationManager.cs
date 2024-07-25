@@ -13,15 +13,11 @@ namespace Aktitic.HrProject.BL;
 
 public class DesignationManager:IDesignationManager
 {
-    private readonly IDesignationRepo _designationRepo;
-    private readonly IDepartmentRepo _departmentRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public DesignationManager(IDesignationRepo designationRepo, IMapper mapper, IDepartmentRepo departmentRepo, IUnitOfWork unitOfWork)
+    public DesignationManager( IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _designationRepo = designationRepo;
         _mapper = mapper;
-        _departmentRepo = departmentRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -30,37 +26,43 @@ public class DesignationManager:IDesignationManager
         var designation = new Designation()
         {
             Name = designationAddDto.Name,
-            DepartmentId = designationAddDto.DepartmentId
+            DepartmentId = designationAddDto.DepartmentId,
+            CreatedAt = DateTime.Now,
         }; 
-        _designationRepo.Add(designation);
+        _unitOfWork.Designation.Add(designation);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(DesignationUpdateDto designationUpdateDto,int id)
     {
-        var designation = _designationRepo.GetById(id);
+        var designation = _unitOfWork.Designation.GetById(id);
         
         if (designation == null) return Task.FromResult(0);
         if(designationUpdateDto.Name != null) designation.Name = designationUpdateDto.Name;
         if(designationUpdateDto.DepartmentId != null) designation.DepartmentId = designationUpdateDto.DepartmentId;
-        
-        _designationRepo.Update(designation);
+
+        designation.UpdatedAt = DateTime.Now;
+        _unitOfWork.Designation.Update(designation);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _designationRepo.GetById(id);
+        var designation = _unitOfWork.Designation.GetById(id);
+        if (designation==null) return Task.FromResult(0);
+        designation.IsDeleted = true;
+        designation.DeletedAt = DateTime.Now;
+        _unitOfWork.Designation.Update(designation);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public  DesignationReadDto? Get(int id)
     {
-        var designation =  _designationRepo.GetById(id);
+        var designation =  _unitOfWork.Designation.GetById(id);
         if (designation == null)
             return new DesignationReadDto();
 
-        var department =  _departmentRepo.GetById(designation.DepartmentId);
+        var department =  _unitOfWork.Department.GetById(designation.DepartmentId);
 
         var mappedDepartment = department != null
             ? _mapper.Map<Department, DepartmentDto>(department)
@@ -77,7 +79,7 @@ public class DesignationManager:IDesignationManager
 
     public async Task<List<DesignationReadDto>> GetAll()
     {
-        var  designations = await _designationRepo.GetAll();
+        var  designations = await _unitOfWork.Designation.GetAll();
         return designations.Select(designation => new DesignationReadDto()
         {
             Id = designation.Id,
@@ -91,19 +93,19 @@ public class DesignationManager:IDesignationManager
           (string? column, string? value1, string? operator1, string? value2,
               string? operator2, int page, int pageSize)
     {
-        var users = _designationRepo.GetDesignationsWithDepartments();
+        var designations = _unitOfWork.Designation.GetDesignationsWithDepartments();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = designations.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var designationList = designations.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = designationList.Skip((page - 1) * pageSize).Take(pageSize);
 
             List<DesignationDto> designationDto = new();
             foreach (var designation in paginatedResults)
@@ -125,22 +127,22 @@ public class DesignationManager:IDesignationManager
             };
             // foreach (var designation in result.DesignationDto)
             // {
-            //     designation.Department = _mapper.Map<Department, DepartmentDto>(designation.Department);
+            //     designation.DepartmentId = _mapper.Map<DepartmentId, DepartmentDto>(designation.DepartmentId);
             // }
             return result;
         }
 
-        if (users != null)
+        if (designations != null)
         {
             IEnumerable<Designation> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(designations, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(designations, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -170,32 +172,32 @@ public class DesignationManager:IDesignationManager
 
         return new FilteredDesignationDto();
     }
-    private IEnumerable<Designation> ApplyFilter(IEnumerable<Designation> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Designation> ApplyFilter(IEnumerable<Designation> designations, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var designationValue) => ApplyNumericFilter(users, column, designationValue, operatorType),
-            _ => users
+            "contains" => designations.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => designations.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => designations.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => designations.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var designationValue) => ApplyNumericFilter(designations, column, designationValue, operatorType),
+            _ => designations
         };
     }
 
-    private IEnumerable<Designation> ApplyNumericFilter(IEnumerable<Designation> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Designation> ApplyNumericFilter(IEnumerable<Designation> designations, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue < value),
-        _ => users
+        "eq" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue == value),
+        "neq" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue != value),
+        "gte" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue >= value),
+        "gt" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue > value),
+        "lte" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue <= value),
+        "lt" => designations.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var designationValue) && designationValue < value),
+        _ => designations
     };
 }
 
@@ -205,14 +207,14 @@ public class DesignationManager:IDesignationManager
         
         if(column!=null)
         {
-            IEnumerable<Designation> user;
-            user = _designationRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var designation = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(user);
+            IEnumerable<Designation> designationDto;
+            designationDto = _unitOfWork.Designation.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var designation = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(designationDto);
             return Task.FromResult(designation.ToList());
         }
 
-        var  users = _designationRepo.GlobalSearch(searchKey);
-        var designations = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(users);
+        var  designationDtos = _unitOfWork.Designation.GlobalSearch(searchKey);
+        var designations = _mapper.Map<IEnumerable<Designation>, IEnumerable<DesignationDto>>(designationDtos);
         return Task.FromResult(designations.ToList());
     }
 

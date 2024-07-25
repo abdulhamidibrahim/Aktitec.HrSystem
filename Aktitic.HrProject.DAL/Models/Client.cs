@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Client 
+public class Client : BaseEntity
     // : ApplicationUser
 {
     [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]

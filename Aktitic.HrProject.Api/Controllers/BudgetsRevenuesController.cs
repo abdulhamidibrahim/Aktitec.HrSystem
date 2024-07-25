@@ -27,9 +27,9 @@ public class BudgetsRevenuesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<BudgetRevenuesReadDto?> Get(int id)
     {
-        var user = _categoryManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _categoryManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]
@@ -57,15 +57,15 @@ public class BudgetsRevenuesController: ControllerBase
     }
     
      
-    [HttpGet("getFilteredBudgetsRevenuess")]
-    public Task<FilteredBudgetRevenuesDto> GetFilteredBudgetsRevenuessAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    [HttpGet("getFilteredBudgetsRevenues")]
+    public Task<FilteredBudgetRevenuesDto> GetFilteredBudgetsRevenuesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _categoryManager.GetFilteredCategoriesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return _categoryManager.GetFilteredRevenuesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     [HttpGet("GlobalSearch")]
-    public async Task<IEnumerable<BudgetRevenuesDto>> GlobalSearch(string search,string? column)
+    public async Task<IEnumerable<BudgetRevenuesSearchDto>> GlobalSearch(string search,string? column)
     {
         return await _categoryManager.GlobalSearch(search,column);
     }

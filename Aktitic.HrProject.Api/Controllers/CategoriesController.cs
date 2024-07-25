@@ -27,9 +27,9 @@ public class CategoriesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<CategoryReadDto?> Get(int id)
     {
-        var user = _categoryManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _categoryManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

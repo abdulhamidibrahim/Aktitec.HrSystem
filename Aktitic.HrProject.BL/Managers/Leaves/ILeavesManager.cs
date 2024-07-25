@@ -11,7 +11,7 @@ public interface ILeavesManager
     public LeavesReadDto? Get(int id);
     public List<LeavesReadDto> GetAll();
     
-    public Task<FilteredLeavesDto> GetFilteredLeavesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
-    public Task<List<LeavesDto>> GlobalSearch(string searchKey,string? column);
+    public Task<List<LeavesGetFilteredDto>> GlobalSearch(string searchKey,string? column);
 }

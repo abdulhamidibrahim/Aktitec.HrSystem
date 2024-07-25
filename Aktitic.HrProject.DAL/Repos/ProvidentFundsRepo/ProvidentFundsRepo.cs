@@ -18,7 +18,9 @@ public class ProvidentFundsRepo :GenericRepo<ProvidentFunds>,IProvidentFundsRepo
     {
         if (_context.ProvidentFunds != null)
         {
-            var query = _context.ProvidentFunds.AsQueryable();
+            var query = _context.ProvidentFunds
+                .Include(x=>x.Employee)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {

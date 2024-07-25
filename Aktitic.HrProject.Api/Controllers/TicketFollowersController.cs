@@ -23,9 +23,9 @@ public class TicketFollowersController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<Task<TicketFollowersReadDto?>> Get(int id)
     {
-        var user = _ticketFollowersManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var result = _ticketFollowersManager.Get(id);
+        if (result == null) return NotFound();
+        return result;
     }
     
     [HttpPost("create")]

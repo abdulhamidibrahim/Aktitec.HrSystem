@@ -10,7 +10,7 @@ public interface IDesignationManager
     public Task<int> Delete(int id);
     public DesignationReadDto? Get(int id);
     public Task<List<DesignationReadDto>> GetAll();
-    public Task<FilteredDesignationDto> GetFilteredDesignationsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredDesignationDto> GetFilteredDesignationsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<DesignationDto>> GlobalSearch(string searchKey,string? column);
 }

@@ -6,18 +6,23 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>ture</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+<!--        <RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
+        
     </PropertyGroup>
 
     
     
-    <ItemGroup>
+    <ItemGroup> 
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.8" />
@@ -31,9 +36,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Aktitic.HrProject.BL\Aktitic.HrProject.BL.csproj" />
+      <ProjectReference Include="..\User.Management.Services\User.Management.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="wwwroot\uploads\contacts\" />
       <Folder Include="wwwroot\uploads\employees\" />
     </ItemGroup>
 
@@ -42,6 +49,9 @@
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ahmed\ahmed.png" />
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\abdulhamidibrahim\Screenshot 2024-02-24 at 6.07.33 PM.png.png" />
       <_ContentIncludedByDefault Remove="wwwroot\uploads\employees\ali\ali.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\contacts\0a6793e1-875a-495a-9e0f-da3b4bd170ad\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\contacts\bee3ab2e-1ff8-437a-bddf-adc0ce533738\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg" />
+      <_ContentIncludedByDefault Remove="wwwroot\uploads\contacts\dfd08ff3-3f78-4f28-8c3a-049312b1eaea\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg" />
     </ItemGroup>
 
 </Project>

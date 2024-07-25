@@ -10,12 +10,10 @@ namespace Aktitic.HrProject.BL;
 
 public class FileManager:IFileManager
 {
-    private readonly IFileRepo _fileRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public FileManager(IFileRepo fileRepo, IUnitOfWork unitOfWork)
+    public FileManager( IUnitOfWork unitOfWork)
     {
-        _fileRepo = fileRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -26,36 +24,38 @@ public class FileManager:IFileManager
             Name = fileAddDto.Name,
             Content = fileAddDto.Content,
             Extension = fileAddDto.Extension,
+            CreatedAt = DateTime.Now,
         };
-        _fileRepo.Add(file);
+        _unitOfWork.File.Add(file);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(FileUpdateDto fileUpdateDto, int id)
     {
-        var file = _fileRepo.GetById(id);
+        var file = _unitOfWork.File.GetById(id);
         
         if (file == null) return Task.FromResult(0);
         if(fileUpdateDto.Name != null) file.Name = fileUpdateDto.Name;
         if(fileUpdateDto.Content != null) file.Content = fileUpdateDto.Content;
         if(fileUpdateDto.Extension != null) file.Extension = fileUpdateDto.Extension;
-        
-        
-        _fileRepo.Update(file);
+
+        file.UpdatedAt = DateTime.Now;
+        _unitOfWork.File.Update(file);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var file = _fileRepo.GetById(id);
-        if (file != null) _fileRepo.Delete(file);
-        
-        return _unitOfWork.SaveChangesAsync();
-    }
+        var file = _unitOfWork.File.GetById(id);
+        if (file==null) return Task.FromResult(0);
+        file.IsDeleted = true;
+        file.DeletedAt = DateTime.Now;
+        _unitOfWork.File.Update(file);
+        return _unitOfWork.SaveChangesAsync();    }
 
     public FileReadDto? Get(int id)
     {
-        var file = _fileRepo.GetById(id);
+        var file = _unitOfWork.File.GetById(id);
         if (file == null) return null;
         return new FileReadDto()
         {
@@ -81,7 +81,7 @@ public class FileManager:IFileManager
 
     public List<FileReadDto> GetAll()
     {
-        var files = _fileRepo.GetAll();
+        var files = _unitOfWork.File.GetAll();
         return files.Result.Select(file => new FileReadDto()
         {
             Id = file.Id,

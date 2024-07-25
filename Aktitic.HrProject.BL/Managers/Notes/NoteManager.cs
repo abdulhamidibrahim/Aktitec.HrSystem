@@ -10,12 +10,10 @@ namespace Aktitic.HrProject.BL;
 
 public class NoteManager:INoteManager
 {
-    private readonly INotesRepo _notesRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public NoteManager(INotesRepo notesRepo, IUnitOfWork unitOfWork)
+    public NoteManager(IUnitOfWork unitOfWork)
     {
-        _notesRepo = notesRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -27,15 +25,16 @@ public class NoteManager:INoteManager
             ReceiverId = notesAddDto.ReceiverId,
             Content = notesAddDto.Content,
             Starred = notesAddDto.Starred,
-            Date = DateTime.Now
+            Date = DateTime.Now,
+            CreatedAt = DateTime.Now,
         }; 
-        _notesRepo.Add(notes);
+        _unitOfWork.Notes.Add(notes);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(NotesUpdateDto notesUpdateDto, int id)
     {
-        var notes = _notesRepo.GetById(id);
+        var notes = _unitOfWork.Notes.GetById(id);
 
         if (notes == null) return Task.FromResult(0);
         if(notesUpdateDto.ReceiverId != null) notes.ReceiverId = notesUpdateDto.ReceiverId;
@@ -44,20 +43,24 @@ public class NoteManager:INoteManager
         if(notesUpdateDto.Starred != null) notes.Starred = notesUpdateDto.Starred;
         notes.Date = DateTime.Now;
 
-
-         _notesRepo.Update(notes);
+        notes.UpdatedAt = DateTime.Now;
+         _unitOfWork.Notes.Update(notes);
          return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _notesRepo.GetById(id);
+        var notes = _unitOfWork.Notes.GetById(id);
+        if (notes==null) return Task.FromResult(0);
+        notes.IsDeleted = true;
+        notes.DeletedAt = DateTime.Now;
+        _unitOfWork.Notes.Update(notes);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<NotesReadDto>? Get(int id)
     {
-        var notes = _notesRepo.GetById(id);
+        var notes = _unitOfWork.Notes.GetById(id);
         if (notes == null) return null;
         return Task.FromResult(new NotesReadDto()
         {
@@ -72,7 +75,7 @@ public class NoteManager:INoteManager
 
     public Task<List<NotesReadDto>> GetAll()
     {
-        var notes = _notesRepo.GetAll();
+        var notes = _unitOfWork.Notes.GetAll();
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,
@@ -84,32 +87,32 @@ public class NoteManager:INoteManager
         }).ToList());
     }
 
-    public Task<List<NotesReadDto>> GetByReceiver(int receiverId)
+    public List<NotesReadDto> GetByReceiver(int receiverId)
     {
-        var notes = _notesRepo.GetByReceiver(receiverId);
-        return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
+        var notes = _unitOfWork.Notes.GetByReceiver(receiverId);
+        return (notes.Result.Select(note => new NotesReadDto()
         {
-            Id = note.Notes.Id,
-            SenderId = note.Notes.SenderId,
-            ReceiverId = note.Notes.ReceiverId,
-            Content = note.Notes.Content,
-            Starred = note.Notes.Starred,
-            Date = note.Notes.Date,
-            FullName = note.Employee.FullName,
-            UserName = note.Employee.UserName,
-            Email = note.Employee.Email,
-            ImgUrl = note.Employee.ImgUrl,
-            ImgId = note.Employee.ImgId,
-            Gender = note.Employee.Gender,
-            Age = note.Employee.Age,
-            JobPosition = note.Employee.JobPosition
+            Id = note.Id,
+            SenderId = note.SenderId,
+            ReceiverId = note.ReceiverId,
+            Content = note.Content,
+            Starred = note.Starred,
+            Date = note.Date,
+            FullName = note.Sender?.FullName,
+            UserName = note.Sender?.UserName,
+            Email = note.Sender?.Email,
+            ImgUrl = note.Sender?.ImgUrl,
+            ImgId = note.Sender?.ImgId,
+            Gender = note.Sender?.Gender,
+            Age = note.Sender?.Age,
+            JobPosition = note.Sender?.JobPosition
             
         }).ToList());
     }
 
     public Task<List<NotesReadDto>> GetBySender(int senderId)
     {
-        var notes = _notesRepo.GetBySender(senderId);
+        var notes = _unitOfWork.Notes.GetBySender(senderId);
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,
@@ -117,13 +120,21 @@ public class NoteManager:INoteManager
             ReceiverId = note.ReceiverId,
             Content = note.Content,
             Starred = note.Starred,
-            Date = note.Date
+            Date = note.Date,
+            FullName = note.Receiver?.FullName,
+            UserName = note.Receiver?.UserName,
+            Email = note.Receiver?.Email,
+            ImgUrl = note.Receiver?.ImgUrl,
+            ImgId = note.Receiver?.ImgId,
+            Gender = note.Receiver?.Gender,
+            Age = note.Receiver?.Age,
+            JobPosition = note.Receiver?.JobPosition
         }).ToList());
     }
 
     public Task<List<NotesReadDto>> GetStarred(int userId)
     {
-        var notes = _notesRepo.GetStarred(userId);
+        var notes = _unitOfWork.Notes.GetStarred(userId);
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,

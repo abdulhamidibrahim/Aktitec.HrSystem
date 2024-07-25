@@ -12,7 +12,8 @@ public interface IProjectManager
     public Task<ProjectReadDto?> Get(int id);
     public Task<List<ProjectReadDto>> GetAll();
   
-    public Task<FilteredProjectDto> GetFilteredProjectsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public FilteredProjectDto GetFilteredProjectsAsync(string? column, string? value1, string? operator1, string? value2,
+        string? operator2, int page, int pageSize);
 
     public Task<List<ProjectDto>> GlobalSearch(string searchKey,string? column);
 }

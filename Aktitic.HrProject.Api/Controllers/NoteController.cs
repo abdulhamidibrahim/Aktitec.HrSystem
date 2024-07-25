@@ -23,21 +23,20 @@ public class NoteController: ControllerBase
     [HttpGet("{id}")]
     public Task<NotesReadDto?> Get(int id)
     {
-        var user = _noteManager.Get(id);
-        if (user == null) return Task.FromResult<NotesReadDto?>(null);
-        return user;
+        var result = _noteManager.Get(id);
+        if (result == null) return Task.FromResult<NotesReadDto?>(null);
+        return result;
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromForm] NotesAddDto noteAddDto)
+    public ActionResult Add( NotesAddDto noteAddDto)
     {
         if (noteAddDto.SenderId != noteAddDto.ReceiverId)
         {
             try
             {
                 var result = _noteManager.Add(noteAddDto);
-                if (result.Result > 0) return Ok("Note added successfully.");
-                return BadRequest("failed to add note. try entering valid data.");
+                return Ok("Note added successfully.");
             }
             catch (Exception e)
             {
@@ -50,7 +49,7 @@ public class NoteController: ControllerBase
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromBody] NotesUpdateDto noteUpdateDto,int id)
+    public ActionResult Update( NotesUpdateDto noteUpdateDto,int id)
     {
         var result =_noteManager.Update(noteUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
@@ -66,9 +65,9 @@ public class NoteController: ControllerBase
     }
     
     [HttpGet("getReceivedNotes/{userId}")]
-    public async Task<List<NotesReadDto>> GetByReceiver(int userId)
+    public  List<NotesReadDto> GetByReceiver(int userId)
     {
-        return await _noteManager.GetByReceiver(userId);
+        return  _noteManager.GetByReceiver(userId);
     }
     
     [HttpGet("getSentNotes/{userId}")]

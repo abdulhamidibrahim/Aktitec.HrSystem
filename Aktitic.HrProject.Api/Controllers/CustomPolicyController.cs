@@ -24,9 +24,9 @@ public class CustomPolicyController: ControllerBase
     [HttpGet("{id}")]
     public  ActionResult<CustomPolicyReadDto?> Get(int id)
     {
-        var user = _customPolicyManager.Get(id);
-        if (user == null) return NotFound("policy not found");
-        return Ok(user);
+        var result = _customPolicyManager.Get(id);
+        if (result == null) return NotFound("policy not found");
+        return Ok(result);
     }
     
     [HttpPost("create")]

@@ -18,13 +18,11 @@ namespace Aktitic.HrTaskList.BL;
 
 public class BudgetManager:IBudgetManager
 {
-    private readonly IBudgetRepo _budgetRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public BudgetManager(IBudgetRepo budgetRepo, IUnitOfWork unitOfWork, IMapper mapper)
+    public BudgetManager(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _budgetRepo = budgetRepo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -43,16 +41,16 @@ public class BudgetManager:IBudgetManager
             
             OverallExpense = budgetAddDto.OverallExpense,
             OverallRevenue = budgetAddDto.OverallRevenue,
-            Expenses = _mapper.Map<List<ExpensesCreateDto>,List<Expenses>>(budgetAddDto.Expenses),
+            Expenses = _mapper.Map<List<ExpensesCreateDto>,List<ExpensesOfBudget>>(budgetAddDto.Expenses),
             Revenues = _mapper.Map<List<RevenuesCreateDto>,List<Revenue>>(budgetAddDto.Revenue),
         }; 
-        _budgetRepo.Add(budget);
+        _unitOfWork.Budget.Add(budget);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(BudgetUpdateDto budgetUpdateDto, int id)
     {
-        var budget = _budgetRepo.GetById(id);
+        var budget = _unitOfWork.Budget.GetById(id);
         
         
         if (budget == null) return Task.FromResult(0);
@@ -64,25 +62,77 @@ public class BudgetManager:IBudgetManager
         if(budgetUpdateDto.EndDate != null) budget.EndDate = budgetUpdateDto.EndDate;
         if(budgetUpdateDto.ExpectedProfit != null) budget.ExpectedProfit = budgetUpdateDto.ExpectedProfit;
         if(budgetUpdateDto.Tax != null) budget.Tax = budgetUpdateDto.Tax;
-        if(budgetUpdateDto.Expenses != null) budget.Expenses = _mapper.Map<List<ExpensesCreateDto>,List<Expenses>>(budgetUpdateDto.Expenses);
-        if(budgetUpdateDto.OverallExpense != null) budget.OverallExpense = budgetUpdateDto.OverallExpense;
+        if(budgetUpdateDto.OverallExpense != null){  budget.OverallExpense = budgetUpdateDto.OverallExpense;}
         if(budgetUpdateDto.OverallRevenue != null) budget.OverallRevenue = budgetUpdateDto.OverallRevenue;
-        if(budgetUpdateDto.RevenueId != null) budget.Revenues = _mapper.Map<List<RevenuesCreateDto>,List<Revenue>>(budgetUpdateDto.Revenue);
         
         
-        _budgetRepo.Update(budget);
+        if (budgetUpdateDto.Expenses?.Count > 0)
+        {
+            for (int i=0; i<budgetUpdateDto.Expenses.Count;i++)
+            {
+                if (budgetUpdateDto.Expenses[i].Id == 0)
+                {
+                    _unitOfWork.ExpensesOfBudget.Add(new ExpensesOfBudget(){
+                        ExpensesAmount = budgetUpdateDto.Expenses[i].ExpensesAmount,
+                        ExpensesTitle = budgetUpdateDto.Expenses[i].ExpensesTitle,
+                        BudgetId = id,
+                    });
+                    continue;
+                }
+                
+                var exp = _unitOfWork.ExpensesOfBudget.GetById(budgetUpdateDto.Expenses[i].Id);
+                if (exp == null) continue;
+                
+                if(exp.ExpensesAmount != null) exp.ExpensesAmount = budgetUpdateDto.Expenses[i].ExpensesAmount;
+                if(exp.ExpensesTitle != null) exp.ExpensesTitle = budgetUpdateDto.Expenses[i].ExpensesTitle;
+
+                _unitOfWork.ExpensesOfBudget.Update(exp);
+
+            }
+        }
+        
+        if(budgetUpdateDto.Revenue?.Count > 0 )
+        {
+            for (int i=0;i<budgetUpdateDto.Revenue.Count;i++)
+            {
+                if (budgetUpdateDto.Revenue[i].Id == 0)
+                {
+                    _unitOfWork.Revenues.Add(new Revenue(){
+                        RevenueAmount = budgetUpdateDto.Revenue[i].RevenueAmount,
+                        RevenueTitle = budgetUpdateDto.Revenue[i].RevenueTitle,
+                        BudgetId = id
+                    });
+                    continue;
+                }
+
+                var rev = _unitOfWork.Revenues.GetById(budgetUpdateDto.Revenue[i].Id);
+                if (rev == null) continue;
+                
+                if (rev.RevenueAmount != null) rev.RevenueAmount = budgetUpdateDto.Revenue[i].RevenueAmount;
+                if (rev.RevenueTitle != null) rev.RevenueTitle = budgetUpdateDto.Revenue[i].RevenueTitle;
+                    
+                _unitOfWork.Revenues.Update(rev);
+            }
+        }
+        
+        
+        _unitOfWork.Budget.Update(budget);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _budgetRepo.Delete(id);
+        var budget = _unitOfWork.Budget.GetById(id);
+        if (budget == null) return Task.FromResult(0);
+        budget.IsDeleted = true;
+        budget.DeletedAt = DateTime.Now;
+        _unitOfWork.Budget.Update(budget); 
         return _unitOfWork.SaveChangesAsync();
     }
 
     public BudgetReadDto? Get(int id)
     {
-        var budget = _budgetRepo.GetById(id);
+        var budget = _unitOfWork.Budget.GetWithDetails(id);
         if (budget == null) return null;
         return new BudgetReadDto()
         {
@@ -97,14 +147,14 @@ public class BudgetManager:IBudgetManager
             OverallExpense = budget.OverallExpense,
             OverallRevenue = budget.OverallRevenue,
             Revenues = _mapper.Map<List<Revenue>,List<RevenuesCreateDto>>(budget.Revenues) ,
-            Expenses= _mapper.Map<List<Expenses>,List<ExpensesCreateDto>>(budget.Expenses)
+            Expenses= _mapper.Map<List<ExpensesOfBudget>,List<ExpensesCreateDto>>(budget.Expenses)
            
         };
     }
 
     public Task<List<BudgetReadDto>> GetAll()
     {
-        var budget = _budgetRepo.GetAll();
+        var budget = _unitOfWork.Budget.GetAllWithDetails();
         return Task.FromResult(budget.Result.Select(p => new BudgetReadDto()
         {
             Id = p.Id,
@@ -118,25 +168,25 @@ public class BudgetManager:IBudgetManager
             OverallExpense = p.OverallExpense,
             OverallRevenue = p.OverallRevenue,
             Revenues = _mapper.Map<List<Revenue>,List<RevenuesCreateDto>>(p.Revenues) ,
-            Expenses= _mapper.Map<List<Expenses>,List<ExpensesCreateDto>>(p.Expenses)
+            Expenses= _mapper.Map<List<ExpensesOfBudget>,List<ExpensesCreateDto>>(p.Expenses)
         }).ToList());
     }
     
      public async Task<FilteredBudgetDto> GetFilteredBudgetsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _budgetRepo.GetAll();
+        var budgets = await _unitOfWork.Budget.GetAllWithDetails();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = budgets.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var budgetList = budgets.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = budgetList.Skip((page - 1) * pageSize).Take(pageSize);
     
             var mappedBudgets = new List<BudgetDto>();
             foreach (var budget in paginatedResults)
@@ -153,8 +203,9 @@ public class BudgetManager:IBudgetManager
                     Tax = budget.Tax,
                     OverallExpense =budget.OverallExpense,
                     OverallRevenue = budget.OverallRevenue,
-                    Revenue = _mapper.Map<List<Revenue>,List<RevenuesBudget>>(budget.Revenues) ,
-                    Expenses= _mapper.Map<List<Expenses>,List<ExpensesBudget>>(budget.Expenses)
+                    Revenues = _mapper.Map<List<Revenue>,List<RevenuesBudget>>(budget.Revenues) ,
+                    
+                    Expenses= _mapper.Map<List<ExpensesOfBudget>,List<ExpensesBudget>>(budget.Expenses)
                    
                 });
             }
@@ -167,17 +218,17 @@ public class BudgetManager:IBudgetManager
             return filteredBudgetDto;
         }
 
-        if (users != null)
+        if (budgets != null)
         {
             IEnumerable<Budget> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(budgets, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(budgets, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -205,8 +256,8 @@ public class BudgetManager:IBudgetManager
                     Tax = budget.Tax,
                     OverallExpense =budget.OverallExpense,
                     OverallRevenue = budget.OverallRevenue,
-                    Revenue = _mapper.Map<List<Revenue>,List<RevenuesBudget>>(budget.Revenues) ,
-                    Expenses= _mapper.Map<List<Expenses>,List<ExpensesBudget>>(budget.Expenses)
+                    Revenues = _mapper.Map<List<Revenue>,List<RevenuesBudget>>(budget.Revenues) ,
+                    Expenses= _mapper.Map<List<ExpensesOfBudget>,List<ExpensesBudget>>(budget.Expenses)
 
                 });
             }
@@ -221,32 +272,32 @@ public class BudgetManager:IBudgetManager
 
         return new FilteredBudgetDto();
     }
-    private IEnumerable<Budget> ApplyFilter(IEnumerable<Budget> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Budget> ApplyFilter(IEnumerable<Budget> budgets, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var budgetValue) => ApplyNumericFilter(users, column, budgetValue, operatorType),
-            _ => users
+            "contains" => budgets.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => budgets.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => budgets.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => budgets.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var budgetValue) => ApplyNumericFilter(budgets, column, budgetValue, operatorType),
+            _ => budgets
         };
     }
 
-    private IEnumerable<Budget> ApplyNumericFilter(IEnumerable<Budget> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Budget> ApplyNumericFilter(IEnumerable<Budget> budgets, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue < value),
-        _ => users
+        "eq" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue == value),
+        "neq" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue != value),
+        "gte" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue >= value),
+        "gt" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue > value),
+        "lte" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue <= value),
+        "lt" => budgets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var budgetValue) && budgetValue < value),
+        _ => budgets
     };
 }
 
@@ -256,14 +307,14 @@ public class BudgetManager:IBudgetManager
         
         if(column!=null)
         {
-            IEnumerable<Budget> user;
-            user = _budgetRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var budget = _mapper.Map<IEnumerable<Budget>, IEnumerable<BudgetDto>>(user);
+            IEnumerable<Budget> budgetDto;
+            budgetDto = _unitOfWork.Budget.GetAllWithDetails().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var budget = _mapper.Map<IEnumerable<Budget>, IEnumerable<BudgetDto>>(budgetDto);
             return Task.FromResult(budget.ToList());
         }
 
-        var  users = _budgetRepo.GlobalSearch(searchKey);
-        var budgets = _mapper.Map<IEnumerable<Budget>, IEnumerable<BudgetDto>>(users);
+        var  budgetsDto = _unitOfWork.Budget.GlobalSearch(searchKey);
+        var budgets = _mapper.Map<IEnumerable<Budget>, IEnumerable<BudgetDto>>(budgetsDto);
         return Task.FromResult(budgets.ToList());
     }
 

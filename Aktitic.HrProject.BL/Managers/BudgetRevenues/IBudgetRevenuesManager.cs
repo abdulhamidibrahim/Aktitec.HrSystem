@@ -12,8 +12,8 @@ public interface IBudgetRevenuesManager
     public Task<int> Delete(int id);
     public BudgetRevenuesReadDto? Get(int id);
     public Task<List<BudgetRevenuesReadDto>> GetAll();
-    public Task<FilteredBudgetRevenuesDto> GetFilteredCategoriesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredBudgetRevenuesDto> GetFilteredRevenuesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
-    public Task<List<BudgetRevenuesDto>> GlobalSearch(string searchKey,string? column);
+    public Task<List<BudgetRevenuesSearchDto>> GlobalSearch(string searchKey,string? column);
   
 }

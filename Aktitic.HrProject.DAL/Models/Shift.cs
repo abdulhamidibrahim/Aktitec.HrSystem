@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Shift
+public partial class Shift : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }

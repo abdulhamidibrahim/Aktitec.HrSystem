@@ -1,6 +1,6 @@
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Payment
+public class Payment : BaseEntity
 {
     public int? Id { get; set; }
     public DateOnly? PaidDate { get; set; }

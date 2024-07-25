@@ -7,7 +7,7 @@ using Aktitic.HrProject.DAL.Pagination.Employee;
 namespace Aktitic.HrProject.DAL.Models;
 
 // [Table("Employee")]
-public partial class Employee 
+public partial class Employee : BaseEntity
     // : ApplicationUser
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

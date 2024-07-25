@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Scheduling
+public class Scheduling : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }

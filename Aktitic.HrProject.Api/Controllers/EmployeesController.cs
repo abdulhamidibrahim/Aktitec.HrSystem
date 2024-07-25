@@ -16,17 +16,14 @@ namespace Aktitic.HrProject.API.Controllers;
 public class EmployeesController: ControllerBase
 {
     private readonly IEmployeeManager _employeeManager;
-    private readonly IFileRepo _fileRepo;
     private readonly IWebHostEnvironment _webHostEnvironment;
     // private readonly UserManager<Employee> _userManager;
 
     public EmployeesController(
         IEmployeeManager employeeManager, 
-        IFileRepo fileRepo, 
         IWebHostEnvironment webHostEnvironment)
     {
         _employeeManager = employeeManager;
-        _fileRepo = fileRepo;
         _webHostEnvironment = webHostEnvironment;
         // _userManager = userManager;
     }
@@ -40,11 +37,11 @@ public class EmployeesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<Task<EmployeeReadDto?>> Get(int id)
     {
-        var user = _employeeManager.Get(id);
-        if (user == null) return Task.FromResult<EmployeeReadDto?>(null);
+        var result = _employeeManager.Get(id);
+        if (result == null) return Task.FromResult<EmployeeReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
-        user.ImgUrl = hostUrl + user.ImgUrl; 
-        return Ok(user!);
+        result.ImgUrl = hostUrl + result.ImgUrl; 
+        return Ok(result!);
     }
     
     [HttpGet("getEmployees")]

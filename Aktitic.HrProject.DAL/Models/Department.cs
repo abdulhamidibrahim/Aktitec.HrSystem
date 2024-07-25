@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Department
+public partial class Department : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -17,5 +17,6 @@ public partial class Department
 
     public virtual ICollection<Scheduling> Schedulings { get; set; } = new List<Scheduling>();
     
-   
+    public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    
 }

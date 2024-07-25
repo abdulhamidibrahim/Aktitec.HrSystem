@@ -29,7 +29,7 @@ public class TaskBoardController: ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult<Task> Add([FromForm] TaskBoardAddDto taskBoardAddDto)
+    public ActionResult<Task> Add( TaskBoardAddDto taskBoardAddDto)
     {
         var result =_taskBoardManager.Add(taskBoardAddDto);
         if (result.Result == 0) return BadRequest("Failed to add");
@@ -37,7 +37,7 @@ public class TaskBoardController: ControllerBase
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] TaskBoardUpdateDto taskBoardUpdateDto,int id)
+    public ActionResult Update( TaskBoardUpdateDto taskBoardUpdateDto,int id)
     {
         var result =_taskBoardManager.Update(taskBoardUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
@@ -50,6 +50,15 @@ public class TaskBoardController: ControllerBase
         var result =_taskBoardManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully");
+    }
+    
+    //get by project id 
+    [HttpGet("getByProjectId/{id}")]
+    public async Task<List<TaskBoardReadDto>> GetByProjectId(int id)
+    {
+        var task = await _taskBoardManager.GetAllByProjectId(id);
+        
+        return task;
     }
     
 }

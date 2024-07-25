@@ -5,6 +5,7 @@ namespace Aktitic.HrProject.BL;
 
 public class RevenuesCreateDto
 {
-    public string? RevenueTile { get; set; }
+    public int Id { get; set; }
+    public string? RevenueTitle { get; set; }
     public float? RevenueAmount { get; set; }
 }

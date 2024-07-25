@@ -177,5 +177,32 @@ public class EmployeeRepo : GenericRepo<Employee>, IEmployeeRepo
                 .ToListAsync();
         return new List<Employee>();
     }
+
+    public async Task<List<Employee>> GetEmployeesByIdsAsync(List<int> employeeIds)
+    {
+        return await _context.Employees?.Where(x => employeeIds.Contains(x.Id)).ToListAsync()!;
+    }
+
+    public async Task<List<Employee>> GetEmployeesWithAttendancesAsync()
+    {
+        if (_context.Employees != null)
+            return await _context.Employees
+                                        .Include(x => x.Attendances)
+                                        .Include(x=>x.Department)
+                                        .ToListAsync();
+        
+        return (new List<Employee>());
+    }
+
+
+    public async Task<Employee> GetEmployeeWithAttendancesAsync(int id)
+    {
+        if (_context.Employees != null)
+            return  await _context.Employees
+                .Include(x => x.Attendances)
+                .FirstOrDefaultAsync(x => x.Id == id) ?? new Employee();
+        
+        return (new Employee());
+    }
 }
 

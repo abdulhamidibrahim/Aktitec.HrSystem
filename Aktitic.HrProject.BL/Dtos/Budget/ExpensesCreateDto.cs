@@ -5,8 +5,9 @@ namespace Aktitic.HrProject.BL;
 
 public class ExpensesCreateDto
 {
-    public string? ExpenseTitle { get; set; }
+    public int Id { get; set; }
+    public string? ExpensesTitle { get; set; }
   
-    public float? ExpenseAmount { get; set; }
+    public float? ExpensesAmount { get; set; }
    
 }

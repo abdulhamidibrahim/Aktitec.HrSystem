@@ -1,13 +1,20 @@
 using System.Text;
+using Aktitic.HrProject.Api.Configuration;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.AutoMapper;
+using Aktitic.HrProject.BL.SignalR;
+using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.Configuration;
+using Aktitic.HrProject.DAL.Helpers.Connection_Strings;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.ClientRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.Repos.GoalListRepo;
 using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
+using Aktitic.HrProject.DAL.Repos.TrainingListRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using Aktitic.HrTaskBoard.BL;
@@ -20,6 +27,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using User.Management.Services.Models;
+using User.Management.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +61,7 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
-    // options.CustomSchemaIds(e => e.FullName);
+    options.CustomSchemaIds(e => e.FullName);
     
     options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
@@ -61,8 +70,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<HrSystemDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HrManagementDbConnection"),
-        option => option.CommandTimeout(300));
+    options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(HrManagementDbConnection))
+        // option => option.CommandTimeout(300)
+        );
     // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
@@ -77,6 +87,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
 //     .AddEntityFrameworkStores<HrManagementDbContext>()
 //     .AddDefaultTokenProviders();
 
+var jwtOptions = builder.Configuration.GetSection("JWT").Get<JwtOptions>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -88,9 +100,12 @@ builder.Services.AddAuthentication(options =>
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = builder.Configuration["JWT:issuer"],
-        ValidAudience = builder.Configuration["JWT:audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:secret"]!))
+        ValidateIssuer = true,
+        ValidIssuer = jwtOptions?.Issuer,
+        ValidateAudience = true,
+        ValidAudience = jwtOptions?.Audience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey))
     };
 });
 
@@ -101,7 +116,14 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.User.RequireUniqueEmail = true;
 });
+
+
+var emailConfiguration = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+
+builder.Services.AddSingleton(emailConfiguration);
 
 // builder.Services.AddAuthorization(options =>
 // {
@@ -146,9 +168,14 @@ var mapperConfig = new MapperConfiguration(mc =>
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
+builder.Services.AddScoped<HttpContextAccessor>();
+builder.Services.AddScoped<UserUtility>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<JwtOptions>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 #region resolving dependencies
+builder.Services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
 builder.Services.AddScoped<IAttendanceManager, AttendanceManager>();
 builder.Services.AddScoped<IDepartmentManager, DepartmentManager>();
 builder.Services.AddScoped<IDesignationManager, DesignationManager>();
@@ -177,47 +204,30 @@ builder.Services.AddScoped<IPaymentManager, PaymentManager>();
 builder.Services.AddScoped<ITaxManager, TaxManager>();
 builder.Services.AddScoped<IProvidentFundsManager, ProvidentFundsManager>();
 builder.Services.AddScoped<IBudgetRevenuesManager, BudgetRevenuesManager>();
+builder.Services.AddScoped<IBudgetExpensesManager, BudgetExpensesManager>();
 builder.Services.AddScoped<IBudgetManager, BudgetManager>();
+builder.Services.AddScoped<ICategoryManager, CategoryManager>();
+builder.Services.AddScoped<IPoliciesManager, PoliciesManager>();
+builder.Services.AddScoped<ISalaryManager, SalaryManager>();
+builder.Services.AddScoped<IPayrollOvertimeManager, PayrollOvertimeManager>();
+builder.Services.AddScoped<IPayrollDeductionManager, PayrollDeductionManager>();
+builder.Services.AddScoped<IPayrollAdditionManager, PayrollAdditionManager>();
+builder.Services.AddScoped<ITerminationManager, TerminationManager>();
+builder.Services.AddScoped<IResignationManager, ResignationManager>();
+builder.Services.AddScoped<IPromotionManager, PromotionManager>();
+builder.Services.AddScoped<ITrainerManager, TrainerManager>();
+builder.Services.AddScoped<ITrainingTypeManager, TrainingTypeManager>();
+builder.Services.AddScoped<ITrainingListManager, TrainingListManager>();
+builder.Services.AddScoped<IGoalTypeManager, GoalTypeManager>();
+builder.Services.AddScoped<IGoalListManager, GoalListManager>();
+builder.Services.AddScoped<IPerformanceAppraisalManager, PerformanceAppraisalManager>();
+builder.Services.AddScoped<IPerformanceIndicatorManager, PerformanceIndicatorManager>();
+builder.Services.AddScoped<IEventManager, EventManager>();
+builder.Services.AddScoped<IContactsManager, ContactsManager>();
+builder.Services.AddScoped<IContractsManager, ContractsManager>();
 
 #endregion
 
-#region resolving repositories
-
-builder.Services.AddScoped<IAttendanceRepo, AttendanceRepo>();
-builder.Services.AddScoped<IDepartmentRepo, DepartmentRepo>();
-builder.Services.AddScoped<IDesignationRepo, DesignationRepo>();
-builder.Services.AddScoped<IEmployeeRepo, EmployeeRepo>();
-builder.Services.AddScoped<IFileRepo, FileRepo>();
-builder.Services.AddScoped<IHolidayRepo, HolidayRepo>();
-builder.Services.AddScoped<ILeavesRepo, LeavesRepo>();
-builder.Services.AddScoped<ILeaveSettingRepo, LeaveSettingRepo>();
-builder.Services.AddScoped<IOvertimeRepo, OvertimeRepo>();
-builder.Services.AddScoped<ISchedulingRepo, SchedulingRepo>();
-builder.Services.AddScoped<IShiftRepo, ShiftRepo>();
-builder.Services.AddScoped<ITimesheetRepo, TimesheetRepo>();
-builder.Services.AddScoped<INotesRepo, NotesRepo>();
-builder.Services.AddScoped<IClientRepo, ClientRepo>();
-builder.Services.AddScoped<ICustomPolicyRepo, CustomPolicyRepo>();
-builder.Services.AddScoped<IProjectRepo, ProjectRepo>();
-builder.Services.AddScoped<IPermissionsRepo, PermissionsRepo>();
-builder.Services.AddScoped<ITaskRepo, TaskRepo>();
-builder.Services.AddScoped<ITaskBoardRepo, TaskBoardRepo>();
-builder.Services.AddScoped<ITaskListRepo, TaskListRepo>();
-builder.Services.AddScoped<ITicketRepo, TicketRepo>();
-builder.Services.AddScoped<IEmployeeProjectsRepo, EmployeeProjectsRepo>();
-builder.Services.AddScoped<IMessageRepo, MessageRepo>();
-builder.Services.AddScoped<IEstimateRepo, EstimateRepo>();
-builder.Services.AddScoped<IInvoiceRepo, InvoiceRepo>();
-builder.Services.AddScoped<IExpensesRepo, ExpensesRepo>();
-builder.Services.AddScoped<IItemRepo, ItemRepo>();
-builder.Services.AddScoped<IPaymentRepo, PaymentRepo>();
-builder.Services.AddScoped<ITaxRepo, TaxRepo>();
-builder.Services.AddScoped<IProvidentFundsRepo, ProvidentFundsRepo>();
-builder.Services.AddScoped<ITicketFollowersRepo, TicketFollowersRepo>();
-builder.Services.AddScoped<IBudgetRevenuesRepo, BudgetRevenuesRepo>();
-builder.Services.AddScoped<IBudgetRepo, BudgetRepo>();
-
-#endregion
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -226,10 +236,14 @@ builder.Services.Configure<FormOptions>(options =>
     options.MemoryBufferThreshold = int.MaxValue;
 });
 
+// builder.Services.AddMigrate();
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -249,5 +263,7 @@ app.UseAuthorization();
 app.UseCors("AllowAngularOrigins");
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chat");
 
 app.Run();

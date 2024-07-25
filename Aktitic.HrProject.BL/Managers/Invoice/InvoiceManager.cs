@@ -1,6 +1,7 @@
 
 using System.Collections;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
@@ -14,17 +15,13 @@ namespace Aktitic.HrTaskList.BL;
 
 public class InvoiceManager:IInvoiceManager
 {
-    private readonly IInvoiceRepo _invoiceRepo;
-    private readonly IItemRepo _itemRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public InvoiceManager(IInvoiceRepo invoiceRepo, IUnitOfWork unitOfWork, IMapper mapper, IItemRepo itemRepo)
+    public InvoiceManager(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _invoiceRepo = invoiceRepo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _itemRepo = itemRepo;
     }
     
     public Task<int> Add(InvoiceAddDto invoiceAddDto)
@@ -47,21 +44,21 @@ public class InvoiceManager:IInvoiceManager
                 (invoiceAddDto.Items ?? Array.Empty<ItemDto>()),
             ClientId = invoiceAddDto.ClientId,
             ProjectId = invoiceAddDto.ProjectId,
-            
+            CreatedAt = DateTime.Now,
         }; 
-        _invoiceRepo.Add(invoice);
+        _unitOfWork.Invoice.Add(invoice);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(InvoiceUpdateDto invoiceUpdateDto, int id)
     {
-        var invoice = _invoiceRepo.GetInvoiceWithItems(id);
+        var invoice = _unitOfWork.Invoice.GetInvoiceWithItems(id).Result;
         if(invoiceUpdateDto.Items != null)
         {
-            var items = _itemRepo.GetItemsByInvoiceId(id);
+            var items = _unitOfWork.Item.GetItemsByInvoiceId(id);
             foreach (var item in items)
             {
-                _itemRepo.Delete(item);
+                _unitOfWork.Item.Delete(item);
             }
 
             if (invoice != null)
@@ -84,22 +81,27 @@ public class InvoiceManager:IInvoiceManager
         if(invoiceUpdateDto.GrandTotal != null) invoice.GrandTotal = invoiceUpdateDto.GrandTotal;
         if(invoiceUpdateDto.ClientId != null) invoice.ClientId = invoiceUpdateDto.ClientId;
         if(invoiceUpdateDto.ProjectId != null) invoice.ProjectId = invoiceUpdateDto.ProjectId;
-        
-        _invoiceRepo.Update(invoice);
+
+        invoice.UpdatedAt = DateTime.Now;
+        _unitOfWork.Invoice.Update(invoice);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _invoiceRepo.Delete(id);
+        var invoice = _unitOfWork.Invoice.GetById(id);
+        if (invoice==null) return Task.FromResult(0);
+        invoice.IsDeleted = true;
+        invoice.DeletedAt = DateTime.Now;
+        _unitOfWork.Invoice.Update(invoice);
         return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<InvoiceReadDto>? Get(int id)
+    public InvoiceReadDto? Get(int id)
     {
-        var invoice = _invoiceRepo.GetInvoiceWithItems(id);
-        if (invoice == null) return null;
-        return Task.FromResult(new InvoiceReadDto()
+        var invoice = _unitOfWork.Invoice.GetInvoiceWithItems(id).Result;
+        if (invoice == null) return new InvoiceReadDto();
+        return new InvoiceReadDto()
         {
             Id = invoice.Id,
             Email = invoice.Email,
@@ -117,12 +119,14 @@ public class InvoiceManager:IInvoiceManager
             Items = _mapper.Map<IEnumerable<Item>,IEnumerable<ItemDto>>(invoice.Items),
             ClientId = invoice.ClientId,
             ProjectId = invoice.ProjectId,
-        });
+            Client = _mapper.Map<Client,ClientDto>(invoice.Client),
+            Project = _mapper.Map<Project,ProjectDto>(invoice.Project),
+        };
     }
 
     public Task<List<InvoiceReadDto>> GetAll()
     {
-        var invoice = _invoiceRepo.GetAllInvoiceWithItems();
+        var invoice = _unitOfWork.Invoice.GetAllInvoiceWithItems();
         return Task.FromResult(invoice.Result.Select(i => new InvoiceReadDto()
         {
             Id = i.Id,
@@ -147,25 +151,26 @@ public class InvoiceManager:IInvoiceManager
     
      public async Task<FilteredInvoiceDto> GetFilteredInvoicesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _invoiceRepo.GetAllInvoiceWithItems();
+        var invoices = await _unitOfWork.Invoice.GetAllInvoiceWithItems();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = invoices.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var invoiceList = invoices.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = invoiceList.Skip((page - 1) * pageSize).Take(pageSize);
     
             var mappedInvoices = new List<InvoiceDto>();
             foreach (var invoice in paginatedResults)
             {
                 mappedInvoices.Add(new InvoiceDto()
                 {
+                    Id = invoice.Id,
                     Email = invoice.Email,
                     ClientAddress = invoice.ClientAddress,
                     BillingAddress = invoice.BillingAddress,
@@ -179,8 +184,8 @@ public class InvoiceManager:IInvoiceManager
                     Tax = invoice.Tax,
                     GrandTotal = invoice.GrandTotal,
                     Items = _mapper.Map<IEnumerable<Item>,IEnumerable<ItemDto>>(invoice.Items),
-                    ClientId = invoice.ClientId,
-                    ProjectId = invoice.ProjectId,
+                    ClientId = invoice.Client?.FullName,
+                    ProjectId = invoice.Project?.Name,
                 });
             }
             FilteredInvoiceDto filteredInvoiceDto = new()
@@ -192,17 +197,17 @@ public class InvoiceManager:IInvoiceManager
             return filteredInvoiceDto;
         }
 
-        if (users != null)
+        if (invoices != null)
         {
             IEnumerable<Invoice> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(invoices, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(invoices, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -220,6 +225,7 @@ public class InvoiceManager:IInvoiceManager
                 
                 mappedInvoices.Add(new InvoiceDto()
                 {
+                    Id = invoice.Id,
                     Email = invoice.Email,
                     ClientAddress = invoice.ClientAddress,
                     BillingAddress = invoice.BillingAddress,
@@ -233,8 +239,8 @@ public class InvoiceManager:IInvoiceManager
                     Tax = invoice.Tax,
                     GrandTotal = invoice.GrandTotal,
                     Items = _mapper.Map<IEnumerable<Item>,IEnumerable<ItemDto>>(invoice.Items),
-                    ClientId = invoice.ClientId,
-                    ProjectId = invoice.ProjectId,
+                    ClientId = invoice.Client?.FullName,
+                    ProjectId = invoice.Project?.Name,
                 });
             }
             FilteredInvoiceDto filteredInvoiceDto = new()
@@ -248,32 +254,32 @@ public class InvoiceManager:IInvoiceManager
 
         return new FilteredInvoiceDto();
     }
-    private IEnumerable<Invoice> ApplyFilter(IEnumerable<Invoice> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Invoice> ApplyFilter(IEnumerable<Invoice> invoices, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var invoiceValue) => ApplyNumericFilter(users, column, invoiceValue, operatorType),
-            _ => users
+            "contains" => invoices.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => invoices.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => invoices.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => invoices.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var invoiceValue) => ApplyNumericFilter(invoices, column, invoiceValue, operatorType),
+            _ => invoices
         };
     }
 
-    private IEnumerable<Invoice> ApplyNumericFilter(IEnumerable<Invoice> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Invoice> ApplyNumericFilter(IEnumerable<Invoice> invoices, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue < value),
-        _ => users
+        "eq" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue == value),
+        "neq" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue != value),
+        "gte" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue >= value),
+        "gt" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue > value),
+        "lte" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue <= value),
+        "lt" => invoices.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var invoiceValue) && invoiceValue < value),
+        _ => invoices
     };
 }
 
@@ -283,14 +289,14 @@ public class InvoiceManager:IInvoiceManager
         
         if(column!=null)
         {
-            IEnumerable<Invoice> user;
-            user = _invoiceRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var invoice = _mapper.Map<IEnumerable<Invoice>, IEnumerable<InvoiceDto>>(user);
+            IEnumerable<Invoice> invoiceDto;
+            invoiceDto = _unitOfWork.Invoice.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var invoice = _mapper.Map<IEnumerable<Invoice>, IEnumerable<InvoiceDto>>(invoiceDto);
             return Task.FromResult(invoice.ToList());
         }
 
-        var  users = _invoiceRepo.GlobalSearch(searchKey);
-        var invoices = _mapper.Map<IEnumerable<Invoice>, IEnumerable<InvoiceDto>>(users);
+        var  invoicesDto = _unitOfWork.Invoice.GlobalSearch(searchKey);
+        var invoices = _mapper.Map<IEnumerable<Invoice>, IEnumerable<InvoiceDto>>(invoicesDto);
         return Task.FromResult(invoices.ToList());
     }
 

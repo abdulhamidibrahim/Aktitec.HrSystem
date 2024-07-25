@@ -9,7 +9,7 @@ public class TaskAddDto
     
     public string? Description { get; set; }=string.Empty;
     
-    public DateOnly Date { get; set; }
+    // public DateOnly Date { get; set; }
     
     public string? Priority { get; set; }=string.Empty;
 

@@ -20,6 +20,8 @@ public class InvoiceRepo :GenericRepo<Invoice>,IInvoiceRepo
             var query = 
                 _context.Invoices
                 .Include(x=>x.Items)
+                .Include(x=>x.Client)
+                .Include(x=>x.Project)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -53,11 +55,13 @@ public class InvoiceRepo :GenericRepo<Invoice>,IInvoiceRepo
         return _context.Invoices!.AsQueryable();
     }
 
-    public Invoice GetInvoiceWithItems(int id)
+    public Task<Invoice> GetInvoiceWithItems(int id)
     {
         return _context.Invoices!
             .Include(x => x.Items)
-            .FirstOrDefault(x => x.Id == id);
+            .Include(x => x.Client)
+            .Include(x => x.Project)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public Task<List<Invoice>> GetAllInvoiceWithItems()
@@ -65,6 +69,8 @@ public class InvoiceRepo :GenericRepo<Invoice>,IInvoiceRepo
         return
             _context.Invoices!
                 .Include(x => x.Items)
+                .Include(x => x.Client)
+                .Include(x => x.Project)
                 .ToListAsync();
     }
 }

@@ -27,13 +27,13 @@ public class TaskListController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<Task<TaskListReadDto?>> Get(int id)
     {
-        var user = _taskManager.Get(id);
-        if (user == null) return NotFound("TaskList not found");
-        return Ok(user);
+        var result = _taskManager.Get(id);
+        if (result == null) return NotFound("TaskList not found");
+        return Ok(result);
     }
     
     [HttpPost("create")]
-    public ActionResult<Task> Add([FromForm] TaskListAddDto taskAddDto)
+    public ActionResult<Task> Add( TaskListAddDto taskAddDto)
     {
         var result=_taskManager.Add(taskAddDto);
         if (result.Result == 0) return BadRequest("Failed to create");
@@ -41,7 +41,7 @@ public class TaskListController: ControllerBase
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] TaskListUpdateDto taskUpdateDto,int id)
+    public ActionResult Update(TaskListUpdateDto taskUpdateDto,int id)
     {
         var result =_taskManager.Update(taskUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
@@ -55,5 +55,10 @@ public class TaskListController: ControllerBase
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully");
     }
-    
+    // get by taskBoardId
+    [HttpGet("getByTaskBoardId/{id}")]
+    public Task<List<TaskListReadDto>> GetByTaskBoardId(int id)
+    {
+        return _taskManager.GetAllByTaskBoardId(id);
+    }
 }

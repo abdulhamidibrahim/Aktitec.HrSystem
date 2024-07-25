@@ -13,14 +13,10 @@ namespace Aktitic.HrProject.BL;
 
 public class CustomPolicyManager:ICustomPolicyManager
 {
-    private readonly ICustomPolicyRepo _customPolicyRepo;
-    private readonly IEmployeeRepo _employeeRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public CustomPolicyManager(ICustomPolicyRepo customPolicyRepo, IEmployeeRepo employeeRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public CustomPolicyManager( IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _customPolicyRepo = customPolicyRepo;
-        _employeeRepo = employeeRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -32,37 +28,43 @@ public class CustomPolicyManager:ICustomPolicyManager
             Name = customPolicyAddDto.Name,
             EmployeeId = customPolicyAddDto.EmployeeId,
             Days = customPolicyAddDto.Days,
-            Type = customPolicyAddDto.Type
+            Type = customPolicyAddDto.Type,
+            CreatedAt = DateTime.Now,
         };
-        _customPolicyRepo.Add(customPolicy);
+        _unitOfWork.CustomPolicy.Add(customPolicy);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(CustomPolicyUpdateDto customPolicyUpdateDto,int id)
     {
-        var customPolicy = _customPolicyRepo.GetById(id);
+        var customPolicy = _unitOfWork.CustomPolicy.GetById(id);
         
         if (customPolicy == null) return Task.FromResult(0);
         if(customPolicyUpdateDto.EmployeeId != null) customPolicy.EmployeeId = customPolicyUpdateDto.EmployeeId;
         if(customPolicyUpdateDto.Days != null) customPolicy.Days = customPolicyUpdateDto.Days;
         if(customPolicyUpdateDto.Name != null) customPolicy.Name = customPolicyUpdateDto.Name;
         if(customPolicyUpdateDto.Type != null) customPolicy.Type = customPolicyUpdateDto.Type;
-       
-         _customPolicyRepo.Update(customPolicy);
+
+        customPolicy.UpdatedAt = DateTime.Now;
+         _unitOfWork.CustomPolicy.Update(customPolicy);
          return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _customPolicyRepo.Delete(id);
+        var customPolicy = _unitOfWork.CustomPolicy.GetById(id);
+        if (customPolicy == null) return Task.FromResult(0);
+        customPolicy.IsDeleted = true;
+        customPolicy.DeletedAt = DateTime.Now;
+        _unitOfWork.CustomPolicy.Update(customPolicy);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public  CustomPolicyReadDto Get(int id)
     {
-        var customPolicy =  _customPolicyRepo.GetWithEmployee(id);
+        var customPolicy =  _unitOfWork.CustomPolicy.GetWithEmployee(id);
         if (customPolicy == null) return new CustomPolicyReadDto();
-        var employee =  _employeeRepo.GetById(customPolicy.EmployeeId);
+        var employee =  _unitOfWork.Employee.GetById(customPolicy.EmployeeId);
         var employeeMapped = _mapper.Map<Employee,EmployeeDto>(employee!);
         return new CustomPolicyReadDto()
         {
@@ -77,7 +79,7 @@ public class CustomPolicyManager:ICustomPolicyManager
 
     public List<CustomPolicyReadDto>? GetByType(string type)
     {
-        var customPolicys = _customPolicyRepo.GetByType(type);
+        var customPolicys = _unitOfWork.CustomPolicy.GetByType(type);
         if (customPolicys != null)
         {
             return customPolicys.Select(customPolicy => new CustomPolicyReadDto()
@@ -87,7 +89,7 @@ public class CustomPolicyManager:ICustomPolicyManager
                 EmployeeId = customPolicy.EmployeeId,
                 Days = customPolicy.Days,
                 Type = customPolicy.Type,
-                Employee = _employeeRepo.GetById(customPolicy.EmployeeId)?.FullName,
+                Employee = _unitOfWork.Employee.GetById(customPolicy.EmployeeId)?.FullName,
             }).ToList();
         }
         return null;
@@ -95,7 +97,7 @@ public class CustomPolicyManager:ICustomPolicyManager
 
     public async Task<List<CustomPolicyReadDto>> GetAll()
     {
-        var customPolicys =await  _customPolicyRepo.GetAllWithEmployee();
+        var customPolicys =await  _unitOfWork.CustomPolicy.GetAllWithEmployee();
         return customPolicys.Select(customPolicy => new CustomPolicyReadDto()
         {
             Id = customPolicy.Id,

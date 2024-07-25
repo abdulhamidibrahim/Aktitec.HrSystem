@@ -1,8 +1,10 @@
+using System.Collections;
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Mvc;
+using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.API.Controllers;
 
@@ -26,9 +28,9 @@ public class AttendancesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<AttendanceReadDto?> Get(int id)
     {
-        var user = _attendanceManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var result = _attendanceManager.Get(id);
+        if (result == null) return NotFound();
+        return result;
     }
     
     [HttpPost("create")]
@@ -68,11 +70,24 @@ public class AttendancesController: ControllerBase
         return await _attendanceManager.GlobalSearch(search,column);
     }
 
-
-    [HttpGet("getAllAttendances")]
-    public async Task<List<EmployeeAttendanceDto>> GetAllAttendancesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+    [HttpGet("getEmployeeAttendance")]
+    public async Task<PaginatedAttendanceDto> GetAttendancesByEmployeeIdAsync(int id, int page, int pageSize)
     {
-        return  await _attendanceManager.GetAllEmployeeAttendanceInCurrentMonth(column,  value1,  operator1,  value2,  operator2, page,pageSize);
+        return await _attendanceManager.GetEmployeeAttendance(id,page,pageSize);
     }
+
+    [HttpGet("getTodayEmployeeAttendance")]
+    public async Task<TodayFilteredAttendanceDto> GetTodayEmployeeAttendance(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    {
+        return await _attendanceManager.GetTodayFilteredAttendancesAsync(column, value1, operator1, value2, operator2,
+            page, pageSize);
+    }
+
+    //
+    // [HttpGet("getAllAttendances")]
+    // public async Task<List<Dictionary<string,object>>> GetAllAttendancesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+    // {
+    //     return  await _attendanceManager.ge(column,  value1,  operator1,  value2,  operator2 ,page,pageSize);
+    // }
 
 }

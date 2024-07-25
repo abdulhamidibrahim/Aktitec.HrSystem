@@ -11,7 +11,7 @@ public interface IEstimateManager
     public Task<int> Delete(int id);
     public Task<EstimateReadDto>? Get(int id);
     public Task<List<EstimateReadDto>> GetAll();
-    public Task<FilteredEstimateDto> GetFilteredEstimatesAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredEstimateDto> GetFilteredEstimatesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<EstimateDto>> GlobalSearch(string searchKey,string? column);
   

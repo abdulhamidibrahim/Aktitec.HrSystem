@@ -25,13 +25,13 @@ public class LeavesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<LeavesReadDto?> Get(int id)
     {
-        var user = _leaveManager.Get(id);
-        if (user == null) return NotFound("Leave not found.");
-        return user;
+        var result = _leaveManager.Get(id);
+        if (result == null) return NotFound("Leave not found.");
+        return result;
     }
     
     [HttpGet("GlobalSearch")]
-    public async Task<IEnumerable<LeavesDto>> GlobalSearch(string search,string? column)
+    public async Task<IEnumerable<LeavesGetFilteredDto>> GlobalSearch(string search,string? column)
     {
         return await _leaveManager.GlobalSearch(search,column);
     }

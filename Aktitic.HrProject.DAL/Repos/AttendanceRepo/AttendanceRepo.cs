@@ -1,8 +1,12 @@
+using System.Linq.Dynamic.Core;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
+using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.UnitOfWork;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
@@ -10,7 +14,7 @@ namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 public class AttendanceRepo :GenericRepo<Attendance>,IAttendanceRepo
 {
     private readonly HrSystemDbContext _context;
-
+    
     public AttendanceRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
@@ -59,53 +63,33 @@ public class AttendanceRepo :GenericRepo<Attendance>,IAttendanceRepo
     {
         public List<AttendanceDto> Attendance { get; set; }
         public int? EmployeeId { get; set; }
-        public DateOnly Date { get; set; }
-        public bool Attended { get; set; }
+        // public DateOnly Date { get; set; }
+        // public bool Attended { get; set; }
     }
     
-    public List<EmployeeAttendanceDalDto> GetEmployeeAttendanceInCurrentMonth(List<AttendanceDto> attendanceDtoList)
+    public async Task<List<Attendance>> GetEmployeeAttendanceInCurrentMonth(List<AttendanceDto> attendanceDto)
     {
-        // Get the current month and year
         int currentYear = DateTime.Today.Year;
         int currentMonth = DateTime.Today.Month;
 
-        // Define the start and end date of the current month
         DateOnly startDate = new DateOnly(currentYear, currentMonth, 1);
         DateOnly endDate = startDate.AddMonths(1).AddDays(-1);
-
-        // Filter attendance records for the current month
-        var filteredAttendance = attendanceDtoList
-            .Where(attendance => attendance.Date.HasValue &&
-                                 attendance.Date.Value >= startDate &&
-                                 attendance.Date.Value <= endDate)
-            .ToList();
-
-        // Group attendance records by employee ID
-        var groupedByEmployee = filteredAttendance
-            .GroupBy(attendance => attendance.EmployeeId)
-            .ToList();
-
-        // Create a list to hold attendance information for each employee
-        var employeeAttendanceList = new List<EmployeeAttendanceDalDto>();
-
-        foreach (var group in groupedByEmployee)
+        
+        List<int> employeeIds = attendanceDto.Select(a => a.EmployeeId).ToList();
+        
+        // Filter attendance records within the current month
+        if (_context.Attendances != null)
         {
-            var employeeId = group.Key;
-            var attendanceList = group.ToList();
-
-            // Create a new EmployeeAttendanceDalDto for each employee
-            var employeeAttendance = new EmployeeAttendanceDalDto
-            {
-                EmployeeId = employeeId,
-                Date = startDate,
-                Attended = true, // Assuming attendance is recorded for each employee on each date
-                Attendance = attendanceList
-            };
-
-            employeeAttendanceList.Add(employeeAttendance);
+            var filteredAttendance = await _context.Attendances
+                .Include(a=> a.Employee)
+                .Where(attendance => employeeIds.Contains(attendance.EmployeeId)&& 
+                                     attendance.Date.HasValue &&
+                                     attendance.Date.Value >= startDate &&
+                                     attendance.Date.Value <= endDate).ToListAsync();
+            return filteredAttendance;
         }
-
-        return employeeAttendanceList;
+        
+        return new List<Attendance>();
     }
 
     public List<Attendance> GetByEmployeeId(int employeeId)
@@ -113,8 +97,8 @@ public class AttendanceRepo :GenericRepo<Attendance>,IAttendanceRepo
         return _context.Attendances!.Where(x => x.EmployeeId == employeeId).ToList();
     }
 
-    public List<Attendance> GetAttendanceWithEmployee()
+    public async Task<List<Attendance>> GetAttendanceWithEmployee()
     {
-        return _context.Attendances!.Include(x => x.Employee).ToList();
+        return await _context.Attendances!.Include(x => x.Employee).ToListAsync();
     }
 }

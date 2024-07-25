@@ -26,9 +26,9 @@ public class EstimateController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<EstimateReadDto?> Get(int id)
     {
-        var user = _estimateManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _estimateManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

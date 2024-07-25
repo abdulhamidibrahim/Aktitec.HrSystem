@@ -1,5 +1,6 @@
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
+using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 
@@ -16,4 +17,7 @@ public interface IEmployeeRepo :IGenericRepo<Employee>
 
     public Task<List<Employee>> GetEmployeeWithDepartment();
 
+    Task<List<Employee>> GetEmployeesByIdsAsync(List<int> employeeIds);
+    Task<List<Employee>> GetEmployeesWithAttendancesAsync();
+    Task<Employee> GetEmployeeWithAttendancesAsync(int employeeId);
 }

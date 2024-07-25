@@ -1,6 +1,6 @@
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Budget
+public class Budget : BaseEntity
 {
     public int Id { get; set; }
     public string? Title { get; set; }
@@ -13,7 +13,7 @@ public class Budget
     public float? Tax { get; set; }
     public float? BudgetAmount { get; set; }
    
-    public List<Expenses>? Expenses { get; set; }
+    public List<ExpensesOfBudget>? Expenses { get; set; }
    
     public List<Revenue>? Revenues { get; set; }
 }

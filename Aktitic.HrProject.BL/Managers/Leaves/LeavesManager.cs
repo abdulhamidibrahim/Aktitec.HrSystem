@@ -13,13 +13,11 @@ namespace Aktitic.HrProject.BL;
 
 public class LeavesManager:ILeavesManager
 {
-    private readonly ILeavesRepo _leavesRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public LeavesManager(ILeavesRepo leavesRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public LeavesManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _leavesRepo = leavesRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -36,40 +34,47 @@ public class LeavesManager:ILeavesManager
             ApprovedBy = leavesAddDto.ApprovedBy,
             Days = leavesAddDto.Days,
             Approved = leavesAddDto.Approved,
-            Status = leavesAddDto.Status
-            
+            Status = leavesAddDto.Status,
+            CreatedAt = DateTime.Now,
         }; 
-        _leavesRepo.Add(leaves);
+        _unitOfWork.Leaves.Add(leaves);
         return _unitOfWork.SaveChangesAsync();
     }
 
-    public Task<int> Update(LeavesUpdateDto leavesUpdateDto, int id)
+    public async Task<int> Update(LeavesUpdateDto leavesUpdateDto, int id)
     {
-        var leaves = _leavesRepo.GetById(id);
+        var leaves = _unitOfWork.Leaves.GetById(id); // Use async method for fetching data
 
-        if (leaves == null) return Task.FromResult(0);
-        if(leavesUpdateDto.EmployeeId != null) leaves.EmployeeId = leavesUpdateDto.EmployeeId;
-        if(leavesUpdateDto.Type != null) leaves.Type = leavesUpdateDto.Type;
-        if(leavesUpdateDto.FromDate != null) leaves.FromDate = leavesUpdateDto.FromDate;
-        if(leavesUpdateDto.ToDate != null) leaves.ToDate = leavesUpdateDto.ToDate;
-        if(leavesUpdateDto.Reason != null) leaves.Reason = leavesUpdateDto.Reason;
-        if(leavesUpdateDto.ApprovedBy!=null) leaves.ApprovedBy = leavesUpdateDto.ApprovedBy;
-        if(leavesUpdateDto.Days != null) leaves.Days = leavesUpdateDto.Days;
-        if(leavesUpdateDto.Approved != null) leaves.Approved = leavesUpdateDto.Approved;
-        
-        _leavesRepo.Update(leaves);
-        return _unitOfWork.SaveChangesAsync();
+        if (leaves == null) return 0;
+
+        if (leavesUpdateDto.EmployeeId != null) leaves.EmployeeId = leavesUpdateDto.EmployeeId;
+        if (leavesUpdateDto.Type != null) leaves.Type = leavesUpdateDto.Type;
+        if (leavesUpdateDto.FromDate != null) leaves.FromDate = leavesUpdateDto.FromDate;
+        if (leavesUpdateDto.ToDate != null) leaves.ToDate = leavesUpdateDto.ToDate;
+        if (leavesUpdateDto.Reason != null) leaves.Reason = leavesUpdateDto.Reason;
+        if (leavesUpdateDto.ApprovedBy != null) leaves.ApprovedBy = leavesUpdateDto.ApprovedBy;
+        if (leavesUpdateDto.Status != null) leaves.Status = leavesUpdateDto.Status;
+        if (leavesUpdateDto.Days != null) leaves.Days = leavesUpdateDto.Days;
+        if (leavesUpdateDto.Approved != null) leaves.Approved = leavesUpdateDto.Approved;
+
+        leaves.UpdatedAt = DateTime.Now;
+        _unitOfWork.Leaves.Update(leaves);
+        return await _unitOfWork.SaveChangesAsync(); // Use async method for saving changes
     }
 
     public Task<int> Delete(int id)
     {
-        _leavesRepo.GetById(id);
+        var leaves = _unitOfWork.Leaves.GetById(id);
+        if (leaves==null) return Task.FromResult(0);
+        leaves.IsDeleted = true;
+        leaves.DeletedAt = DateTime.Now;
+        _unitOfWork.Leaves.Update(leaves);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public LeavesReadDto? Get(int id)
     {
-        var leaves = _leavesRepo.GetById(id);
+        var leaves = _unitOfWork.Leaves.GetById(id);
         if (leaves == null) return null;
         return new LeavesReadDto()
         {
@@ -88,7 +93,7 @@ public class LeavesManager:ILeavesManager
 
     public List<LeavesReadDto> GetAll()
     {
-        var leaves = _leavesRepo.GetAll();
+        var leaves = _unitOfWork.Leaves.GetAll();
         return leaves.Result.Select(leave => new LeavesReadDto()
         {
             Id = leave.Id,
@@ -105,33 +110,33 @@ public class LeavesManager:ILeavesManager
         }).ToList();
     }
 
-    public async Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1,
+    public Task<FilteredLeavesDto> GetFilteredLeavesAsync(string? column, string? value1, string? operator1,
         string? value2, string? operator2, int page, int pageSize)
     {
-        var users =  _leavesRepo.GetLeavesWithEmployee();
+        var leavesList =  _unitOfWork.Leaves.GetLeavesWithEmployee();
 
-        // Check if users is null
-        if (users == null)
+        // Check if leaves is null
+        if (leavesList == null)
         {
-            return new FilteredLeavesDto();
+            return  Task.FromResult(new FilteredLeavesDto());
         }
 
         // Check if column, value1, and operator1 are all null or empty
-        IEnumerable<Leaves>? paginatedResults;
+        // IEnumerable<Leaves>? paginatedResults;
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = leavesList.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var leaveList = leavesList.ToList();
 
-            paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = leaveList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            List<LeavesDto> leavesDto = new();
+            List<LeavesGetFilteredDto> leavesDto = new();
             foreach (var leaves in paginatedResults)
             {
-                leavesDto.Add(new LeavesDto()
+                leavesDto.Add(new LeavesGetFilteredDto()
                 {
                     Id = leaves.Id,
                     EmployeeId = leaves.EmployeeId,
@@ -141,10 +146,9 @@ public class LeavesManager:ILeavesManager
                     Reason = leaves.Reason,
                     Days = leaves.Days,
                     Approved = leaves.Approved,
-                    ApprovedById = leaves.ApprovedBy,
                     Status = leaves.Status,
                     Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
-                    ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)
+                    ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)?.FullName,
                 });
             }
 
@@ -154,29 +158,29 @@ public class LeavesManager:ILeavesManager
                 TotalCount = count,
                 TotalPages = pages
             };
-            return result;
+            return Task.FromResult(result);
         }
 
         IEnumerable<Leaves> filteredResults;
 
         // Apply the first filter
-        filteredResults = ApplyFilter(users, column, value1, operator1);
+        filteredResults = ApplyFilter(leavesList, column, value1, operator1);
 
         // Apply the second filter only if both value2 and operator2 are provided
         if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
         {
-            filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+            filteredResults = filteredResults.Concat(ApplyFilter(leavesList, column, value2, operator2));
         }
 
         var enumerable = filteredResults.Distinct().ToList(); // Use Distinct to eliminate duplicates
         var totalCount = enumerable.Count();
         var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-        paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
+        var results = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-        List<LeavesDto> leavesDtos = new();
-        foreach (var leaves in paginatedResults)
+        List<LeavesGetFilteredDto> leavesDtos = new();
+        foreach (var leaves in results)
         {
-            leavesDtos.Add(new LeavesDto()
+            leavesDtos.Add(new LeavesGetFilteredDto()
             {
                 Id = leaves.Id,
                 EmployeeId = leaves.EmployeeId,
@@ -189,7 +193,7 @@ public class LeavesManager:ILeavesManager
                 ApprovedById = leaves.ApprovedBy,
                 Status = leaves.Status,
                 Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
-                ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)
+                ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation)?.FullName,
             });
         }
 
@@ -199,53 +203,81 @@ public class LeavesManager:ILeavesManager
             TotalCount = totalCount,
             TotalPages = totalPages
         };
-        return filteredLeaves;
+        return Task.FromResult(filteredLeaves);
     }
 
-    private IEnumerable<Leaves> ApplyFilter(IEnumerable<Leaves> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Leaves> ApplyFilter(IEnumerable<Leaves> leaves, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(users, column, projectValue, operatorType),
-            _ => users
+            "contains" => leaves.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => leaves.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => leaves.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => leaves.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(leaves, column, projectValue, operatorType),
+            _ => leaves
         };
     }
 
-    private IEnumerable<Leaves> ApplyNumericFilter(IEnumerable<Leaves> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Leaves> ApplyNumericFilter(IEnumerable<Leaves> leaves, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
-        _ => users
+        "eq" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
+        "neq" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
+        "gte" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
+        "gt" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
+        "lte" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
+        "lt" => leaves.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
+        _ => leaves
     };
 }
 
 
-    public Task<List<LeavesDto>> GlobalSearch(string searchKey, string? column)
+    public Task<List<LeavesGetFilteredDto>> GlobalSearch(string searchKey, string? column)
     {
         
         if(column!=null)
         {
-            IEnumerable<Leaves> user;
-            user = _leavesRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var project = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(user);
-            return Task.FromResult(project.ToList());
+            IEnumerable<Leaves> leave;
+            leave = _unitOfWork.Leaves.GetLeavesWithEmployee().AsQueryable().Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var mappedLeave = leave.Select(leaves=>new  LeavesGetFilteredDto()
+            {
+                Id = leaves.Id,
+                EmployeeId = leaves.EmployeeId,
+                Type = leaves.Type,
+                FromDate = leaves.FromDate,
+                ToDate = leaves.ToDate,
+                Reason = leaves.Reason,
+                Days = leaves.Days,
+                Approved = leaves.Approved,
+                Status = leaves.Status,
+                Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
+                ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation) != null ? 
+                    _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation).FullName : null,
+            });
+            return Task.FromResult(mappedLeave.ToList());
         }
 
-        var  users = _leavesRepo.GlobalSearch(searchKey);
-        var projects = _mapper.Map<IEnumerable<Leaves>, IEnumerable<LeavesDto>>(users);
-        return Task.FromResult(projects.ToList());
+        var  leaves = _unitOfWork.Leaves.GlobalSearch(searchKey);
+        var mappedLeaves = leaves.Select(leaves => new LeavesGetFilteredDto()
+        {
+            Id = leaves.Id,
+            EmployeeId = leaves.EmployeeId,
+            Type = leaves.Type,
+            FromDate = leaves.FromDate,
+            ToDate = leaves.ToDate,
+            Reason = leaves.Reason,
+            Days = leaves.Days,
+            Approved = leaves.Approved,
+            Status = leaves.Status,
+            Employee = _mapper.Map<Employee, EmployeeDto>(leaves.Employee),
+            ApprovedBy = _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation) != null ? 
+                _mapper.Map<Employee, EmployeeDto>(leaves.ApprovedByNavigation).FullName : null,
+        });
+        return Task.FromResult(mappedLeaves.ToList());
     }
 
 }

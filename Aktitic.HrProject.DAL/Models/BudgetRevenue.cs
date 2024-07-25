@@ -1,6 +1,6 @@
 namespace Aktitic.HrProject.DAL.Models;
 
-public class BudgetRevenue
+public class BudgetRevenue : BaseEntity
 {
     public int Id { get; set; }
     public double? Amount { get; set; }
@@ -12,8 +12,3 @@ public class BudgetRevenue
         
     public virtual Category? Category { get; set; }
 }
-
-// {
-// "categoryName": "Material",
-// "subcategoryName": "Material Expenses"
-// }

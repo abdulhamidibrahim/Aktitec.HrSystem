@@ -12,7 +12,7 @@ public interface IBudgetManager
     public Task<int> Delete(int id);
     public BudgetReadDto? Get(int id);
     public Task<List<BudgetReadDto>> GetAll();
-    public Task<FilteredBudgetDto> GetFilteredBudgetsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredBudgetDto> GetFilteredBudgetsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<BudgetDto>> GlobalSearch(string searchKey,string? column);
   
