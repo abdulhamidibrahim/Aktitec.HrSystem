@@ -27,9 +27,9 @@ public class TaxesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<TaxReadDto?> Get(int id)
     {
-        var user = _taxManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _taxManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

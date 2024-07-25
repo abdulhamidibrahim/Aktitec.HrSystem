@@ -26,9 +26,9 @@ public class TasksController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<Task<TaskReadDto?>> Get(int id)
     {
-        var user = _taskManager.Get(id);
-        if (user == null) return NotFound("Task not found!");
-        return Ok(user);
+        var result = _taskManager.Get(id);
+        if (result == null) return NotFound("Task not found!");
+        return Ok(result);
     }
     
     [HttpPost("create")]

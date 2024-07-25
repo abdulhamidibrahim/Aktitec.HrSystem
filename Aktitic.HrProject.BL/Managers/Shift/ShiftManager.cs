@@ -13,13 +13,11 @@ namespace Aktitic.HrProject.BL;
 
 public class ShiftManager:IShiftManager
 {
-    private readonly IShiftRepo _shiftRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public ShiftManager(IShiftRepo shiftRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public ShiftManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _shiftRepo = shiftRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -44,15 +42,16 @@ public class ShiftManager:IShiftManager
             ApprovedBy = shiftAddDto.ApprovedBy,
             StartTime = shiftAddDto.StartTime,
             EndTime = shiftAddDto.EndTime,
-            Days = shiftAddDto.Days
+            Days = shiftAddDto.Days,
+            CreatedAt = DateTime.Now,
         }; 
-        _shiftRepo.Add(shift);
+        _unitOfWork.Shift.Add(shift);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(ShiftUpdateDto shiftUpdateDto, int id)
     {
-        var shift = _shiftRepo.GetById(id);
+        var shift = _unitOfWork.Shift.GetById(id);
 
         if (shift == null) return Task.FromResult(0);
         if(shiftUpdateDto.Name != null) shift.Name = shiftUpdateDto.Name;
@@ -72,21 +71,25 @@ public class ShiftManager:IShiftManager
         if(shiftUpdateDto.StartTime != null) shift.StartTime = shiftUpdateDto.StartTime;
         if(shiftUpdateDto.EndDate != null) shift.EndTime = shiftUpdateDto.EndTime;
         if(shiftUpdateDto.Days != null) shift.Days = shiftUpdateDto.Days;
-        
-        _shiftRepo.Update(shift);
+
+        shift.UpdatedAt = DateTime.Now;
+        _unitOfWork.Shift.Update(shift);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-
-        _shiftRepo.GetById(id);
+        var shift = _unitOfWork.Shift.GetById(id);
+        if (shift==null) return Task.FromResult(0);
+        shift.IsDeleted = true;
+        shift.DeletedAt = DateTime.Now;
+        _unitOfWork.Shift.Update(shift);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public  ShiftReadDto? Get(int id)
     {
-        var shift =  _shiftRepo.GetById(id);
+        var shift =  _unitOfWork.Shift.GetById(id);
         if (shift == null) return null;
         return new ShiftReadDto()
         {
@@ -113,7 +116,7 @@ public class ShiftManager:IShiftManager
 
     public async Task<List<ShiftReadDto>> GetAll()
     {
-        var shifts = await _shiftRepo.GetAll();
+        var shifts = await _unitOfWork.Shift.GetAll();
         return shifts.Select(shift => new ShiftReadDto()
         {
             Id = shift.Id,
@@ -139,19 +142,19 @@ public class ShiftManager:IShiftManager
     
       public async Task<FilteredShiftsDto> GetFilteredShiftsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _shiftRepo.GetAll();
+        var shifts = await _unitOfWork.Shift.GetAll();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = shifts.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var shiftList = shifts.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = shiftList.Skip((page - 1) * pageSize).Take(pageSize);
 
             var map = _mapper.Map<IEnumerable<Shift>, IEnumerable<ShiftDto>>(paginatedResults);
             FilteredShiftsDto result = new()
@@ -163,17 +166,17 @@ public class ShiftManager:IShiftManager
             return result;
         }
 
-        if (users != null)
+        if (shifts != null)
         {
             IEnumerable<Shift> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(shifts, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(shifts, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -194,32 +197,32 @@ public class ShiftManager:IShiftManager
 
         return new FilteredShiftsDto();
     }
-    private IEnumerable<Shift> ApplyFilter(IEnumerable<Shift> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Shift> ApplyFilter(IEnumerable<Shift> shifts, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var shiftValue) => ApplyNumericFilter(users, column, shiftValue, operatorType),
-            _ => users
+            "contains" => shifts.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => shifts.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => shifts.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => shifts.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var shiftValue) => ApplyNumericFilter(shifts, column, shiftValue, operatorType),
+            _ => shifts
         };
     }
 
-    private IEnumerable<Shift> ApplyNumericFilter(IEnumerable<Shift> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Shift> ApplyNumericFilter(IEnumerable<Shift> shifts, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue < value),
-        _ => users
+        "eq" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue == value),
+        "neq" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue != value),
+        "gte" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue >= value),
+        "gt" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue > value),
+        "lte" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue <= value),
+        "lt" => shifts.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var shiftValue) && shiftValue < value),
+        _ => shifts
     };
 }
 
@@ -229,14 +232,14 @@ public class ShiftManager:IShiftManager
         
         if(column!=null)
         {
-            IEnumerable<Shift> user;
-            user = _shiftRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var shift = _mapper.Map<IEnumerable<Shift>, IEnumerable<ShiftDto>>(user);
+            IEnumerable<Shift> shiftDto;
+            shiftDto = _unitOfWork.Shift.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var shift = _mapper.Map<IEnumerable<Shift>, IEnumerable<ShiftDto>>(shiftDto);
             return Task.FromResult(shift.ToList());
         }
 
-        var  users = _shiftRepo.GlobalSearch(searchKey);
-        var shifts = _mapper.Map<IEnumerable<Shift>, IEnumerable<ShiftDto>>(users);
+        var  shiftDtos = _unitOfWork.Shift.GlobalSearch(searchKey);
+        var shifts = _mapper.Map<IEnumerable<Shift>, IEnumerable<ShiftDto>>(shiftDtos);
         return Task.FromResult(shifts.ToList());
     }
 

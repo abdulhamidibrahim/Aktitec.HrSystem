@@ -12,7 +12,7 @@ public interface ITaxManager
     public Task<int> Delete(int id);
     public TaxReadDto? Get(int id);
     public Task<List<TaxReadDto>> GetAll();
-    public Task<FilteredTaxDto> GetFilteredTaxsAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredTaxDto> GetFilteredTaxsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<TaxDto>> GlobalSearch(string searchKey,string? column);
   

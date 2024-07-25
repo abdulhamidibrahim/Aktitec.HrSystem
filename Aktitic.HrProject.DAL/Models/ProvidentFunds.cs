@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class ProvidentFunds
+public class ProvidentFunds : BaseEntity
 {
     public int? Id { get; set; }
     public string? ProvidentType { get; set; }

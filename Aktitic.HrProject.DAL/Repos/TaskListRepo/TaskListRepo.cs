@@ -14,6 +14,23 @@ public class TaskListRepo :GenericRepo<TaskList>,ITaskListRepo
         _context = context;
     }
 
-   
-   
+
+    public async Task<IEnumerable<TaskList>> GetAllByTaskBoardId(int id)
+    {
+        if (_context.TaskLists != null)
+            return await _context.TaskLists
+                .Include(x => x.Task)
+                .Where(x => x.TaskBoardId == id)
+                .ToListAsync();
+        return new List<TaskList>();
+    }
+
+    public async Task<IEnumerable<TaskList>> GetAllWithTask()
+    {
+        if (_context.TaskLists != null)
+            return await _context.TaskLists
+                .Include(x => x.Task)
+                .ToListAsync();
+        return new List<TaskList>();
+    }
 }

@@ -15,18 +15,12 @@ namespace Aktitic.HrProject.API.Controllers;
 public class ProjectsController: ControllerBase
 {
     private readonly IProjectManager _projectManager;
-    private readonly IFileRepo _fileRepo;
-    private readonly IWebHostEnvironment _webHostEnvironment;
     // private readonly UserManager<Project> _userManager;
 
     public ProjectsController(
-        IProjectManager projectManager, 
-        IFileRepo fileRepo, 
-        IWebHostEnvironment webHostEnvironment)
+        IProjectManager projectManager)
     {
         _projectManager = projectManager;
-        _fileRepo = fileRepo;
-        _webHostEnvironment = webHostEnvironment;
         // _userManager = userManager;
     }
     
@@ -39,9 +33,9 @@ public class ProjectsController: ControllerBase
     [HttpGet("{id}")]
     public Task<ProjectReadDto?> Get(int id)
     {
-        Task<ProjectReadDto?> user = _projectManager.Get(id);
+        Task<ProjectReadDto?> result = _projectManager.Get(id);
 
-        return user;
+        return result;
     }
     
     // [ValidateAntiForgeryToken]
@@ -81,10 +75,17 @@ public class ProjectsController: ControllerBase
     }
     
     [HttpGet("getFilteredProjects")]
-    public Task<FilteredProjectDto> GetFilteredProjectsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    public OkObjectResult GetFilteredProjectsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
-        
-        return _projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        try
+        {
+            var project =  _projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+            return Ok(project);  
+        }
+        catch (Exception e)
+        {
+            return Ok(e.Message);
+        }
     }
     
     

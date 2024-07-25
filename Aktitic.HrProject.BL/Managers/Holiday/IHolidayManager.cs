@@ -11,7 +11,7 @@ public interface IHolidayManager
     public HolidayReadDto? Get(int id);
     public List<HolidayReadDto> GetAll();
     
-    public Task<FilteredHolidayDto> GetFilteredHolidaysAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredHolidayDto> GetFilteredHolidaysAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<HolidayDto>> GlobalSearch(string searchKey,string? column);
 }

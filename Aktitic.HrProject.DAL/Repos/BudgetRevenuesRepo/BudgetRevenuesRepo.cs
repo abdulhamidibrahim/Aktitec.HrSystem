@@ -20,6 +20,7 @@ public class BudgetRevenuesRepo :GenericRepo<BudgetRevenue>,IBudgetRevenuesRepo
         {
             var query = 
                 _context.BudgetsRevenues
+                    .Include(x=>x.Category)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))

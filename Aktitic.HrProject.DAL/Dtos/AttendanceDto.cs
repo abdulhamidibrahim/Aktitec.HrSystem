@@ -19,9 +19,9 @@ public class AttendanceDto
 
     // public int? OvertimeId { get; set; }
 
-    public int? EmployeeId { get; set; }
+    public int EmployeeId { get; set; }
 
-    public  EmployeeDto? Employee { get; set; }
+    public  EmployeeDto Employee { get; set; }
 
     public  string? Overtime { get; set; }
     

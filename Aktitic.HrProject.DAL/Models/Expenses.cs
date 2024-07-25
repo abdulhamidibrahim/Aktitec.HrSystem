@@ -1,7 +1,7 @@
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Expenses
+public class Expenses : BaseEntity
 {
     public int? Id { get; set; }
     public string? ItemName { get; set; }

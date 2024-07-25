@@ -15,31 +15,34 @@ public class NotesRepo :GenericRepo<Notes>,INotesRepo
         _context = context;
     }
 
-    public async Task<List<NoteSender>> GetByReceiver(int receiverId)
+    public async Task<List<Notes>> GetByReceiver(int receiverId)
     {
         if (_context.Notes != null)
         {
             var notes = await _context.Notes
-                .Where(x => x.ReceiverId == receiverId)
+                .Where(x => x.ReceiverId == receiverId).Include(x=>x.Sender)
                 .ToListAsync();
 
-            var noteSenders = notes.Select(note => new NoteSender
-            {
-                Notes = note,
-                Employee = _context.Employees?.FirstOrDefault(e => e.Id == note.SenderId)!
-            }).ToList();
+            // var noteSenders = notes.Select(note => new NoteSender
+            // {
+            //     Notes = note,
+            //     Employee = _context.Employees?.FirstOrDefault(e => e.Id == note.SenderId)!
+            // }).ToList();
 
-            return noteSenders;
+            return notes;
         }
 
         // Handle the case when _context.Notes is null more gracefully
-        return new List<NoteSender>();
+        return new List<Notes>();
     }
 
 
     public Task<List<Notes>> GetBySender(int senderId)
     {
-        if (_context.Notes != null) return _context.Notes.Where(x => x.SenderId == senderId).ToListAsync();
+        if (_context.Notes != null) return _context.Notes
+            .Where(x => x.SenderId == senderId)
+            .Include(x=>x.Receiver)
+            .ToListAsync();
         return Task.FromResult(new List<Notes>());
     }
 

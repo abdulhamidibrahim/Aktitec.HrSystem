@@ -15,18 +15,16 @@ namespace Aktitic.HrProject.API.Controllers;
 public class ClientsController: ControllerBase
 {
     private readonly IClientManager _clientManager;
-    private readonly IFileRepo _fileRepo;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    // private readonly IWebHostEnvironment _webHostEnvironment;
     // private readonly UserManager<Client> _userManager;
 
     public ClientsController(
-        IClientManager clientManager, 
-        IFileRepo fileRepo, 
-        IWebHostEnvironment webHostEnvironment)
+        IClientManager clientManager
+        // IWebHostEnvironment webHostEnvironment
+        )
     {
         _clientManager = clientManager;
-        _fileRepo = fileRepo;
-        _webHostEnvironment = webHostEnvironment;
+        // _webHostEnvironment = webHostEnvironment;
         // _userManager = userManager;
     }
     
@@ -39,11 +37,11 @@ public class ClientsController: ControllerBase
     [HttpGet("{id}")]
     public Task<ClientReadDto?> Get(int id)
     {
-        var user = _clientManager.Get(id);
-        if (user == null) return Task.FromResult<ClientReadDto?>(null);
+        var result = _clientManager.Get(id);
+        if (result == null) return Task.FromResult<ClientReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
-        user.PhotoUrl = hostUrl + user.PhotoUrl; 
-        return Task.FromResult(user)!;
+        result.PhotoUrl = hostUrl + result.PhotoUrl; 
+        return Task.FromResult(result)!;
     }
     
     // [HttpGet("getClients")]
@@ -87,8 +85,10 @@ public class ClientsController: ControllerBase
     public ActionResult Delete(int id)
     {
            var result =  _clientManager.Delete(id);
-           if (result.Result == 0) return BadRequest("Failed to delete"); 
-           return Ok(" deleted successfully!");
+           if (result.Result > (0))
+                return Ok(" deleted successfully!");
+           
+           return BadRequest("Failed to delete");
     }
     
     [HttpGet("GlobalSearch")]

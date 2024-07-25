@@ -27,9 +27,9 @@ public class TimesheetsController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TimesheetReadDto?>> Get(int id)
     {
-        var user = await _timesheetManager.Get(id);
-        if (user == null) return NotFound("TimeSheet not found");
-        return Ok(user);
+        var result = await _timesheetManager.Get(id);
+        if (result == null) return NotFound("TimeSheet not found");
+        return Ok(result);
     }
     
     [HttpPost("create")]

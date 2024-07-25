@@ -18,7 +18,7 @@ public class LeavesRepo :GenericRepo<Leaves>,ILeavesRepo
     {
         if (_context.Leaves != null)
         {
-            var query = _context.Leaves.AsQueryable();
+            var query = _context.Leaves.Include(e=>e.Employee).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {

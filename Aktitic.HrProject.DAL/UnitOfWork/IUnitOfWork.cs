@@ -1,5 +1,9 @@
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
+using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
 using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 
@@ -8,40 +12,64 @@ namespace Aktitic.HrProject.DAL.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
     Task<int> SaveChangesAsync();
-    IGenericRepo<Notes> Notes { get; }
-    IGenericRepo<Attendance> Attendance { get; }
-    IGenericRepo<Department> Department { get; }
-    IGenericRepo<Employee> Employee { get; }
-    IGenericRepo<Client> Client { get; }
-    IGenericRepo<CustomPolicy> CustomPolicy { get; }
-    IGenericRepo<Designation> Designation { get; }
-    IGenericRepo<EmployeeProjects> EmployeeProjects { get; }
-    IGenericRepo<File> File { get; }
-    IGenericRepo<Holiday> Holiday { get; }
-    IGenericRepo<Leaves> Leaves { get; }
-    IGenericRepo<LeaveSettings> LeaveSettings { get; }
-    IGenericRepo<Project> Project { get; }
-    IGenericRepo<Overtime> Overtime { get; }
-    IGenericRepo<Shift> Shift { get; }
-    IGenericRepo<TimeSheet> TimeSheet { get; }
-    IGenericRepo<Permission> Permission { get; }
-    IGenericRepo<Scheduling> Scheduling { get; }
-    IGenericRepo<Task> Task { get; }
+    INotesRepo Notes { get; }
+    IApplicationUserRepo ApplicationUser { get; }
+    IAttendanceRepo Attendance { get; }
+    IDepartmentRepo Department { get; }
+    IEmployeeRepo Employee { get; }
+    IClientRepo Client { get; }
+    ICustomPolicyRepo CustomPolicy { get; }
+    IContactsRepo Contacts { get; }
+    IContractsRepo Contracts { get; }
+    IDesignationRepo Designation { get; }
+    IEmployeeProjectsRepo EmployeeProjects { get; }
+    IFileRepo File { get; }
+    IHolidayRepo Holiday { get; }
+    ILeavesRepo Leaves { get; }
+    ILeaveSettingRepo LeaveSettings { get; }
+    IProjectRepo Project { get; }
+    IOvertimeRepo Overtime { get; }
+    IShiftRepo Shift { get; }
+    ITimesheetRepo TimeSheet { get; }
+    IPermissionsRepo Permission { get; }
+    ISchedulingRepo Scheduling { get; }
+    ITaskRepo Task { get; }
     
-    IGenericRepo<TaskBoard> TaskBoard { get; }
-    IGenericRepo<TaskList> TaskList { get; }
-    IGenericRepo<Ticket> Ticket { get; }
-    IGenericRepo<TicketFollowers> TicketFollowers { get; }
-    IGenericRepo<Estimate> Estimate { get; }
-    IGenericRepo<Item> Item { get; }
-    IGenericRepo<Message> Message { get; }
-    IGenericRepo<Expenses> Expenses { get; }
-    IGenericRepo<Payment> Payment { get; }
-    IGenericRepo<Tax> Tax { get; }
-    IGenericRepo<ProvidentFunds> ProvidentFunds { get; }
-    IGenericRepo<Category> Category { get; }
-    IGenericRepo<BudgetRevenue> BudgetsRevenue { get; }
-    IGenericRepo<Budget> Budget { get; }
+    ITaskBoardRepo TaskBoard { get; }
+    ITaskListRepo TaskList { get; }
+    ITicketRepo Ticket { get; }
+    ITicketFollowersRepo TicketFollowers { get; }
+    IEstimateRepo Estimate { get; }
+    IItemRepo Item { get; }
+    IMessageRepo Message { get; }
+    IExpensesRepo Expenses { get; }
+    IPaymentRepo Payment { get; }
+    ITaxRepo Tax { get; }
+    IProvidentFundsRepo ProvidentFunds { get; }
+    ICategoryRepo Category { get; }
+    IBudgetRevenuesRepo BudgetsRevenue { get; }
+    IBudgetRepo Budget { get; }
+    IBudgetExpensesRepo BudgetExpenses { get; }
+    IExpensesOfBudgetRepo ExpensesOfBudget { get; }
+    ISalaryRepo Salary { get; }
+    IPolicyRepo Policies { get; }
+    IPayrollOvertimeRepo PayrollOvertime { get; }
+    IPayrollDeductionRepo PayrollDeduction { get; }
+    IPayrollAdditionRepo PayrollAddition { get; }
+    ITerminationRepo Termination { get; }
+    IResignationRepo Resignation { get; }
+    IRevenuesRepo Revenues { get; }
+    IPromotionRepo Promotion { get; }
+    ITrainerRepo Trainer { get; }
+    ITrainingTypeRepo TrainingType { get; }
+    ITrainingListRepo TrainingList { get; }
+    IGoalTypeRepo GoalType { get; }
+    IGoalListRepo GoalList { get; }
+    IInvoiceRepo Invoice { get; }
+    IEventsRepo Events { get; }
+    IPerformanceAppraisalRepo PerformanceAppraisal { get; }
+    IPerformanceIndicatorRepo PerformanceIndicator { get; }
+    
     
     
 }

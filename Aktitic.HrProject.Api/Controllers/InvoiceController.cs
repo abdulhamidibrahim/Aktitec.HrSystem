@@ -26,9 +26,9 @@ public class InvoiceController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<InvoiceReadDto?> Get(int id)
     {
-        var user = _invoiceManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _invoiceManager.Get(id);
+        // if (result == null) return BadRequest("No invoice found");
+        return Ok(result);
     }
     
     [HttpPost("create")]

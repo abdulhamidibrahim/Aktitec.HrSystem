@@ -26,9 +26,9 @@ public class ShiftsController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ShiftReadDto?> Get(int id)
     {
-        var user = _shiftManager.Get(id);
-        if (user == null) return NotFound("Shift not found");
-        return Ok(user);
+        var result = _shiftManager.Get(id);
+        if (result == null) return NotFound("Shift not found");
+        return Ok(result);
     }
     
     [HttpPost("create")]

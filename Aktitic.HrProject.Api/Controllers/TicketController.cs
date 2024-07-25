@@ -25,9 +25,9 @@ public class TicketController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<TicketReadDto?> Get(int id)
     {
-        var user = _ticketManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _ticketManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

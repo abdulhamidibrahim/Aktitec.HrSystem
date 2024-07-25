@@ -14,17 +14,13 @@ namespace Aktitic.HrTaskList.BL;
 
 public class ExpensesManager:IExpensesManager
 {
-    private readonly IExpensesRepo _expensesRepo;
-    private readonly IItemRepo _itemRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ExpensesManager(IExpensesRepo expensesRepo, IUnitOfWork unitOfWork, IMapper mapper, IItemRepo itemRepo)
+    public ExpensesManager( IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _expensesRepo = expensesRepo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _itemRepo = itemRepo;
     }
     
     public Task<int> Add(ExpensesAddDto expensesAddDto)
@@ -38,17 +34,17 @@ public class ExpensesManager:IExpensesManager
             Amount = expensesAddDto.Amount,
             PaidBy = expensesAddDto.PaidBy,
             Status = expensesAddDto.Status,
-            Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesAddDto.Attachments)
-            
+            Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesAddDto.Attachments),
+            CreatedAt = DateTime.Now,
             
         }; 
-        _expensesRepo.Add(expenses);
+        _unitOfWork.Expenses.Add(expenses);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(ExpensesUpdateDto expensesUpdateDto, int id)
     {
-        var expenses = _expensesRepo.GetById(id);
+        var expenses = _unitOfWork.Expenses.GetById(id);
         
         
         if (expenses == null) return Task.FromResult(0);
@@ -61,20 +57,25 @@ public class ExpensesManager:IExpensesManager
         if(expensesUpdateDto.PaidBy!=null) expenses.PaidBy = expensesUpdateDto.PaidBy;
         if(expensesUpdateDto.Status!=null) expenses.Status = expensesUpdateDto.Status;
         if(expensesUpdateDto.Attachments !=null) expenses.Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesUpdateDto.Attachments);
-        
-        _expensesRepo.Update(expenses);
+
+        expenses.UpdatedAt = DateTime.Now;
+        _unitOfWork.Expenses.Update(expenses);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _expensesRepo.Delete(id);
+        var expenses = _unitOfWork.Expenses.GetById(id);
+        if (expenses==null) return Task.FromResult(0);
+        expenses.IsDeleted = true;
+        expenses.DeletedAt = DateTime.Now;
+        _unitOfWork.Expenses.Update(expenses);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<ExpensesReadDto>? Get(int id)
     {
-        var expenses = _expensesRepo.GetEstimateWithEmployee(id);
+        var expenses = _unitOfWork.Expenses.GetExpensesWithEmployee(id);
         if (expenses == null) return null;
         return Task.FromResult(new ExpensesReadDto()
         {
@@ -92,7 +93,7 @@ public class ExpensesManager:IExpensesManager
 
     public Task<List<ExpensesReadDto>> GetAll()
     {
-        var expenses = _expensesRepo.GetAllEstimateWithEmployees();
+        var expenses = _unitOfWork.Expenses.GetAllExpensesWithEmployees();
         return Task.FromResult(expenses.Result.Select(note => new ExpensesReadDto()
         {
             Id = note.Id,
@@ -110,19 +111,19 @@ public class ExpensesManager:IExpensesManager
     
      public async Task<FilteredExpensesDto> GetFilteredExpensesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _expensesRepo.GetAll();
+        var expensesList = await _unitOfWork.Expenses.GetAllExpensesWithEmployees();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = expensesList.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var expenseList = expensesList.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = expenseList.Skip((page - 1) * pageSize).Take(pageSize);
     
             var mappedExpensess = new List<ExpensesDto>();
             foreach (var expenses in paginatedResults)
@@ -137,7 +138,8 @@ public class ExpensesManager:IExpensesManager
                     Amount = expenses.Amount,
                     PaidBy = expenses.PaidBy,
                     Status = expenses.Status,
-                    Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(expenses.Attachments)                });
+                    Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(expenses.Attachments) ,
+                });
             }
             FilteredExpensesDto filteredExpensesDto = new()
             {
@@ -148,17 +150,17 @@ public class ExpensesManager:IExpensesManager
             return filteredExpensesDto;
         }
 
-        if (users != null)
+        if (expensesList != null)
         {
             IEnumerable<Expenses> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(expensesList, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(expensesList, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -199,32 +201,32 @@ public class ExpensesManager:IExpensesManager
 
         return new FilteredExpensesDto();
     }
-    private IEnumerable<Expenses> ApplyFilter(IEnumerable<Expenses> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Expenses> ApplyFilter(IEnumerable<Expenses> expenses, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var expensesValue) => ApplyNumericFilter(users, column, expensesValue, operatorType),
-            _ => users
+            "contains" => expenses.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => expenses.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => expenses.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => expenses.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var expensesValue) => ApplyNumericFilter(expenses, column, expensesValue, operatorType),
+            _ => expenses
         };
     }
 
-    private IEnumerable<Expenses> ApplyNumericFilter(IEnumerable<Expenses> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Expenses> ApplyNumericFilter(IEnumerable<Expenses> expenses, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue < value),
-        _ => users
+        "eq" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue == value),
+        "neq" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue != value),
+        "gte" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue >= value),
+        "gt" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue > value),
+        "lte" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue <= value),
+        "lt" => expenses.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var expensesValue) && expensesValue < value),
+        _ => expenses
     };
 }
 
@@ -234,14 +236,14 @@ public class ExpensesManager:IExpensesManager
         
         if(column!=null)
         {
-            IEnumerable<Expenses> user;
-            user = _expensesRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var expenses = _mapper.Map<IEnumerable<Expenses>, IEnumerable<ExpensesDto>>(user);
+            IEnumerable<Expenses> expense;
+            expense = _unitOfWork.Expenses.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var expenses = _mapper.Map<IEnumerable<Expenses>, IEnumerable<ExpensesDto>>(expense);
             return Task.FromResult(expenses.ToList());
         }
 
-        var  users = _expensesRepo.GlobalSearch(searchKey);
-        var expensess = _mapper.Map<IEnumerable<Expenses>, IEnumerable<ExpensesDto>>(users);
+        var  expenseDtos = _unitOfWork.Expenses.GlobalSearch(searchKey);
+        var expensess = _mapper.Map<IEnumerable<Expenses>, IEnumerable<ExpensesDto>>(expenseDtos);
         return Task.FromResult(expensess.ToList());
     }
 

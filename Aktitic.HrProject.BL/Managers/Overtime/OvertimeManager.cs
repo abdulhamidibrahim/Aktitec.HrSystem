@@ -13,13 +13,11 @@ namespace Aktitic.HrProject.BL;
 
 public class OvertimeManager:IOvertimeManager
 {
-    private readonly IOvertimeRepo _overtimeRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public OvertimeManager(IOvertimeRepo overtimeRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public OvertimeManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _overtimeRepo = overtimeRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -35,15 +33,15 @@ public class OvertimeManager:IOvertimeManager
             Status = overtimeAddDto.Status,
             ApprovedBy = overtimeAddDto.ApprovedBy,
             EmployeeId = overtimeAddDto.EmployeeId,
-            
+            CreatedAt = DateTime.Now,
         };
-          _overtimeRepo.Add(overtime);
+          _unitOfWork.Overtime.Add(overtime);
           return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(OvertimeUpdateDto overtimeUpdateDto, int id)
     {
-        var overtime = _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy(id);
+        var overtime = _unitOfWork.Overtime.GetOvertimesWithEmployeeAndApprovedBy(id);
         
         if (overtime.Result == null) return Task.FromResult(0);
         if(overtimeUpdateDto.OtHours != null) overtime.Result.OtHours = overtimeUpdateDto.OtHours;
@@ -54,20 +52,25 @@ public class OvertimeManager:IOvertimeManager
         if(overtimeUpdateDto.ApprovedBy != null) overtime.Result.ApprovedBy = overtimeUpdateDto.ApprovedBy;
         if(overtimeUpdateDto.EmployeeId != null) overtime.Result.EmployeeId = overtimeUpdateDto.EmployeeId;
 
-         _overtimeRepo.Update(overtime.Result);
+        overtime.Result.UpdatedAt = DateTime.Now;
+         _unitOfWork.Overtime.Update(overtime.Result);
          return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _overtimeRepo.Delete(id);
+        var overtime = _unitOfWork.Overtime.GetById(id);
+        if (overtime==null) return Task.FromResult(0);
+        overtime.IsDeleted = true;
+        overtime.DeletedAt = DateTime.Now;
+        _unitOfWork.Overtime.Update(overtime);
         return _unitOfWork.SaveChangesAsync();
     }
 
 
     public async Task<OvertimeReadDto>? Get(int id)
     {
-        var overtime = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy(id);
+        var overtime = await _unitOfWork.Overtime.GetOvertimesWithEmployeeAndApprovedBy(id);
         if (overtime == null) return null;
         return new OvertimeReadDto()
         {
@@ -84,7 +87,7 @@ public class OvertimeManager:IOvertimeManager
 
     public async Task<List<OvertimeReadDto>> GetAll()
     {
-        var overtimes = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy();
+        var overtimes = await _unitOfWork.Overtime.GetOvertimesWithEmployeeAndApprovedBy();
         return overtimes.Select(overtime => new OvertimeReadDto()
         {
             Id = overtime.Id,
@@ -101,19 +104,19 @@ public class OvertimeManager:IOvertimeManager
     
      public async Task<FilteredOvertimeDto> GetFilteredOvertimesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _overtimeRepo.GetOvertimesWithEmployeeAndApprovedBy();
+        var overtimes = await _unitOfWork.Overtime.GetOvertimesWithEmployeeAndApprovedBy();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = overtimes.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var overtimeList = overtimes.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = overtimeList.Skip((page - 1) * pageSize).Take(pageSize);
 
             List<OvertimeDto> leavesDto = new();
             foreach (var leaves in paginatedResults)
@@ -141,17 +144,17 @@ public class OvertimeManager:IOvertimeManager
             return result;
         }
 
-        if (users != null)
+        if (overtimes != null)
         {
             IEnumerable<Overtime> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(overtimes, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(overtimes, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -186,32 +189,32 @@ public class OvertimeManager:IOvertimeManager
 
         return new FilteredOvertimeDto();
     }
-    private IEnumerable<Overtime> ApplyFilter(IEnumerable<Overtime> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Overtime> ApplyFilter(IEnumerable<Overtime> overtimes, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(users, column, projectValue, operatorType),
-            _ => users
+            "contains" => overtimes.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => overtimes.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => overtimes.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => overtimes.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var projectValue) => ApplyNumericFilter(overtimes, column, projectValue, operatorType),
+            _ => overtimes
         };
     }
 
-    private IEnumerable<Overtime> ApplyNumericFilter(IEnumerable<Overtime> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Overtime> ApplyNumericFilter(IEnumerable<Overtime> overtimes, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
-        _ => users
+        "eq" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue == value),
+        "neq" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue != value),
+        "gte" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue >= value),
+        "gt" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue > value),
+        "lte" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue <= value),
+        "lt" => overtimes.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var projectValue) && projectValue < value),
+        _ => overtimes
     };
 }
 
@@ -221,14 +224,14 @@ public class OvertimeManager:IOvertimeManager
         
         if(column!=null)
         {
-            IEnumerable<Overtime> user;
-            user = _overtimeRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var project = _mapper.Map<IEnumerable<Overtime>, IEnumerable<OvertimeDto>>(user);
+            IEnumerable<Overtime> overtime;
+            overtime = _unitOfWork.Overtime.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var project = _mapper.Map<IEnumerable<Overtime>, IEnumerable<OvertimeDto>>(overtime);
             return Task.FromResult(project.ToList());
         }
 
-        var  users = _overtimeRepo.GlobalSearch(searchKey);
-        var projects = _mapper.Map<IEnumerable<Overtime>, IEnumerable<OvertimeDto>>(users);
+        var  overtimes = _unitOfWork.Overtime.GlobalSearch(searchKey);
+        var projects = _mapper.Map<IEnumerable<Overtime>, IEnumerable<OvertimeDto>>(overtimes);
         return Task.FromResult(projects.ToList());
     }
 

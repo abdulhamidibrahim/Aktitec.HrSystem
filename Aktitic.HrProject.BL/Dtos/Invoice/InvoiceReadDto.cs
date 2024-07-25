@@ -20,8 +20,8 @@ public class InvoiceReadDto
     public float? Discount { get; set; }
     public float? GrandTotal { get; set; }
     public int? ClientId { get; set; }
-    // public ClientDto? Client { get; set; }
+    public ClientDto? Client { get; set; }
     public int? ProjectId { get; set; }
-    // public ProjectDto? Project { get; set; }
+    public ProjectDto? Project { get; set; }
     public IEnumerable<ItemDto>? Items { get; set; }
 }

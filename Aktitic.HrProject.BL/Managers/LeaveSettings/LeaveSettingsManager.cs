@@ -11,11 +11,9 @@ namespace Aktitic.HrProject.BL;
 public class LeaveSettingsManager:ILeaveSettingsManager
 {
 
-    private readonly ILeaveSettingRepo _leaveSettingRepo;
     private readonly IUnitOfWork _unitOfWork;
-    public LeaveSettingsManager(ILeaveSettingRepo leaveSettingRepo, IUnitOfWork unitOfWork)
+    public LeaveSettingsManager(IUnitOfWork unitOfWork)
     {
-        _leaveSettingRepo = leaveSettingRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -41,10 +39,11 @@ public class LeaveSettingsManager:ILeaveSettingsManager
             SickDays = leaveSettingAddDto.Sick!.Days,
             SickActive = leaveSettingAddDto.Sick.Active,
             HospitalisationDays = leaveSettingAddDto.Hospitalisation!.Days,
-            HospitalisationActive = leaveSettingAddDto.Hospitalisation.Active
+            HospitalisationActive = leaveSettingAddDto.Hospitalisation.Active,
+            CreatedAt = DateTime.Now,
         };
 
-         _leaveSettingRepo.Add(leaveSetting);
+         _unitOfWork.LeaveSettings.Add(leaveSetting);
          return _unitOfWork.SaveChangesAsync();
 
     }
@@ -53,7 +52,7 @@ public Task<int> Update(LeaveSettingUpdateDto leaveSettingUpdateDto, int id)
     try
     {
         // Retrieve the leave setting from the repository
-        var leaveSetting = _leaveSettingRepo.GetById(id);
+        var leaveSetting = _unitOfWork.LeaveSettings.GetById(id);
 
         if (leaveSetting != null)
         {
@@ -65,6 +64,7 @@ public Task<int> Update(LeaveSettingUpdateDto leaveSettingUpdateDto, int id)
                 leaveSetting.AnnualCarryForward = leaveSettingUpdateDto.Annual.CarryForward;
                 leaveSetting.AnnualCarryForwardMax = leaveSettingUpdateDto.Annual.CarryForwardMax;
                 leaveSetting.AnnualActive = leaveSettingUpdateDto.Annual.Active;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             if (leaveSettingUpdateDto?.Lop != null)
@@ -74,34 +74,40 @@ public Task<int> Update(LeaveSettingUpdateDto leaveSettingUpdateDto, int id)
                 leaveSetting.LopCarryForward = leaveSettingUpdateDto.Lop.CarryForward;
                 leaveSetting.LopCarryForwardMax = leaveSettingUpdateDto.Lop.CarryForwardMax;
                 leaveSetting.LopEarnedLeave = leaveSettingUpdateDto.Lop.EarnedLeave;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             if (leaveSettingUpdateDto?.Maternity != null)
             {
                 leaveSetting.MaternityActive = leaveSettingUpdateDto.Maternity.Active;
                 leaveSetting.MaternityDays = leaveSettingUpdateDto.Maternity.Days;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             if (leaveSettingUpdateDto?.Paternity != null)
             {
                 leaveSetting.PaternityActive = leaveSettingUpdateDto.Paternity.Active;
                 leaveSetting.PaternityDays = leaveSettingUpdateDto.Paternity.Days;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             if (leaveSettingUpdateDto?.Sick != null)
             {
                 leaveSetting.SickActive = leaveSettingUpdateDto.Sick.Active;
                 leaveSetting.SickDays = leaveSettingUpdateDto.Sick.Days;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             if (leaveSettingUpdateDto?.Hospitalisation != null)
             {
                 leaveSetting.HospitalisationActive = leaveSettingUpdateDto.Hospitalisation.Active;
                 leaveSetting.HospitalisationDays = leaveSettingUpdateDto.Hospitalisation.Days;
+                leaveSetting.UpdatedAt = DateTime.Now;
             }
 
             // Save changes to the repository
-             _leaveSettingRepo.Update(leaveSetting);
+            
+             _unitOfWork.LeaveSettings.Update(leaveSetting);
              return _unitOfWork.SaveChangesAsync();
         }
         
@@ -120,14 +126,17 @@ public Task<int> Update(LeaveSettingUpdateDto leaveSettingUpdateDto, int id)
 
 public Task<int> Delete(int id)
 {
-
-    _leaveSettingRepo.GetById(id);
+    var leaves = _unitOfWork.LeaveSettings.GetById(id);
+    if (leaves==null) return Task.FromResult(0);
+    leaves.IsDeleted = true;
+    leaves.DeletedAt = DateTime.Now;
+    _unitOfWork.LeaveSettings.Update(leaves);
     return _unitOfWork.SaveChangesAsync();
 }
 
 public LeaveSettingReadDto? Get(int id)
 {
-    var leaveSetting = _leaveSettingRepo.GetById(id);
+    var leaveSetting = _unitOfWork.LeaveSettings.GetById(id);
     if (leaveSetting == null) return null;
 
     var annual = new AnnualDto()
@@ -187,7 +196,7 @@ public LeaveSettingReadDto? Get(int id)
 
 public List<LeaveSettingReadDto> GetAll()
 {
-    var leaveSettings = _leaveSettingRepo.GetAll();
+    var leaveSettings = _unitOfWork.LeaveSettings.GetAll();
     return leaveSettings.Result.Select(leaveSetting => new LeaveSettingReadDto()
     {
         Id = leaveSetting.Id,

@@ -31,9 +31,14 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
         
     public async void Delete(T entity) => _context.Remove(entity);
         
+    // soft delete
+    
+    public async void SoftDelete(int id) => _context.Set<T>()
+        .Update(_context.Set<T>()
+            .Find(id) ?? throw new InvalidOperationException("Entity not found"));
 
     public void Delete(int id) =>  _context.Set<T>()
-        .Remove(GetById(id) 
+        .Remove(_context.Set<T>().Find(id) 
                 ?? throw new InvalidOperationException
                     ("Entity not found"));
     

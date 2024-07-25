@@ -1,8 +1,9 @@
-namespace Aktitic.HrProject.DAL.Pagination.Client;
+namespace Aktitic.HrProject.DAL.Dtos;
 
 public class ExpensesBudget
 {
-    public string? ExpenseTitle { get; set; }
+    public int Id { get; set; }
+    public string? ExpensesTitle { get; set; }
   
-    public float? ExpenseAmount { get; set; }
+    public float? ExpensesAmount { get; set; }
 }

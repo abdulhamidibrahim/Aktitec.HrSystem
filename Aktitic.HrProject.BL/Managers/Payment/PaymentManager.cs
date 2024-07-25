@@ -14,17 +14,13 @@ namespace Aktitic.HrTaskList.BL;
 
 public class PaymentManager:IPaymentManager
 {
-    private readonly IPaymentRepo _paymentRepo;
-    private readonly IItemRepo _itemRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PaymentManager(IPaymentRepo paymentRepo, IUnitOfWork unitOfWork, IMapper mapper, IItemRepo itemRepo)
+    public PaymentManager(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _paymentRepo = paymentRepo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _itemRepo = itemRepo;
     }
     
     public Task<int> Add(PaymentAddDto paymentAddDto)
@@ -43,15 +39,16 @@ public class PaymentManager:IPaymentManager
             SwiftCode = paymentAddDto.SwiftCode,
             Status = paymentAddDto.Status,
             ClientId = paymentAddDto.ClientId,
-            InvoiceId = paymentAddDto.InvoiceId
+            InvoiceId = paymentAddDto.InvoiceId,
+            CreatedAt = DateTime.Now,
         }; 
-        _paymentRepo.Add(payment);
+        _unitOfWork.Payment.Add(payment);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(PaymentUpdateDto paymentUpdateDto, int id)
     {
-        var payment = _paymentRepo.GetPaymentWithClient(id);
+        var payment = _unitOfWork.Payment.GetPaymentWithClient(id);
         
         
         if (payment == null) return Task.FromResult(0);
@@ -71,20 +68,25 @@ public class PaymentManager:IPaymentManager
         if(paymentUpdateDto.ClientId != null) payment.ClientId = paymentUpdateDto.ClientId;
         if(paymentUpdateDto.InvoiceId != null) payment.InvoiceId = paymentUpdateDto.InvoiceId;
         if(paymentUpdateDto.SwiftCode != null) payment.SwiftCode = paymentUpdateDto.SwiftCode;
-        
-        _paymentRepo.Update(payment);
+
+        payment.UpdatedAt = DateTime.Now;
+        _unitOfWork.Payment.Update(payment);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _paymentRepo.Delete(id);
+        var payment = _unitOfWork.Payment.GetById(id);
+        if (payment==null) return Task.FromResult(0);
+        payment.IsDeleted = true;
+        payment.DeletedAt = DateTime.Now;
+        _unitOfWork.Payment.Update(payment);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public PaymentReadDto? Get(int id)
     {
-        var payment = _paymentRepo.GetPaymentWithClient(id);
+        var payment = _unitOfWork.Payment.GetPaymentWithClient(id);
         if (payment == null) return null;
         return new PaymentReadDto()
         {
@@ -110,7 +112,7 @@ public class PaymentManager:IPaymentManager
 
     public Task<List<PaymentReadDto>> GetAll()
     {
-        var payment = _paymentRepo.GetAllPaymentWithClients();
+        var payment = _unitOfWork.Payment.GetAllPaymentWithClients();
         return Task.FromResult(payment.Result.Select(p => new PaymentReadDto()
         {
             Id = p.Id,
@@ -135,19 +137,19 @@ public class PaymentManager:IPaymentManager
     
      public async Task<FilteredPaymentDto> GetFilteredPaymentsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _paymentRepo.GetAllPaymentWithClients();
+        var payments = await _unitOfWork.Payment.GetAllPaymentWithClients();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = payments.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var paymentList = payments.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = paymentList.Skip((page - 1) * pageSize).Take(pageSize);
     
             var mappedPayments = new List<PaymentDto>();
             foreach (var payment in paginatedResults)
@@ -181,17 +183,17 @@ public class PaymentManager:IPaymentManager
             return filteredPaymentDto;
         }
 
-        if (users != null)
+        if (payments != null)
         {
             IEnumerable<Payment> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(payments, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(payments, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -238,32 +240,32 @@ public class PaymentManager:IPaymentManager
 
         return new FilteredPaymentDto();
     }
-    private IEnumerable<Payment> ApplyFilter(IEnumerable<Payment> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Payment> ApplyFilter(IEnumerable<Payment> payments, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var paymentValue) => ApplyNumericFilter(users, column, paymentValue, operatorType),
-            _ => users
+            "contains" => payments.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => payments.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => payments.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => payments.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var paymentValue) => ApplyNumericFilter(payments, column, paymentValue, operatorType),
+            _ => payments
         };
     }
 
-    private IEnumerable<Payment> ApplyNumericFilter(IEnumerable<Payment> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Payment> ApplyNumericFilter(IEnumerable<Payment> payments, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue < value),
-        _ => users
+        "eq" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue == value),
+        "neq" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue != value),
+        "gte" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue >= value),
+        "gt" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue > value),
+        "lte" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue <= value),
+        "lt" => payments.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var paymentValue) && paymentValue < value),
+        _ => payments
     };
 }
 
@@ -273,10 +275,10 @@ public class PaymentManager:IPaymentManager
         
         if(column!=null)
         {
-            IEnumerable<Payment> user;
-            user = _paymentRepo.GetAllPaymentWithClients().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<Payment> paymentDto;
+            paymentDto = _unitOfWork.Payment.GetAllPaymentWithClients().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var pays = new List<PaymentDto>();
-            foreach (var payment in user)
+            foreach (var payment in paymentDto)
             {
                 
                 pays.Add(new PaymentDto()
@@ -302,9 +304,9 @@ public class PaymentManager:IPaymentManager
             return Task.FromResult(pays.ToList());
         }
 
-        var  users = _paymentRepo.GlobalSearch(searchKey);
+        var  paymentDtos = _unitOfWork.Payment.GlobalSearch(searchKey);
         var payments = new List<PaymentDto>();
-        foreach (var payment in users)
+        foreach (var payment in paymentDtos)
         {
                 
             payments.Add(new PaymentDto()

@@ -19,7 +19,10 @@ public class ProjectRepo :GenericRepo<Project>,IProjectRepo
     {
         if (_context.Projects != null)
         {
-            var query = _context.Projects.AsQueryable();
+            var query = _context.Projects
+                .Include(p=> p.EmployeesProject)
+                .ThenInclude(p=>p.Employee)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {

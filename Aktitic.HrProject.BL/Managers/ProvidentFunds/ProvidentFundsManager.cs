@@ -15,13 +15,13 @@ namespace Aktitic.HrTaskList.BL;
 
 public class ProvidentFundsManager:IProvidentFundsManager
 {
-    private readonly IProvidentFundsRepo _providentFundsRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ProvidentFundsManager(IProvidentFundsRepo providentFundsRepo, IUnitOfWork unitOfWork, IMapper mapper)
+    public ProvidentFundsManager(
+        IUnitOfWork unitOfWork,
+        IMapper mapper) 
     {
-        _providentFundsRepo = providentFundsRepo;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -37,15 +37,16 @@ public class ProvidentFundsManager:IProvidentFundsManager
             OrganizationSharePercentage = providentFundsAddDto.OrganizationSharePercentage,
             Description = providentFundsAddDto.Description,
             Status = providentFundsAddDto.Status,
-            EmployeeId = providentFundsAddDto.EmployeeId
+            EmployeeId = providentFundsAddDto.EmployeeId,
+            CreatedAt = DateTime.Now,
         }; 
-        _providentFundsRepo.Add(providentFunds);
+        _unitOfWork.ProvidentFunds.Add(providentFunds);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(ProvidentFundsUpdateDto providentFundsUpdateDto, int id)
     {
-        var providentFunds = _providentFundsRepo.GetById(id);
+        var providentFunds = _unitOfWork.ProvidentFunds.GetById(id);
         
         
         if (providentFunds == null) return Task.FromResult(0);
@@ -60,19 +61,23 @@ public class ProvidentFundsManager:IProvidentFundsManager
         if(providentFundsUpdateDto.Status != null) providentFunds.Status = providentFundsUpdateDto.Status;
        
         
-        _providentFundsRepo.Update(providentFunds);
+        _unitOfWork.ProvidentFunds.Update(providentFunds);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _providentFundsRepo.Delete(id);
+        var provident = _unitOfWork.ProvidentFunds.GetById(id);
+        if (provident==null) return Task.FromResult(0);
+        provident.IsDeleted = true;
+        provident.DeletedAt = DateTime.Now;
+        _unitOfWork.ProvidentFunds.Update(provident);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public ProvidentFundsReadDto? Get(int id)
     {
-        var providentFunds = _providentFundsRepo.GetWithEmployees(id);
+        var providentFunds = _unitOfWork.ProvidentFunds.GetWithEmployees(id);
         if (providentFunds == null) return null;
         return new ProvidentFundsReadDto()
         {
@@ -91,7 +96,7 @@ public class ProvidentFundsManager:IProvidentFundsManager
 
     public Task<List<ProvidentFundsReadDto>> GetAll()
     {
-        var providentFunds = _providentFundsRepo.GetAllWithEmployeesAsync();
+        var providentFunds = _unitOfWork.ProvidentFunds.GetAllWithEmployeesAsync();
         return Task.FromResult(providentFunds.Result.Select(p => new ProvidentFundsReadDto()
         {
             Id = p.Id,
@@ -109,19 +114,19 @@ public class ProvidentFundsManager:IProvidentFundsManager
     
      public async Task<FilteredProvidentFundsDto> GetFilteredProvidentFundsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _providentFundsRepo.GetAllWithEmployeesAsync();
+        var providentFundss = await _unitOfWork.ProvidentFunds.GetAllWithEmployeesAsync();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = providentFundss.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var providentFundsList = providentFundss.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = providentFundsList.Skip((page - 1) * pageSize).Take(pageSize);
     
             var mappedProvidentFundss = new List<ProvidentFundsDto>();
             foreach (var providentFunds in paginatedResults)
@@ -148,17 +153,17 @@ public class ProvidentFundsManager:IProvidentFundsManager
             return filteredProvidentFundsDto;
         }
 
-        if (users != null)
+        if (providentFundss != null)
         {
             IEnumerable<ProvidentFunds> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(providentFundss, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(providentFundss, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -199,32 +204,32 @@ public class ProvidentFundsManager:IProvidentFundsManager
 
         return new FilteredProvidentFundsDto();
     }
-    private IEnumerable<ProvidentFunds> ApplyFilter(IEnumerable<ProvidentFunds> users, string? column, string? value, string? operatorType)
+    private IEnumerable<ProvidentFunds> ApplyFilter(IEnumerable<ProvidentFunds> providentFundss, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var providentFundsValue) => ApplyNumericFilter(users, column, providentFundsValue, operatorType),
-            _ => users
+            "contains" => providentFundss.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => providentFundss.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => providentFundss.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => providentFundss.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var providentFundsValue) => ApplyNumericFilter(providentFundss, column, providentFundsValue, operatorType),
+            _ => providentFundss
         };
     }
 
-    private IEnumerable<ProvidentFunds> ApplyNumericFilter(IEnumerable<ProvidentFunds> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<ProvidentFunds> ApplyNumericFilter(IEnumerable<ProvidentFunds> providentFundss, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue < value),
-        _ => users
+        "eq" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue == value),
+        "neq" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue != value),
+        "gte" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue >= value),
+        "gt" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue > value),
+        "lte" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue <= value),
+        "lt" => providentFundss.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var providentFundsValue) && providentFundsValue < value),
+        _ => providentFundss
     };
 }
 
@@ -234,14 +239,14 @@ public class ProvidentFundsManager:IProvidentFundsManager
         
         if(column!=null)
         {
-            IEnumerable<ProvidentFunds> user;
-            user = _providentFundsRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var providentFunds = _mapper.Map<IEnumerable<ProvidentFunds>, IEnumerable<ProvidentFundsDto>>(user);
+            IEnumerable<ProvidentFunds> providentFundsDto;
+            providentFundsDto = _unitOfWork.ProvidentFunds.GetAllWithEmployeesAsync().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var providentFunds = _mapper.Map<IEnumerable<ProvidentFunds>, IEnumerable<ProvidentFundsDto>>(providentFundsDto);
             return Task.FromResult(providentFunds.ToList());
         }
 
-        var  users = _providentFundsRepo.GlobalSearch(searchKey);
-        var providentFundss = _mapper.Map<IEnumerable<ProvidentFunds>, IEnumerable<ProvidentFundsDto>>(users);
+        var  providentFundsDtos = _unitOfWork.ProvidentFunds.GlobalSearch(searchKey);
+        var providentFundss = _mapper.Map<IEnumerable<ProvidentFunds>, IEnumerable<ProvidentFundsDto>>(providentFundsDtos);
         return Task.FromResult(providentFundss.ToList());
     }
 

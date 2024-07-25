@@ -6,7 +6,7 @@ namespace Aktitic.HrProject.DAL.Pagination.Client;
 
 public class InvoiceDto
 {
-    // public int Id { get; set; }
+    public int Id { get; set; }
     public string? Email { get; set; }
     public float? Tax { get; set; }
     public string? ClientAddress { get; set; }
@@ -20,9 +20,9 @@ public class InvoiceDto
     public float? TotalAmount { get; set; }
     public float? Discount { get; set; }
     public float? GrandTotal { get; set; }
-    public int? ClientId { get; set; }
+    public string? ClientId { get; set; }
     public ClientDto? Client { get; set; }
-    public int? ProjectId { get; set; }
+    public string? ProjectId { get; set; }
     public ProjectDto? Project { get; set; }
     public IEnumerable<ItemDto>? Items { get; set; }
 }

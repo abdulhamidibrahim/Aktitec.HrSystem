@@ -30,7 +30,7 @@ public class DesignationsController: ControllerBase
 
         if (designation == null)
         {
-             NotFound("Designation Not Found!");
+             NotFound("DesignationId Not Found!");
         }
         return Ok(designation);
     }
@@ -40,7 +40,7 @@ public class DesignationsController: ControllerBase
     {
         var result =_designationManager.Add(designationAddDto);
         if (result.Result == 0) return BadRequest("Failed to add");
-        return Ok("Designation Added Successfully!");
+        return Ok("DesignationId Added Successfully!");
     }
     
     [HttpPut("update/{id}")]
@@ -48,7 +48,7 @@ public class DesignationsController: ControllerBase
     {
         var result = _designationManager.Update(designationUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
-        return Ok("Designation Updated Successfully!");
+        return Ok("DesignationId Updated Successfully!");
     }
     
     [HttpDelete("delete/{id}")]
@@ -56,7 +56,7 @@ public class DesignationsController: ControllerBase
     {
          var result = _designationManager.Delete(id);
          if (result.Result == 0) return BadRequest("Failed to delete");
-        return Ok("Designation Deleted Successfully!");
+        return Ok("DesignationId Deleted Successfully!");
     }
     
     [HttpGet("GlobalSearch")]

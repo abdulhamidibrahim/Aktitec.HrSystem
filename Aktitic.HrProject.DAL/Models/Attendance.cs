@@ -4,8 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public partial class Attendance
+public partial class Attendance : BaseEntity
 {
+   
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
@@ -21,9 +22,9 @@ public partial class Attendance
 
     // public int? OvertimeId { get; set; }
 
-    public int? EmployeeId { get; set; }
+    public int EmployeeId { get; set; }
 
-    public  Employee? Employee { get; set; }
+    public  Employee Employee { get; set; }
 
     public  string? Overtime { get; set; }
 }

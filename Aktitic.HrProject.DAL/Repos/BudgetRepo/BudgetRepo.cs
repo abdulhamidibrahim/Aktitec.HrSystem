@@ -5,21 +5,23 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
-public class CategoryRepo :GenericRepo<Category>,ICategoryRepo
+public class BudgetRepo :GenericRepo<Budget>,IBudgetRepo
 {
     private readonly HrSystemDbContext _context;
 
-    public CategoryRepo(HrSystemDbContext context) : base(context)
+    public BudgetRepo(HrSystemDbContext context) : base(context)
     {
         _context = context;
     }
 
-    public IQueryable<Category> GlobalSearch(string? searchKey)
+    public IQueryable<Budget> GlobalSearch(string? searchKey)
     {
-        if (_context.Categories!= null)
+        if (_context.Budgets!= null)
         {
             var query = 
-                _context.Categories
+                _context.Budgets
+                    .Include(x=> x.Expenses)
+                    .Include(x=> x.Revenues)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -27,10 +29,23 @@ public class CategoryRepo :GenericRepo<Category>,ICategoryRepo
                 searchKey = searchKey.Trim().ToLower();
                 
                 searchKey = searchKey.Trim().ToLower();
+                if( DateOnly.TryParse(searchKey, out var searchDate))
+                {
+                    query = query
+                        .Where(x =>
+                            x.StartDate == searchDate ||
+                            x.EndDate == searchDate );
+                    return query;
+                }
                 query = query
                     .Where(x =>
-                        x.CategoryName!.ToLower().Contains(searchKey) ||
-                        x.SubcategoryName!.ToLower().Contains(searchKey) );
+                        x.Title!.ToLower().Contains(searchKey) ||
+                        x.OverallRevenue!.ToString().Contains(searchKey) ||
+                        x.OverallExpense!.ToString().Contains(searchKey) ||
+                        x.ExpectedProfit!.ToString().Contains(searchKey) ||
+                        x.Tax!.ToString().Contains(searchKey) ||
+                        x.BudgetAmount!.ToString().Contains(searchKey) ||
+                        x.Type!.ToLower().Contains(searchKey) );
                        
                         
                 return query;
@@ -38,7 +53,26 @@ public class CategoryRepo :GenericRepo<Category>,ICategoryRepo
            
         }
 
-        return _context.Categories!.AsQueryable();
+        return _context.Budgets!.AsQueryable();
     }
 
+    public Budget? GetWithDetails(int id)
+    {
+        if (_context.Budgets != null)
+            return _context.Budgets
+                .Include(x => x.Expenses)
+                .Include(x => x.Revenues)
+                .FirstOrDefault(x => x.Id == id);
+        return null;
+    }
+
+    public Task<List<Budget>> GetAllWithDetails()
+    {
+        if (_context.Budgets != null)
+            return _context.Budgets
+                .Include(x => x.Expenses)
+                .Include(x => x.Revenues)
+                .ToListAsync();
+        return Task.FromResult(new List<Budget>());
+    }
 }

@@ -42,6 +42,7 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.SqlServer.Server.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Win32.SystemEvents.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Mono.TextTemplating.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Newtonsoft.Json.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -150,4 +151,10 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/Aktitic.HrProject.Api.pdb
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/Aktitic.HrProject.Api.genruntimeconfig.cache
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/obj/Debug/net8.0/ref/Aktitic.HrProject.Api.dll
-/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Newtonsoft.Json.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.JsonPatch.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/MailKit.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/MimeKit.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/NETCore.MailKit.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/BouncyCastle.Crypto.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/User.Management.Services.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/User.Management.Services.pdb

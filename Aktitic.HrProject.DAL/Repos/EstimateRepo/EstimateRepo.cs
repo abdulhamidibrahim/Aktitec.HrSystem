@@ -21,6 +21,8 @@ public class EstimateRepo :GenericRepo<Estimate>,IEstimateRepo
             var query = 
                 _context.Estimates
                 .Include(x=>x.Items)
+                .Include(x=>x.Client)
+                .Include(x=>x.Project)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -58,6 +60,10 @@ public class EstimateRepo :GenericRepo<Estimate>,IEstimateRepo
     {
         return _context.Estimates!
             .Include(x => x.Items)
+            .Include(x => x.Client)
+            .Include(x => x.Project)
+            .ThenInclude(x=>x.EmployeesProject)
+            .ThenInclude(x=>x.Employee)
             .FirstOrDefault(x => x.Id == id);
     }
 
@@ -66,6 +72,8 @@ public class EstimateRepo :GenericRepo<Estimate>,IEstimateRepo
         return
             _context.Estimates!
                 .Include(x => x.Items)
+                .Include(x=>x.Client)
+                .Include(x=>x.Project)
                 .ToListAsync();
     }
 }

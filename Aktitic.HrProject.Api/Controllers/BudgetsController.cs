@@ -27,9 +27,9 @@ public class BudgetsController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<BudgetReadDto?> Get(int id)
     {
-        var user = _budgetManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _budgetManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]
@@ -51,9 +51,13 @@ public class BudgetsController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        var result= _budgetManager.Delete(id);
-        if (result.Result == 0) return BadRequest("Failed to delete");
-        return Ok("Deleted successfully");
+        var budget = _budgetManager.Get(id);
+        if (budget == null)
+        {
+            return NotFound();
+        }
+        _budgetManager.Delete(id);
+        return StatusCode(200, "Deleted successfully");
     }
     
      

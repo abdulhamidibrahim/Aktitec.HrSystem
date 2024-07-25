@@ -10,6 +10,7 @@ public class ClientDto
     public string LastName { get; set; } = string.Empty;
 
     public string FullName => $"{FirstName} {LastName}";
+    public string UserName { get; set; } = string.Empty;
     public string? ClientId { get; set; }
 
     // public string? FileName { get; set; }=string.Empty;

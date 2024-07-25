@@ -1,4 +1,6 @@
 
+using Aktitic.HrProject.DAL.Dtos;
+
 namespace Aktitic.HrProject.DAL.Pagination.Client;
 
 public class BudgetDto
@@ -13,8 +15,6 @@ public class BudgetDto
     public float? ExpectedProfit { get; set; }
     public float? Tax { get; set; }
     public float? BudgetAmount { get; set; }
-    public int? ExpensesId { get; set; }
     public ICollection<ExpensesBudget>? Expenses { get; set; }
-    public int? RevenueId { get; set; }
-    public ICollection<RevenuesBudget>? Revenue { get; set; }
+    public ICollection<RevenuesBudget>? Revenues { get; set; }
 }

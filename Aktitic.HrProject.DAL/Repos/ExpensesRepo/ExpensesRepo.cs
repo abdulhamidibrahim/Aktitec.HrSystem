@@ -52,17 +52,18 @@ public class ExpensesRepo :GenericRepo<Expenses>,IExpensesRepo
         return _context.Expenses!.AsQueryable();
     }
 
-    public Expenses GetEstimateWithEmployee(int id)
+    public Expenses GetExpensesWithEmployee(int id)
     {
         return _context.Expenses
             .Include(x => x.PurchasedBy)
             .FirstOrDefault(x => x.Id == id);
     }
 
-    public Task<List<Expenses>> GetAllEstimateWithEmployees()
+    public Task<List<Expenses>> GetAllExpensesWithEmployees()
     {
         return _context.Expenses
             .Include(x => x.PurchasedBy)
             .ToListAsync();
     }
+    
 }

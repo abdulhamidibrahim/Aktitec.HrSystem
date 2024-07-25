@@ -12,13 +12,11 @@ namespace Aktitic.HrProject.BL;
 
 public class HolidayManager:IHolidayManager
 {
-    private readonly IHolidayRepo _holidayRepo;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public HolidayManager(IHolidayRepo holidayRepo, IMapper mapper, IUnitOfWork unitOfWork)
+    public HolidayManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _holidayRepo = holidayRepo;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -28,34 +26,39 @@ public class HolidayManager:IHolidayManager
         var holiday = new Holiday()
         {
             Title = holidayAddDto.Title,
-            Date = holidayAddDto.Date
+            Date = holidayAddDto.Date,
+            CreatedAt = DateTime.Now,
         }; 
-        _holidayRepo.Add(holiday);
+        _unitOfWork.Holiday.Add(holiday);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(HolidayUpdateDto holidayUpdateDto, int id)
     {
-        var holiday = _holidayRepo.GetById(id);
+        var holiday = _unitOfWork.Holiday.GetById(id);
 
         if (holiday == null) return Task.FromResult(0);
         if(holidayUpdateDto.Title != null) holiday.Title = holidayUpdateDto.Title;
         if(holidayUpdateDto.Date != null) holiday.Date = holidayUpdateDto.Date;
 
-
-        _holidayRepo.Update(holiday);
+        holiday.UpdatedAt = DateTime.Now;
+        _unitOfWork.Holiday.Update(holiday);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        _holidayRepo.GetById(id);
+        var holiday = _unitOfWork.Holiday.GetById(id);
+        if (holiday==null) return Task.FromResult(0);
+        holiday.IsDeleted = true;
+        holiday.DeletedAt = DateTime.Now;
+        _unitOfWork.Holiday.Update(holiday);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public HolidayReadDto? Get(int id)
     {
-        var holiday = _holidayRepo.GetById(id);
+        var holiday = _unitOfWork.Holiday.GetById(id);
         if (holiday == null) return null;
         return new HolidayReadDto()
         {
@@ -67,7 +70,7 @@ public class HolidayManager:IHolidayManager
 
     public List<HolidayReadDto> GetAll()
     {
-        var holidays = _holidayRepo.GetAll();
+        var holidays = _unitOfWork.Holiday.GetAll();
         return holidays.Result.Select(holiday => new HolidayReadDto()
         {
             Id = holiday.Id,
@@ -78,19 +81,19 @@ public class HolidayManager:IHolidayManager
     
      public async Task<FilteredHolidayDto> GetFilteredHolidaysAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _holidayRepo.GetAll();
+        var holidays = await _unitOfWork.Holiday.GetAll();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = holidays.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var holidayList = holidays.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = holidayList.Skip((page - 1) * pageSize).Take(pageSize);
 
             var map = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(paginatedResults);
             FilteredHolidayDto result = new()
@@ -102,17 +105,17 @@ public class HolidayManager:IHolidayManager
             return result;
         }
 
-        if (users != null)
+        if (holidays != null)
         {
             IEnumerable<Holiday> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(holidays, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(holidays, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -133,32 +136,32 @@ public class HolidayManager:IHolidayManager
 
         return new FilteredHolidayDto();
     }
-    private IEnumerable<Holiday> ApplyFilter(IEnumerable<Holiday> users, string? column, string? value, string? operatorType)
+    private IEnumerable<Holiday> ApplyFilter(IEnumerable<Holiday> holidays, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var holidayValue) => ApplyNumericFilter(users, column, holidayValue, operatorType),
-            _ => users
+            "contains" => holidays.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => holidays.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => holidays.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => holidays.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var holidayValue) => ApplyNumericFilter(holidays, column, holidayValue, operatorType),
+            _ => holidays
         };
     }
 
-    private IEnumerable<Holiday> ApplyNumericFilter(IEnumerable<Holiday> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<Holiday> ApplyNumericFilter(IEnumerable<Holiday> holidays, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue < value),
-        _ => users
+        "eq" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue == value),
+        "neq" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue != value),
+        "gte" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue >= value),
+        "gt" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue > value),
+        "lte" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue <= value),
+        "lt" => holidays.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var holidayValue) && holidayValue < value),
+        _ => holidays
     };
 }
 
@@ -168,14 +171,14 @@ public class HolidayManager:IHolidayManager
         
         if(column!=null)
         {
-            IEnumerable<Holiday> user;
-            user = _holidayRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var holiday = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(user);
+            IEnumerable<Holiday> holidayDto;
+            holidayDto = _unitOfWork.Holiday.GetAll().Result.Where(e => e.GetPropertyValue(column).Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var holiday = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidayDto);
             return Task.FromResult(holiday.ToList());
         }
 
-        var  users = _holidayRepo.GlobalSearch(searchKey);
-        var holidays = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(users);
+        var  holidaysDto = _unitOfWork.Holiday.GlobalSearch(searchKey);
+        var holidays = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidaysDto);
         return Task.FromResult(holidays.ToList());
     }
 

@@ -14,6 +14,6 @@ public class AttendanceAddDto
 
     public string? Overtime { get; set; }
 
-    public int? EmployeeId { get; set; }
+    public int EmployeeId { get; set; }
 
 }

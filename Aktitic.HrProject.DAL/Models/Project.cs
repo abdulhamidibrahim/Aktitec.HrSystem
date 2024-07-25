@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Project
+public class Project : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
@@ -37,6 +37,8 @@ public class Project
     public List<Department> Departments { get; set; } = new();
     public ICollection<File> Files { get; set; }   = new List<File>();
     
-    
+    [ForeignKey(nameof(TaskBoard))]
+    public int? TaskBoardId { get; set; }
+    public TaskBoard? TaskBoard { get; set; }
 
 }

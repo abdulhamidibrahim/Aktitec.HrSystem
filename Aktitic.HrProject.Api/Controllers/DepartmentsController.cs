@@ -25,9 +25,9 @@ public class DepartmentsController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<DepartmentReadDto?> Get(int id)
     {
-        var user = _departmentManager.Get(id);
-        if (user == null) return NotFound("Not Found!");
-        return user;
+        var result = _departmentManager.Get(id);
+        if (result == null) return NotFound("Not Found!");
+        return result;
     }
     
     [HttpPost("create")]

@@ -28,4 +28,10 @@ public class PermissionsRepo :GenericRepo<Permission>,IPermissionsRepo
         _context.Permissions?.AddRange(permissionDto);
         _context.SaveChanges();
     }
+
+    public List<Permission> GetByApplicationUserId(int id)
+    {
+        
+        return _context.Permissions.Where(x => x.UserId == id).ToList();
+    }
 }

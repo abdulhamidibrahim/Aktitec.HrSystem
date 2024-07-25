@@ -1,6 +1,6 @@
 namespace Aktitic.HrProject.DAL.Models;
 
-public class Tax
+public class Tax : BaseEntity
 {
         public int Id { get; set; }
         public string? Name { get; set; }

@@ -15,8 +15,7 @@ public class BudgetReadDto
     public float? ExpectedProfit { get; set; }
     public float? Tax { get; set; }
     public float? BudgetAmount { get; set; }
-    public int? ExpensesId { get; set; }
     public List<ExpensesCreateDto>? Expenses { get; set; }
-    public int? RevenueId { get; set; }
+
     public List<RevenuesCreateDto>? Revenues { get; set; }
 }

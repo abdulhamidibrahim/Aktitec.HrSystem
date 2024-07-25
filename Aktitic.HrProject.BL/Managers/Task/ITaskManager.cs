@@ -12,7 +12,7 @@ public interface ITaskManager
     public TaskReadSingleDto Get(int id);
     public Task<List<TaskReadDto>> GetAll();
     
-    public Task<FilteredTaskDto> GetFilteredTasksAsync(string column, string value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<TaskDto>> GlobalSearch(string searchKey,string? column);
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId);

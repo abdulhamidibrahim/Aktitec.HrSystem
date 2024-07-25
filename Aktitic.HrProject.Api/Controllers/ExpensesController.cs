@@ -26,9 +26,9 @@ public class ExpensesController: ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ExpensesReadDto?> Get(int id)
     {
-        var user = _expensesManager.Get(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        var result = _expensesManager.Get(id);
+        if (result == null) return NotFound();
+        return Ok(result);
     }
     
     [HttpPost("create")]

@@ -17,17 +17,11 @@ namespace Aktitic.HrProject.BL;
 
 public class TimesheetManager:ITimesheetManager
 {
-    private readonly ITimesheetRepo _timesheetRepo;
-    private readonly IEmployeeRepo _employeeRepo;
-    private readonly IProjectRepo _projectRepo;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    public TimesheetManager(ITimesheetRepo timesheetRepo, IMapper mapper, IEmployeeRepo employeeRepo, IProjectRepo projectRepo, IUnitOfWork unitOfWork)
+    public TimesheetManager(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _timesheetRepo = timesheetRepo;
         _mapper = mapper;
-        _employeeRepo = employeeRepo;
-        _projectRepo = projectRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -42,15 +36,16 @@ public class TimesheetManager:ITimesheetManager
             AssignedHours = timesheetAddDto.AssignedHours,
             Hours = timesheetAddDto.Hours,
             Description = timesheetAddDto.Description,
+            CreatedAt = DateTime.Now,
             
         };
-        _timesheetRepo.Add(timesheet);
+        _unitOfWork.TimeSheet.Add(timesheet);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<Task<int>> Update(TimesheetUpdateDto timesheetUpdateDto, int id)
     {
-        var timesheet = _timesheetRepo.GetById(id);
+        var timesheet = _unitOfWork.TimeSheet.GetById(id);
 
         if (timesheet == null) return Task.FromResult(0);
         if(timesheetUpdateDto.Date != null) 
@@ -68,24 +63,29 @@ public class TimesheetManager:ITimesheetManager
         if(timesheetUpdateDto.Description != null) 
             timesheet.Description = timesheetUpdateDto.Description;
         
-        _timesheetRepo.Update(timesheet);
+        
+        timesheet.UpdatedAt = DateTime.Now;
+        _unitOfWork.TimeSheet.Update(timesheet);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-
-        _timesheetRepo.GetById(id);
+        var timeSheet = _unitOfWork.TimeSheet.GetById(id);
+        if (timeSheet==null) return Task.FromResult(0);
+        timeSheet.IsDeleted = true;
+        timeSheet.DeletedAt = DateTime.Now;
+        _unitOfWork.TimeSheet.Update(timeSheet);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<TimesheetReadDto?> Get(int id)
     {
-        var timesheet = _timesheetRepo.GetById(id);
+        var timesheet = _unitOfWork.TimeSheet.GetById(id);
         if (timesheet == null) return new TimesheetReadDto();
 
-        var employee =  _employeeRepo.GetById(timesheet.EmployeeId);
-        var project =  _projectRepo.GetById(timesheet.ProjectId);
+        var employee =  _unitOfWork.Employee.GetById(timesheet.EmployeeId);
+        var project =  _unitOfWork.Project.GetById(timesheet.ProjectId);
 
         // Check if employee or project is null
         // if (employee == null || project == null)
@@ -115,7 +115,7 @@ public class TimesheetManager:ITimesheetManager
 
     public async Task<List<TimesheetReadDto>> GetAll()
     {
-        var timesheets =await _timesheetRepo.GetAll();
+        var timesheets =await _unitOfWork.TimeSheet.GetAll();
         return timesheets.Select(timesheet => new TimesheetReadDto()
         {
             Id = timesheet.Id,
@@ -133,27 +133,32 @@ public class TimesheetManager:ITimesheetManager
     
       public async Task<FilteredTimeSheetDto> GetFilteredTimeSheetsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var users = await _timesheetRepo.GetTimeSheetWithEmployeeAndProject();
+        var timesheets = await _unitOfWork.TimeSheet.GetTimeSheetWithEmployeeAndProject();
         
 
         // Check if column, value1, and operator1 are all null or empty
         if (string.IsNullOrEmpty(column) || string.IsNullOrEmpty(value1) || string.IsNullOrEmpty(operator1))
         {
-            var count = users.Count();
+            var count = timesheets.Count();
             var pages = (int)Math.Ceiling((double)count / pageSize);
 
             // Use ToList() directly without checking Any() condition
-            var userList = users.ToList();
+            var timesheetList = timesheets.ToList();
 
-            var paginatedResults = userList.Skip((page - 1) * pageSize).Take(pageSize);
+            var paginatedResults = timesheetList.Skip((page - 1) * pageSize).Take(pageSize);
 
             List<TimeSheetDto> timeSheet = new();
             foreach (var designation in paginatedResults)
             {
                 timeSheet.Add(new TimeSheetDto()
-                { 
-                    Description= designation.Description,
-                    Id = designation.Id,
+                {   
+                     Description= designation.Description,
+                     Id = designation.Id,
+                     Date = designation.Date,
+                     ProjectId = designation.ProjectId,
+                     AssignedHours = designation.AssignedHours,
+                     Deadline = designation.Deadline,
+                     Hours = designation.Hours,
                      IdNavigation = _mapper.Map<Employee, EmployeeDto>(designation.Employee)
                 });
             }
@@ -167,17 +172,17 @@ public class TimesheetManager:ITimesheetManager
             return filteredTimeSheetDto;
         }
 
-        if (users != null)
+        if (timesheets != null)
         {
             IEnumerable<TimeSheet> filteredResults;
         
             // Apply the first filter
-            filteredResults = ApplyFilter(users, column, value1, operator1);
+            filteredResults = ApplyFilter(timesheets, column, value1, operator1);
 
             // Apply the second filter only if both value2 and operator2 are provided
             if (!string.IsNullOrEmpty(value2) && !string.IsNullOrEmpty(operator2))
             {
-                filteredResults = filteredResults.Concat(ApplyFilter(users, column, value2, operator2));
+                filteredResults = filteredResults.Concat(ApplyFilter(timesheets, column, value2, operator2));
             }
 
             var enumerable = filteredResults.Distinct().ToList();  // Use Distinct to eliminate duplicates
@@ -192,6 +197,11 @@ public class TimesheetManager:ITimesheetManager
                 { 
                     Description= designation.Description,
                     Id = designation.Id,
+                    Date = designation.Date,
+                    ProjectId = designation.ProjectId,
+                    AssignedHours = designation.AssignedHours,
+                    Deadline = designation.Deadline,
+                    Hours = designation.Hours,
                     IdNavigation = _mapper.Map<Employee, EmployeeDto>(designation.Employee)
                 });
             }
@@ -207,32 +217,32 @@ public class TimesheetManager:ITimesheetManager
 
         return new FilteredTimeSheetDto();
     }
-    private IEnumerable<TimeSheet> ApplyFilter(IEnumerable<TimeSheet> users, string? column, string? value, string? operatorType)
+    private IEnumerable<TimeSheet> ApplyFilter(IEnumerable<TimeSheet> timesheets, string? column, string? value, string? operatorType)
     {
         // value2 ??= value;
 
         return operatorType switch
         {
-            "contains" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "doesnotcontain" => users.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
-            "startswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
-            "endswith" => users.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
-            _ when decimal.TryParse(value, out var timesheetValue) => ApplyNumericFilter(users, column, timesheetValue, operatorType),
-            _ => users
+            "contains" => timesheets.Where(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "doesnotcontain" => timesheets.SkipWhile(e => value != null && column != null && e.GetPropertyValue(column).Contains(value,StringComparison.OrdinalIgnoreCase)),
+            "startswith" => timesheets.Where(e => value != null && column != null && e.GetPropertyValue(column).StartsWith(value,StringComparison.OrdinalIgnoreCase)),
+            "endswith" => timesheets.Where(e => value != null && column != null && e.GetPropertyValue(column).EndsWith(value,StringComparison.OrdinalIgnoreCase)),
+            _ when decimal.TryParse(value, out var timesheetValue) => ApplyNumericFilter(timesheets, column, timesheetValue, operatorType),
+            _ => timesheets
         };
     }
 
-    private IEnumerable<TimeSheet> ApplyNumericFilter(IEnumerable<TimeSheet> users, string? column, decimal? value, string? operatorType)
+    private IEnumerable<TimeSheet> ApplyNumericFilter(IEnumerable<TimeSheet> timesheets, string? column, decimal? value, string? operatorType)
 {
     return operatorType?.ToLower() switch
     {
-        "eq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue == value),
-        "neq" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue != value),
-        "gte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue >= value),
-        "gt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue > value),
-        "lte" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue <= value),
-        "lt" => users.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue < value),
-        _ => users
+        "eq" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue == value),
+        "neq" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue != value),
+        "gte" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue >= value),
+        "gt" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue > value),
+        "lte" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue <= value),
+        "lt" => timesheets.Where(e => column != null && decimal.TryParse(e.GetPropertyValue(column), out var timesheetValue) && timesheetValue < value),
+        _ => timesheets
     };
 }
 
@@ -242,14 +252,14 @@ public class TimesheetManager:ITimesheetManager
         
         if(column!=null)
         {
-            IEnumerable<TimeSheet> user;
-            user = _timesheetRepo.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var timesheet = _mapper.Map<IEnumerable<TimeSheet>, IEnumerable<TimeSheetDto>>(user);
+            IEnumerable<TimeSheet> timesheetDto;
+            timesheetDto = _unitOfWork.TimeSheet.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var timesheet = _mapper.Map<IEnumerable<TimeSheet>, IEnumerable<TimeSheetDto>>(timesheetDto);
             return Task.FromResult(timesheet.ToList());
         }
 
-        var  users = _timesheetRepo.GlobalSearch(searchKey);
-        var timesheets = _mapper.Map<IEnumerable<TimeSheet>, IEnumerable<TimeSheetDto>>(users);
+        var  timesheetDtos = _unitOfWork.TimeSheet.GlobalSearch(searchKey);
+        var timesheets = _mapper.Map<IEnumerable<TimeSheet>, IEnumerable<TimeSheetDto>>(timesheetDtos);
         return Task.FromResult(timesheets.ToList());
     }
 

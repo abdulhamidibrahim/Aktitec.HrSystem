@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,7 +12,7 @@ using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.Context;
 
-public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,IdentityRole<int>,int>
+public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
     public HrSystemDbContext()
     {
@@ -20,22 +21,23 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options)
         : base(options)
     {
-        if(Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
+        if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
         {
-            if(!dbCreater.CanConnect())
+            // Create Database 
+            if (!dbCreater.CanConnect())
             {
                 dbCreater.Create();
             }
-        
+
             // Create Tables
             if (!dbCreater.HasTables())
             {
                 dbCreater.CreateTables();
             }
-        
         }
     }
 
+    public virtual DbSet<ApplicationUser>? ApplicationUsers { get; set; }
     public virtual DbSet<Attendance>? Attendances { get; set; }
 
     public virtual DbSet<Department>? Departments { get; set; }
@@ -57,12 +59,12 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
     public virtual DbSet<Shift>? Shifts { get; set; }
 
     public virtual DbSet<Client>? Clients { get; set; }
-    
+
     public virtual DbSet<CustomPolicy>? CustomPolicies { get; set; }
     public virtual DbSet<Project>? Projects { get; set; }
     public virtual DbSet<Task>? Tasks { get; set; }
     public virtual DbSet<TaskList>? TaskLists { get; set; }
-    public virtual DbSet<TaskBoard>? Taskboards { get; set; }
+    public virtual DbSet<TaskBoard>? TaskBoards { get; set; }
     public virtual DbSet<Ticket>? Tickets { get; set; }
     public virtual DbSet<TicketFollowers>? TicketFollowers { get; set; }
     public virtual DbSet<TimeSheet>? Timesheets { get; set; }
@@ -77,16 +79,58 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
     public virtual DbSet<Expenses>? Expenses { get; set; }
     public virtual DbSet<Payment>? Payments { get; set; }
     public virtual DbSet<Tax>? Taxes { get; set; }
-    public virtual DbSet<ProvidentFunds>? ProvidentFunds{ get; set; }
-    public virtual DbSet<Category>? Categories{ get; set; }
-    public virtual DbSet<BudgetRevenue>? BudgetsRevenues{ get; set; }
+    public virtual DbSet<ProvidentFunds>? ProvidentFunds { get; set; }
+    public virtual DbSet<Category>? Categories { get; set; }
+    public virtual DbSet<BudgetRevenue>? BudgetsRevenues { get; set; }
+    public virtual DbSet<BudgetExpenses>? BudgetsExpenses { get; set; }
     public virtual DbSet<Budget>? Budgets { get; set; }
     public virtual DbSet<Revenue>? Revenues { get; set; }
-   
+    public virtual DbSet<ExpensesOfBudget>? ExpensesOfBudgets { get; set; }
+    public virtual DbSet<Policies>? Polices { get; set; }
+    public virtual DbSet<Salary>? Salaries { get; set; }
+    public virtual DbSet<PayrollOvertime>? PayrollOvertimes { get; set; }
+    public virtual DbSet<PayrollDeduction>? PayrollDeductions { get; set; }
+    public virtual DbSet<PayrollAddition>? PayrollAdditions { get; set; }
+    public virtual DbSet<PerformanceAppraisal>? PerformanceAppraisals { get; set; }
+    public virtual DbSet<PerformanceIndicator>? PerformanceIndicators { get; set; }
+    public virtual DbSet<Termination>? Terminations { get; set; }
+    public virtual DbSet<Resignation>? Resignations { get; set; }
+    public virtual DbSet<Promotion>? Promotions { get; set; }
+    public virtual DbSet<Trainer>? Trainers { get; set; }
+    public virtual DbSet<TrainingType>? TrainingTypes { get; set; }
+    public virtual DbSet<TrainingList>? TrainingLists { get; set; }
+    public virtual DbSet<GoalType>? GoalTypes { get; set; }
+    public virtual DbSet<GoalList>? GoalLists { get; set; }
+    public virtual DbSet<Event>? Events { get; set; }
+    public virtual DbSet<Contact>? Contacts { get; set; }
+    public virtual DbSet<Contract>? Contracts { get; set; }
+    // public virtual DbSet<Email>? Emails { get; set; }   
 
-    
+
+
+    private static LambdaExpression CreateIsDeletedFilter(Type entityType)
+    {
+        var parameter = Expression.Parameter(entityType, "e");
+        var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+        var comparison = Expression.MakeBinary(ExpressionType.Equal, property, Expression.Constant(false));
+        var lambda = Expression.Lambda(comparison, parameter);
+        return lambda;
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        // get non deleted records
+        // Apply global query filters for all entities that derive from BaseEntity
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(CreateIsDeletedFilter(entityType.ClrType));
+            }
+        }
+
+        modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
+        
         modelBuilder.Entity<Attendance>(entity =>
         {
             entity.ToTable("Attendance", "employee");
@@ -219,11 +263,13 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasMaxLength(50)
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.LeafApprovedByNavigations)
+            entity.HasOne(d => d.ApprovedByNavigation)
+                .WithMany(p => p.LeafApprovedByNavigations)
                 .HasForeignKey(d => d.ApprovedBy)
                 .HasConstraintName("FK_leaves_Employee_approved");
 
-            entity.HasOne(d => d.Employee).WithMany(p => p.LeafEmployees)
+            entity.HasOne(d => d.Employee)
+                .WithMany(p => p.LeafEmployees)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_leaves_Employee");
@@ -417,6 +463,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
         entity.HasOne(d => d.Leader).WithMany(p => p.Projects)
             .HasForeignKey(d => d.LeaderId)
             .HasConstraintName("FK_Project_Employee");
+        
+        // project and employeeporject relation 
+        entity.HasMany(d => d.EmployeesProject) 
+            .WithOne(p => p.Project)
+            .HasForeignKey(e=>e.ProjectId).OnDelete(DeleteBehavior.Cascade);        
         });
         
         modelBuilder.Entity<Task>(entity =>
@@ -436,6 +487,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
             entity.Property(e => e.Completed).HasColumnName("completed");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
         });
+        
         modelBuilder.Entity<TaskList>(entity =>
         {
             entity.ToTable("TaskList", "project");
@@ -445,6 +497,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .HasMaxLength(100)
                 .HasColumnName("name");
         });
+        
         modelBuilder.Entity<TaskBoard>(entity =>
         {
             entity.ToTable("Taskboard", "project");
@@ -626,6 +679,13 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser,Ident
                 .WithOne(p => p.Expenses)
                 .HasForeignKey(e => e.ExpensesId).OnDelete(DeleteBehavior.Cascade);
         });
+        
+        modelBuilder.Entity<Permission>()
+            .HasOne(p => p.ApplicationUser)
+            .WithMany(u => u.Permissions)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         OnModelCreatingPartial(modelBuilder);
     }
 

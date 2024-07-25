@@ -6,7 +6,7 @@ namespace Aktitic.HrProject.BL;
 
 public class FilteredLeavesDto
 {
-    public IEnumerable<LeavesDto> LeavesDto { get; set; }
+    public IEnumerable<LeavesGetFilteredDto> LeavesDto { get; set; }
     public int TotalCount { get; set; }
     public int TotalPages { get; set; }
 }
