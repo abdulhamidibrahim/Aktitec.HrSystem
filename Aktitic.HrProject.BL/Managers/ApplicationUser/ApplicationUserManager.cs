@@ -119,8 +119,7 @@ public class ApplicationUserManager(
             var imgPath = Path.Combine(path, applicationUserAddDto.Image?.FileName!);
             using FileStream fileStream = new(imgPath, FileMode.Create);
             applicationUserAddDto.Image?.CopyToAsync(fileStream);
-            applicationUser.Image = Path.Combine("uploads/applicationUsers", applicationUser.UserName + unique,
-                applicationUserAddDto.Image?.FileName!);
+            applicationUser.Image = Path.Combine("uploads/users", applicationUser.UserName + unique,applicationUserAddDto.Image?.FileName!);
             // _fileRepo.Add(file);
 
         }

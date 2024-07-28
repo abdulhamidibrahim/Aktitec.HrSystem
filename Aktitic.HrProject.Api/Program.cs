@@ -156,6 +156,7 @@ builder.Services.AddCors(options =>      // cross-origin resource sharing
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
+    // builder.Services.AddSignalR();
 });
 
 builder.Services.AddAutoMapper(typeof(Program));
