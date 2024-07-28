@@ -24,7 +24,7 @@ public class MessageRepo :GenericRepo<Message>,IMessageRepo
             {
                 searchKey = searchKey.Trim().ToLower();
                 
-                if( DateOnly.TryParse(searchKey, out var searchDate))
+                if( DateTime.TryParse(searchKey, out var searchDate))
                 {
                     query = query
                         .Where(x =>

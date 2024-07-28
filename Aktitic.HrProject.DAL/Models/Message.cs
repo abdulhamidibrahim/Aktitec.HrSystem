@@ -12,10 +12,13 @@ public class Message : BaseEntity
     public string? SenderPhotoUrl { get; set; }=string.Empty;
         
     public int? SenderId { get; set; }
+    public int? ReceiverId { get; set; }
+    public string? GroupName { get; set; }
     
-    public DateOnly? Date { get; set; }
+    public DateTime? Date { get; set; }
     public string? Text { get; set; }
-    public File? File { get; set; }
+    public string? FileName { get; set; }
+    public string? FilePath { get; set; }
     
     public Task? Task { get; set; }
     public int? TaskId { get; set; }

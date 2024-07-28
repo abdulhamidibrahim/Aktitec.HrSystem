@@ -28,9 +28,14 @@ public class EventsRepo :GenericRepo<Event>,IEventsRepo
 
     public async Task<Event> AddEvent(Event @event)
     {
-         var add =await _context.Events.AddAsync(@event);
-         // return the current object 
-            
-         return add.Entity;
+        if (_context.Events != null)
+        {
+            var add =await _context.Events.AddAsync(@event);
+            // return the current object 
+            await _context.SaveChangesAsync();
+            return add.Entity;
+        }
+        
+        return new Event();
     }
 }

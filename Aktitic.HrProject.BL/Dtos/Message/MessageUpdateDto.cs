@@ -11,7 +11,7 @@ public class MessageUpdateDto
         
     public int? SenderId { get; set; }
     
-    public DateOnly? Date { get; set; }
+    public DateTime? Date { get; set; }
     public string? Text { get; set; }
     
     public int? TaskId { get; set; }

@@ -158,3 +158,6 @@
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/BouncyCastle.Crypto.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/User.Management.Services.dll
 /Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/User.Management.Services.pdb
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Connections.Abstractions.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.AspNetCore.SignalR.Common.dll
+/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/bin/Debug/net8.0/Microsoft.Extensions.Features.dll
