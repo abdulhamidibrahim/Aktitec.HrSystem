@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F2021B6-C392-4168-BAE4-4D473BEB31F9}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
+		bump.yml = bump.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Management.Services", "User.Management.Services\User.Management.Services.csproj", "{9D733FD9-3F48-408B-8E1E-49FADBFF9A6E}"
