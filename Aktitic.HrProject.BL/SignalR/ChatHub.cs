@@ -7,9 +7,9 @@ namespace Aktitic.HrProject.BL.SignalR;
 
 public class ChatHub : Hub
 {
-    private readonly UnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ChatHub(UnitOfWork unitOfWork)
+    public ChatHub(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }
@@ -21,10 +21,10 @@ public class ChatHub : Hub
     // public async Task SendGroupMessage(string groupName, string message) 
     //     => await Clients.Group(groupName).SendAsync("ReceiveMessage", message);
 
-
+    //TODO: send to specific company 
     public async Task SendNotification(string user, string message) 
         => await Clients.All.SendAsync("ReceiveMessage", user, message);
-
+        
     public async Task SendMessage(int senderId, string message, string fileName = null, string filePath = null)
     {
         var newMessage = new Message
@@ -33,7 +33,7 @@ public class ChatHub : Hub
             Text = message,
             Date = DateTime.UtcNow,
             FileName = fileName,
-            FilePath = filePath
+            // FilePath = filePath
         };
         _unitOfWork.Message.Add(newMessage);
         await _unitOfWork.SaveChangesAsync();
@@ -56,7 +56,7 @@ public class ChatHub : Hub
             Text = message,
             Date = DateTime.UtcNow,
             FileName = fileName,
-            FilePath = filePath
+            // FilePath = filePath
         };
         _unitOfWork.Message.Add(newMessage);
         await _unitOfWork.SaveChangesAsync();
@@ -80,7 +80,7 @@ public class ChatHub : Hub
             Date = DateTime.UtcNow,
             GroupName = groupName,
             FileName = fileName,
-            FilePath = filePath
+            // FilePath = filePath
         };
         _unitOfWork.Message.Add(newMessage);
         await _unitOfWork.SaveChangesAsync();
@@ -93,5 +93,39 @@ public class ChatHub : Hub
             FileName = fileName,
             FilePath = filePath
         });
+    }
+    // public async Task SendMessage(string user, string message)
+    // {
+    //     await Clients.All.SendAsync("ReceiveMessage", user, message);
+    // }
+
+    public async Task JoinCompanyGroup(int companyId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, companyId.ToString());
+    }
+
+    public async Task LeaveCompanyGroup(int companyId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, companyId.ToString());
+    }
+    public async Task AddUserToGroup(int adminId, List<int> userId, int companyId)
+    {
+        if (!_unitOfWork.ApplicationUser.IsAdmin(adminId))
+        {
+            throw new HubException("Only admins can add users to groups.");
+        }
+
+        foreach (var id in userId)
+        {
+            var user = _unitOfWork.ApplicationUser.GetById(id);
+            if (user == null)
+            {
+                throw new HubException("User not found.");
+                
+            }
+            await Groups.AddToGroupAsync(Context.ConnectionId, companyId.ToString());
+            await Clients.Group(companyId.ToString()).SendAsync("UserAddedToGroup", user.UserName);
+        }
+       
     }
 }

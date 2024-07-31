@@ -18,7 +18,9 @@ public class Message : BaseEntity
     public DateTime? Date { get; set; }
     public string? Text { get; set; }
     public string? FileName { get; set; }
-    public string? FilePath { get; set; }
+    
+    [NotMapped]
+    public Dictionary<string,string>? FilePath { get; set; }
     
     public Task? Task { get; set; }
     public int? TaskId { get; set; }

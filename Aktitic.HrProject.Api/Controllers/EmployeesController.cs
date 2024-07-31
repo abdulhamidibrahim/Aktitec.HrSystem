@@ -113,11 +113,11 @@ public class EmployeesController: ControllerBase
     // {
     //     var file = new File()
     //     {
-    //         Name = image.Name,
+    //         FileName = image.FileName,
     //         Extension = image.ContentType,
     //     };
     //     
-    //     var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages",file.EmployeeId.ToString(), image.Name);
+    //     var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages",file.EmployeeId.ToString(), image.FileName);
     //
     //     using FileStream fileStream = new(path, FileMode.Create);
     //     fileStream.CopyToAsync(fileStream);
@@ -132,7 +132,7 @@ public class EmployeesController: ControllerBase
     // {
     //     var fileModel = _fileRepo.GetById(id);
     //     if (fileModel.Result == null) return NotFound();
-    //     fileModel.Result.Name = file.FileName;
+    //     fileModel.Result.FileName = file.FileName;
     //     // using (var ms = new MemoryStream()) 
     //     // {
     //     //     file.CopyTo(ms);
@@ -155,7 +155,7 @@ public class EmployeesController: ControllerBase
     // {
     //     var uploadedFile = _fileRepo.GetById(id);
     //
-    //     if (uploadedFile.Result is { Name: not null }) return Ok(Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages", uploadedFile.Result.Name));
+    //     if (uploadedFile.Result is { FileName: not null }) return Ok(Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages", uploadedFile.Result.FileName));
     //     return BadRequest("Image Not Found");
     // }
     //
@@ -164,7 +164,7 @@ public class EmployeesController: ControllerBase
     // {
     //     var uploadedFile = _fileRepo.GetById(id);
     //
-    //     var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages", uploadedFile.Result.Name);
+    //     var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employeeImages", uploadedFile.Result.FileName);
     //
     //     MemoryStream memoryStream = new();
     //     using FileStream fileStream = new(path, FileMode.Open);
@@ -173,7 +173,7 @@ public class EmployeesController: ControllerBase
     //     memoryStream.Position = 0;
     //
     //     if (uploadedFile.Result.Extension != null)
-    //         return File(memoryStream, uploadedFile.Result.Extension, uploadedFile.Result.Name);
+    //         return File(memoryStream, uploadedFile.Result.Extension, uploadedFile.Result.FileName);
     //     return BadRequest("Image Not Found");
     // }
     

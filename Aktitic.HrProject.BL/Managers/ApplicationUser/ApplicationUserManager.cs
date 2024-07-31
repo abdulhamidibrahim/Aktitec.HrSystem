@@ -23,7 +23,6 @@ public class ApplicationUserManager(
     IWebHostEnvironment webHostEnvironment,
     IMapper mapper,
     IUnitOfWork unitOfWork,
-    UserUtility userUtility,
     UserManager<ApplicationUser> userManager)
     : IApplicationUserManager
 {
@@ -39,7 +38,7 @@ public class ApplicationUserManager(
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
             Role = applicationUserAddDto.Role,
-            Company = applicationUserAddDto.Company,
+            CompanyId = applicationUserAddDto.CompanyId,
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
             Permissions = mappedPermissions,
@@ -47,7 +46,7 @@ public class ApplicationUserManager(
             Date = applicationUserAddDto.Date,
             UserName = applicationUserAddDto.UserName,
             EmailConfirmed = false,
-            CreatedBy = userUtility.GetUserName() ?? string.Empty,
+            CreatedBy = UserUtility.GetUserName() ?? string.Empty,
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -88,17 +87,17 @@ public class ApplicationUserManager(
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
             Role = applicationUserAddDto.Role,
-            Company = applicationUserAddDto.Company,
+            CompanyId = applicationUserAddDto.CompanyId,
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
             Permissions = mappedPermissions,
-            
+            HasAccess = true,
             Password = applicationUserAddDto.Password,
             Date = applicationUserAddDto.Date,
             UserName = applicationUserAddDto.UserName,
             EmailConfirmed = true,
             CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName() ?? string.Empty,
+            CreatedBy = UserUtility.GetUserName() ?? string.Empty,
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -154,9 +153,10 @@ public class ApplicationUserManager(
         if (!applicationUserUpdateDto.Role.IsNullOrEmpty())
             applicationUser.Role = applicationUserUpdateDto.Role;
         
-        if (!applicationUserUpdateDto.Company.IsNullOrEmpty())
-            applicationUser.Company = applicationUserUpdateDto.Company;
-        
+        if (applicationUserUpdateDto.CompanyId != 0)
+            if (applicationUserUpdateDto.CompanyId != null)
+                applicationUser.CompanyId = (int)applicationUserUpdateDto.CompanyId;
+
         if (applicationUserUpdateDto.EmployeeId != null)
             applicationUser.EmployeeId = applicationUserUpdateDto.EmployeeId;
         
@@ -183,7 +183,7 @@ public class ApplicationUserManager(
             applicationUser.UserName = applicationUserUpdateDto.UserName;
         
         applicationUser.UpdatedAt = DateTime.Now;
-        applicationUser.UpdatedBy = userUtility.GetUserName();
+        applicationUser.UpdatedBy = UserUtility.GetUserName();
         
         // Update permissions
         if (permissions != null)
@@ -257,7 +257,7 @@ public class ApplicationUserManager(
             LastName = applicationUser.LastName,
             Role = applicationUser.Role,
             Email = applicationUser.Email,
-            Company = applicationUser.Company,
+            CompanyId = applicationUser.CompanyId,
             Image = applicationUser.Image,
             EmployeeId = applicationUser.EmployeeId,
             Password = applicationUser.Password,
@@ -280,7 +280,7 @@ public class ApplicationUserManager(
             LastName = applicationUser.LastName,
             Phone = applicationUser.PhoneNumber,
             Email = applicationUser.Email,
-            Company = applicationUser.Company,
+            CompanyId = applicationUser.CompanyId,
             Image = applicationUser.Image,
             Role= applicationUser.Role,
             UserName = applicationUser.UserName,
@@ -325,7 +325,7 @@ public class ApplicationUserManager(
                     UserName = applicationUser.UserName,
                     Email = applicationUser.Email,
                     Phone = applicationUser.PhoneNumber,
-                    Company = applicationUser.Company,
+                    CompanyId = applicationUser.CompanyId,
                     Role = applicationUser.Role,
                     Image = applicationUser.Image,
                     Date = applicationUser.Date,
@@ -375,7 +375,7 @@ public class ApplicationUserManager(
                     UserName = user.UserName?? string.Empty,
                     Email = user.Email?? string.Empty,
                     Phone = user.PhoneNumber?? string.Empty,
-                    Company = user.Company,
+                    CompanyId= user.CompanyId,
                     Role = user.Role,
                     Image = user.Image,
                     Date = user.Date,
@@ -441,7 +441,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
                 UserName = user.UserName?? string.Empty,
                 Email = user.Email?? string.Empty,
                 Phone = user.PhoneNumber?? string.Empty,
-                Company = user.Company,
+                CompanyId = user.CompanyId,
                 Role = user.Role,
                 Image = user.Image,
                 Date = user.Date,
@@ -462,7 +462,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
             UserName = user.UserName?? string.Empty,
             Email = user.Email?? string.Empty,
             Phone = user.PhoneNumber?? string.Empty,
-            Company = user.Company,
+            CompanyId = user.CompanyId,
             Role = user.Role,
             Image = user.Image,
             Date = user.Date,

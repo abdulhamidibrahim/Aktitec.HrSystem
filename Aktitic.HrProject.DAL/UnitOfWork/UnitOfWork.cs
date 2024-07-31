@@ -25,9 +25,11 @@ public class UnitOfWork : IUnitOfWork
     private CustomPolicyRepo _customPolicyRepo;
     private ContactsRepo _contactsRepo;
     private ContractsRepo _contractsRepo;
+    private CompanyRepo _companyRepo;
     private DesignationRepo _designationRepo;
     private EmployeeProjectsRepo _employeeProjectsRepo;
     private FileRepo _fileRepo;
+    private FileUsersRepo _fileUsersRepo;
     private HolidayRepo _holidayRepo;
     private LeavesRepo _leavesRepo;
     private LeaveSettingRepo _leaveSettingsRepo;
@@ -59,6 +61,7 @@ public class UnitOfWork : IUnitOfWork
     private PerformanceIndicatorRepo _performanceIndicatorRepo;
     private PerformanceAppraisalRepo _performanceAppraisalRepo;
     private PermissionsRepo _permissionsRepo;
+    private LicenseRepo _licenseRepo;
     private PolicyRepo _policyRepo;
     private PromotionRepo _promotionRepo;
     private ProvidentFundsRepo _providentFundsRepo;
@@ -72,6 +75,8 @@ public class UnitOfWork : IUnitOfWork
     private ITrainingListRepo _trainingListRepo;
     private TrainingTypeRepo _trainingTypeRepo;
     private EventsRepo _eventsRepo;
+    private NotificationRepo _notificationRepo;
+    private ChatGroupRepo _chatGroupRepo;
 
 
     // complete all other repos
@@ -97,12 +102,14 @@ public class UnitOfWork : IUnitOfWork
     public ICustomPolicyRepo CustomPolicy => _customPolicyRepo ??= new CustomPolicyRepo(_context);
     public IContactsRepo Contacts => _contactsRepo ??= new ContactsRepo(_context);
     public IContractsRepo Contracts => _contractsRepo ??= new ContractsRepo(_context);
+    public ICompanyRepo Company => _companyRepo ??= new CompanyRepo(_context);
     
     public IDesignationRepo Designation => _designationRepo ??= new DesignationRepo(_context);
     
     public IEmployeeProjectsRepo EmployeeProjects => _employeeProjectsRepo ??= new EmployeeProjectsRepo(_context);
     
     public IFileRepo File => _fileRepo ??= new FileRepo(_context);
+    public IFileUsersRepo FileUsers => _fileUsersRepo ??= new FileUsersRepo(_context);
     
     public IHolidayRepo Holiday => _holidayRepo ??= new HolidayRepo(_context);
     
@@ -157,6 +164,7 @@ public class UnitOfWork : IUnitOfWork
     public IGoalTypeRepo GoalType => _goalTypeRepo ??= new GoalTypeRepo(_context);
     public IPayrollAdditionRepo PayrollAddition => _payrollAdditionRepo ??= new PayrollAdditionRepo(_context);
     public IPayrollDeductionRepo PayrollDeduction => _payrollDeductionRepo ??= new PayrollDeductionRepo(_context);
+    public ILicenseRepo License => _licenseRepo ??= new LicenseRepo(_context);
     public IPolicyRepo Policies => _policyRepo ??= new PolicyRepo(_context);
     public IPayrollOvertimeRepo PayrollOvertime => _payrollOvertimeRepo ??= new PayrollOvertimeRepo(_context);
     public IPerformanceIndicatorRepo PerformanceIndicator => _performanceIndicatorRepo ??= new PerformanceIndicatorRepo(_context);
@@ -169,6 +177,8 @@ public class UnitOfWork : IUnitOfWork
     public ISalaryRepo Salary => _salaryRepo ??= new SalaryRepo(_context);
     public ITerminationRepo Termination => _terminationRepo ??= new TerminationRepo(_context);
     public IEventsRepo Events => _eventsRepo ??= new EventsRepo(_context);
+    public INotificationRepo Notification => _notificationRepo ??= new NotificationRepo(_context);
+    public IChatGroupRepo ChatGroup => _chatGroupRepo ??= new ChatGroupRepo(_context);
                 
     
 

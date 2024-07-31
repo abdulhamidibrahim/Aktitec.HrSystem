@@ -21,9 +21,11 @@ public interface IUnitOfWork : IDisposable
     ICustomPolicyRepo CustomPolicy { get; }
     IContactsRepo Contacts { get; }
     IContractsRepo Contracts { get; }
+    ICompanyRepo Company { get; }
     IDesignationRepo Designation { get; }
     IEmployeeProjectsRepo EmployeeProjects { get; }
     IFileRepo File { get; }
+    IFileUsersRepo FileUsers { get; }
     IHolidayRepo Holiday { get; }
     ILeavesRepo Leaves { get; }
     ILeaveSettingRepo LeaveSettings { get; }
@@ -52,6 +54,7 @@ public interface IUnitOfWork : IDisposable
     IBudgetExpensesRepo BudgetExpenses { get; }
     IExpensesOfBudgetRepo ExpensesOfBudget { get; }
     ISalaryRepo Salary { get; }
+    ILicenseRepo License { get; }
     IPolicyRepo Policies { get; }
     IPayrollOvertimeRepo PayrollOvertime { get; }
     IPayrollDeductionRepo PayrollDeduction { get; }
@@ -69,7 +72,6 @@ public interface IUnitOfWork : IDisposable
     IEventsRepo Events { get; }
     IPerformanceAppraisalRepo PerformanceAppraisal { get; }
     IPerformanceIndicatorRepo PerformanceIndicator { get; }
-    
-    
-    
+    INotificationRepo Notification { get; }
+    IChatGroupRepo ChatGroup { get; }
 }

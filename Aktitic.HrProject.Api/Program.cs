@@ -2,6 +2,7 @@ using System.Text;
 using Aktitic.HrProject.Api.Configuration;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.AutoMapper;
+using Aktitic.HrProject.BL.Managers.Company;
 using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
@@ -15,6 +16,8 @@ using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.Repos.GoalListRepo;
 using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
 using Aktitic.HrProject.DAL.Repos.TrainingListRepo;
+using Aktitic.HrProject.DAL.Services.TenantServices;
+using Aktitic.HrProject.DAL.Settings;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using Aktitic.HrTaskBoard.BL;
@@ -70,9 +73,8 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<HrSystemDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(HrManagementDbConnection))
-        // option => option.CommandTimeout(300)
-        );
+    options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(HrManagementDbConnection)),
+        option => option.CommandTimeout(300));
     // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
@@ -88,7 +90,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
 //     .AddDefaultTokenProviders();
 
 var jwtOptions = builder.Configuration.GetSection("JWT").Get<JwtOptions>();
-
+builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -169,7 +171,7 @@ var mapperConfig = new MapperConfiguration(mc =>
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-builder.Services.AddScoped<HttpContextAccessor>();
+builder.Services.AddSingleton<HttpContextAccessor>();
 builder.Services.AddScoped<UserUtility>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<JwtOptions>();
@@ -226,9 +228,14 @@ builder.Services.AddScoped<IPerformanceIndicatorManager, PerformanceIndicatorMan
 builder.Services.AddScoped<IEventManager, EventManager>();
 builder.Services.AddScoped<IContactsManager, ContactsManager>();
 builder.Services.AddScoped<IContractsManager, ContractsManager>();
+builder.Services.AddScoped<IChatGroupManager, ChatGroupManager>();
+builder.Services.AddScoped<ICompanyManager, CompanyManager>();
+builder.Services.AddScoped<INotificationManager, NotificationManager>();
 
 #endregion
 
+builder.Services.AddScoped<ChatHub>();
+builder.Services.AddSingleton<ITenantServices,TenantServices>();
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -237,7 +244,41 @@ builder.Services.Configure<FormOptions>(options =>
     options.MemoryBufferThreshold = int.MaxValue;
 });
 
+
 // builder.Services.AddMigrate();
+//
+// var options  = builder.Configuration.GetSection(nameof(TenantSettings)).Get<TenantSettings>();
+// if (options != null)
+// {
+//     builder.Services.AddSingleton(options);
+
+// the upper line done the same thing like the following lines
+
+// builder.Services.Configure<TenantSettings>(builder.Configuration.GetSection(nameof(TenantSettings)));
+// TenantSettings options= new();
+// builder.Configuration.GetSection(nameof(TenantSettings)).Bind(options);
+
+
+    // var defaultDbProvider = options.Defaults.DbProvider;
+    // if (defaultDbProvider.ToLower() == "mssql")
+    // {
+    //     builder.Services.AddDbContext<HrSystemDbContext>(m => m.UseSqlServer());
+    // }
+    //
+    // foreach (var tenant in options.Tenants)
+    // {
+    //     var connectionString = tenant.ConnectionString ?? options.Defaults.ConnectionString;
+    //     using var scope = builder.Services.BuildServiceProvider().CreateScope();
+    //     var dbContext = scope.ServiceProvider.GetRequiredService<HrSystemDbContext>();
+    //
+    //     dbContext.Database.SetConnectionString(connectionString);
+    //
+    //     if (dbContext.Database.GetPendingMigrations().Any())
+    //     {
+    //         dbContext.Database.Migrate();
+    //     }
+    // }
+
 
 builder.Services.AddSignalR();
 
