@@ -124,7 +124,7 @@ public class SchedulingRepo :GenericRepo<Scheduling>,ISchedulingRepo
                 //         Department = new Department
                 //         {
                 //             Id = x.Employee.Department.Id,
-                //             Name = x.Employee.Department.Name
+                //             FileName = x.Employee.Department.FileName
                 //         }
                 //     }
                 // } : new Scheduling

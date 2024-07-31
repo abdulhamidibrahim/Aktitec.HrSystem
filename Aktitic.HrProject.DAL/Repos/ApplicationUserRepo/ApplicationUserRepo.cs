@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
         {
             var query = _context.ApplicationUsers
                 .Include(a=>a.Employee)
+                .Include(a=>a.Company)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKey))
@@ -38,7 +40,7 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
                         x.UserName!.ToLower().Contains(searchKey) ||
                         x.Email!.ToLower().Contains(searchKey) ||
                         x.PhoneNumber!.ToLower().Contains(searchKey) ||
-                        x.Company.ToLower().Contains(searchKey) ||
+                        x.Company.CompanyName.Contains(searchKey) ||
                         x.Role!.ToLower().Contains(searchKey));
                        
                         
@@ -60,6 +62,17 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
         return new ApplicationUser();
     }
 
+    public async Task<ApplicationUser?> GetUserAdmin(int? companyId)
+    {
+        if (_context.ApplicationUsers != null)
+        {
+            return await _context.ApplicationUsers
+                .Where(x => x.CompanyId == companyId && x.IsManager)
+                .FirstOrDefaultAsync();
+        }
+        return (new ApplicationUser());
+    }
+
     public async Task<IEnumerable<ApplicationUser>> GetAllWithPermissionsAsync()
     {
         if (_context.ApplicationUsers != null)
@@ -79,5 +92,23 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
                 .AsQueryable()
                 .ToListAsync();
         return await Task.FromResult<IEnumerable<ApplicationUser>>(new List<ApplicationUser>());
+    }
+
+    public async Task<List<int>> GetUserIdsByCompanyId(int companyId)
+    {
+        if (_context.ApplicationUsers != null)
+            return await _context.ApplicationUsers!
+                .Where(x => x.CompanyId == companyId)
+                .Select(x => x.Id)
+                .ToListAsync();
+        return (new List<int>());
+    }
+
+    public bool IsAdmin(int adminId)
+    {
+        
+        if (_context.ApplicationUsers != null)
+            return _context.ApplicationUsers.Any(x => x.Id == adminId && x.IsManager ==true);
+        return false;
     }
 }

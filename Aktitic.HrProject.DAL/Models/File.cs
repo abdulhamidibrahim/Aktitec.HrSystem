@@ -8,12 +8,22 @@ public partial class File : BaseEntity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public string? Name { get; set; }
+    public string? FileName { get; set; }
    
-    public string? Extension { get; set; }
+    public string? FilePath { get; set; }
+    public string? FileSize { get; set; }
+    public string VersionNumber { get; set; } = string.Empty;
 
-    public byte[]? Content { get; set; }
+    public Status Status { get; set; }
+    
+    [ForeignKey(nameof(User))]
+    public int? UserId { get; set; }
+    public ApplicationUser? User { get; set; } = new();/// <summary>
+                                                       /// User who uploaded the file
+                                                       /// </summary>
 
+    public List<FileUsers> FileUsers { get; set; }
+    
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }
     

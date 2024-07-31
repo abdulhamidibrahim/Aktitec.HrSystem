@@ -12,15 +12,11 @@ namespace Aktitic.HrTaskList.BL;
 
 public class ContractsManager:IContractsManager
 {
-    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ContractsManager(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+    public ContractsManager(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _webHostEnvironment = webHostEnvironment;
     }
     
     public Task<int> Add(ContractAddDto contractAddDto)

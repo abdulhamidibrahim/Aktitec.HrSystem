@@ -48,7 +48,7 @@ public class EmployeeManager(
 
         // var file = new UserFile()
         // {
-        //     Name = employeeAddDto.Image.FileName,
+        //     FileName = employeeAddDto.Image.FileName,
         //     // Content = image.OpenReadStream().ReadAllBytes(),
         //     Extension = employeeAddDto.Image.ContentType,
         //     
@@ -407,7 +407,7 @@ public class EmployeeManager(
     // {
     //     var file = _fileRepo.GetByEmployeeId(id);
     //     if (file.Result == null) return null;
-    //     return Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",file.Result.EmployeeName!, file.Result.Name);
+    //     return Path.Combine(_webHostEnvironment.WebRootPath, "uploads/employees",file.Result.EmployeeName!, file.Result.FileName);
     // }
     
     public bool IsEmailUnique(string email)

@@ -12,7 +12,7 @@ public class ApplicationUserReadDto
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
-    public string Company { get; set; } = string.Empty;
+    public int? CompanyId { get; set; }
     public string Password { get; set; } = string.Empty;
     public int? EmployeeId { get; set; }
     public string Image { get; set; } = string.Empty;

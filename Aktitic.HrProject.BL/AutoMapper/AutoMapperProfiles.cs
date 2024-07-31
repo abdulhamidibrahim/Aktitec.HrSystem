@@ -44,7 +44,7 @@ public class AutoMapperProfiles : Profile
                 JobPosition = src.AssignEmployee.JobPosition,
                 // DepartmentDto = src.AssignEmployee.DepartmentId == null ? null : new DepartmentDto
                 // {
-                //     Name = src.AssignEmployee.DepartmentId.Name!
+                //     FileName = src.AssignEmployee.DepartmentId.FileName!
                 // }
             })).ForMember(dest => dest.Project, opt =>
                 opt.MapFrom(src => src.Project == null ? null : new ProjectDto

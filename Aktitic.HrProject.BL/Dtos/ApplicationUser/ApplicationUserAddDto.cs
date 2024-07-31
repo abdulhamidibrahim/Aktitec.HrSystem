@@ -25,7 +25,7 @@ public class ApplicationUserAddDto
     [Required, RegularExpression("^\\+?\\d{11}$")]
     public string Phone { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
-    public string Company { get; set; } = string.Empty;
+    public int CompanyId { get; set; }
     public int? EmployeeId { get; set; }
     public DateTime Date { get; set; }
     public IFormFile? Image { get; set; }

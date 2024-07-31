@@ -12,6 +12,7 @@ using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NETCore.MailKit.Core;
 using Newtonsoft.Json;
@@ -29,6 +30,7 @@ public class UsersController(
     IMapper mapper,
     IConfiguration configuration,
     IEmailService emailService,
+    IOptions<JwtOptions> jwtOptions,
     IUnitOfWork unitOfWork)
     : ControllerBase
 {
@@ -70,13 +72,14 @@ public class UsersController(
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(nameof(Company),user.CompanyId.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(30),
-            Issuer = configuration["JWT:Issuer"],
-            Audience = configuration["JWT:Audience"],
+            Issuer = jwtOptions.Value.Issuer,
+            Audience = jwtOptions.Value.Audience,
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]))
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SigningKey))
                     ,SecurityAlgorithms.HmacSha256)
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -91,7 +94,7 @@ public class UsersController(
             LastName = user.LastName,
             Role = user.Role,
             Email = user.Email,
-            Company = user.Company,
+            CompanyId = user.CompanyId,
             Image = user.Image,
             EmployeeId = user.EmployeeId,
             UserName = user.UserName,
