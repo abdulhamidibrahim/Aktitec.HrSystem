@@ -1,4 +1,5 @@
 using System.Linq.Dynamic.Core;
+using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -67,9 +68,21 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
     {
         if (_context.Companies != null)
             return await _context.Companies
-                .Include(x => x.Manager).AsQueryable().ToListAsync();
+                .Include(x => x.Manager)
+                .AsQueryable()
+                .ToListAsync();
 
         return await Task.FromResult(Enumerable.Empty<Company>());
+    }
+
+    public async Task<Company> GetCompany(int companyId)
+    {
+
+        var company = await _context.Companies
+            // .Include(x=>x.Manager)
+            .FirstAsync(x => x.Id == companyId);
+        return company;
+
     }
 
 
@@ -79,4 +92,6 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
         await _context.SaveChangesAsync();
         return (createdCompany.Entity.Id);
     }
+
+  
 }

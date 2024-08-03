@@ -74,4 +74,5 @@ public interface IUnitOfWork : IDisposable
     IPerformanceIndicatorRepo PerformanceIndicator { get; }
     INotificationRepo Notification { get; }
     IChatGroupRepo ChatGroup { get; }
+    IChatGroupUsersRepo ChatGroupUsers { get; }
 }

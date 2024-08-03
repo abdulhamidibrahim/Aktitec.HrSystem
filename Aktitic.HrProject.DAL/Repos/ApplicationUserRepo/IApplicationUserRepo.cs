@@ -1,4 +1,6 @@
 using Aktitic.HrProject.DAL.Models;
+using Microsoft.AspNetCore.SignalR;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.DAL.Repos;
 
@@ -13,4 +15,8 @@ public interface IApplicationUserRepo :IGenericRepo<ApplicationUser>
     
     Task<List<int>> GetUserIdsByCompanyId(int companyId);
     bool IsAdmin(int adminId);
+    bool HasAccess( int companyId);
+    Task AddConnection(string userId, string connectionId);
+    Task RemoveConnection( string connectionId);
+    Task<ApplicationUser?> GetUser(Func<ApplicationUser?, bool> predicate);
 }

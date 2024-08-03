@@ -253,6 +253,22 @@
       "PackagePath": "staticwebassets/uploads/employees/sayed078f20dc-e1f7-4664-9aa9-e8011fc7796d/Notations for Traditional ERD-Page-1.png/Notations for Traditional ERD-Page-1.png"
     },
     {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/users/abdulhamid12cb76a4a-e27f-444b-bf5b-a79e44c66dfb/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg",
+      "PackagePath": "staticwebassets/uploads/users/abdulhamid12cb76a4a-e27f-444b-bf5b-a79e44c66dfb/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg"
+    },
+    {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/users/abdulhamid169df4373-1f5f-4e0c-8ac8-2b5fa1c374e6/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg",
+      "PackagePath": "staticwebassets/uploads/users/abdulhamid169df4373-1f5f-4e0c-8ac8-2b5fa1c374e6/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg"
+    },
+    {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/users/abdulhamid188cb841a-ceed-4b30-bc8d-3b70e6dabcc7/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg",
+      "PackagePath": "staticwebassets/uploads/users/abdulhamid188cb841a-ceed-4b30-bc8d-3b70e6dabcc7/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg"
+    },
+    {
+      "Id": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/wwwroot/uploads/users/abdulhamid1f6178574-f5dd-4405-a96b-a4a7b0308ce4/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg",
+      "PackagePath": "staticwebassets/uploads/users/abdulhamid1f6178574-f5dd-4405-a96b-a4a7b0308ce4/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Aktitic.HrProject.Api.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

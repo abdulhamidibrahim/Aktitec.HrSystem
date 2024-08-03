@@ -10,8 +10,8 @@ public class MessageDto
     public string? SenderPhotoUrl { get; set; }=string.Empty;
         
     public int? SenderId { get; set; }
-    
-    public DateOnly? Date { get; set; }
+    public int? ReceiverId { get; set; }
+    public DateTime? Date { get; set; }
     public string? Text { get; set; }
-    public FileDto? File { get; set; }
+    public string? FilePath { get; set; }
 }

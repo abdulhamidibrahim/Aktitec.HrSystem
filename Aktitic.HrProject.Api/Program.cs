@@ -7,17 +7,8 @@ using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Configuration;
 using Aktitic.HrProject.DAL.Helpers.Connection_Strings;
-using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
-using Aktitic.HrProject.DAL.Repos.ClientRepo;
-using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
-using Aktitic.HrProject.DAL.Repos.GoalListRepo;
-using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
-using Aktitic.HrProject.DAL.Repos.TrainingListRepo;
 using Aktitic.HrProject.DAL.Services.TenantServices;
-using Aktitic.HrProject.DAL.Settings;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using Aktitic.HrTaskBoard.BL;
@@ -91,23 +82,28 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
 
 var jwtOptions = builder.Configuration.GetSection("JWT").Get<JwtOptions>();
 builder.Services.AddSingleton(jwtOptions);
+//
+// builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+// JwtOptions options= new();
+// builder.Configuration.GetSection(nameof(JwtOptions)).Bind(options);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // if not valid redirect to login form 
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+}).AddJwtBearer(bearerOptions =>
 {
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
+    bearerOptions.SaveToken = true;
+    bearerOptions.RequireHttpsMetadata = false;
+    bearerOptions.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidIssuer = jwtOptions?.Issuer,
         ValidateAudience = true,
         ValidAudience = jwtOptions?.Audience,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions?.SigningKey))
     };
 });
 
@@ -176,6 +172,7 @@ builder.Services.AddScoped<UserUtility>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<JwtOptions>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddScoped<ChatHub>();
 
 #region resolving dependencies
 builder.Services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
@@ -234,6 +231,7 @@ builder.Services.AddScoped<INotificationManager, NotificationManager>();
 
 #endregion
 
+builder.Services.AddScoped<NotificationHub>();
 builder.Services.AddScoped<ChatHub>();
 builder.Services.AddSingleton<ITenantServices,TenantServices>();
 
@@ -253,11 +251,11 @@ builder.Services.Configure<FormOptions>(options =>
 //     builder.Services.AddSingleton(options);
 
 // the upper line done the same thing like the following lines
-
+//
 // builder.Services.Configure<TenantSettings>(builder.Configuration.GetSection(nameof(TenantSettings)));
 // TenantSettings options= new();
 // builder.Configuration.GetSection(nameof(TenantSettings)).Bind(options);
-
+//
 
     // var defaultDbProvider = options.Defaults.DbProvider;
     // if (defaultDbProvider.ToLower() == "mssql")
@@ -308,4 +306,68 @@ app.MapControllers();
 
 app.MapHub<ChatHub>("/chat");
 
+// using (var scope = app.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     try
+//     {
+//         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+//         var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+//
+//         // Seed the admin user and roles
+//         await SeedDataAsync(userManager, roleManager);
+//     }
+//     catch (Exception ex)
+//     {
+//         var logger = services.GetRequiredService<ILogger<Program>>();
+//         logger.LogError(ex, "An error occurred while seeding the database.");
+//     }
+// }
+
+
 app.Run();
+
+//
+// static async Task SeedDataAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<int>> roleManager)
+// {
+//     // Check if the admin role exists, if not, create it
+//     if (!await roleManager.RoleExistsAsync("SystemOwner"))
+//     {
+//         await roleManager.CreateAsync(new IdentityRole<int>("SystemOwner"));
+//     }
+//
+//     // Check if the admin user exists, if not, create it
+//     var adminUser = await userManager.FindByNameAsync("admin");
+//     if (adminUser == null)
+//     {
+//         // Create the admin user
+//         adminUser = new ApplicationUser
+//         {
+//             UserName = "admin",
+//             Email = "admin@system.com",
+//             FirstName = "Aktitech",
+//             LastName = "Company",
+//             EmailConfirmed = true,
+//             Password = "aktitech_admin@123",
+//             Image = "string",
+//             IsAdmin = true,
+//             HasAccess = true,
+//             CreatedBy = "admin",
+//             CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+//             UpdatedBy = "",
+//             UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+//         };
+//
+//         var result = await userManager.CreateAsync(adminUser, "aktitech_admin@123"); // Set a strong password
+//         if (result.Succeeded)
+//         {
+//             // Assign the SystemOwner role to the admin user
+//             await userManager.AddToRoleAsync(adminUser, "SystemOwner");
+//         }
+//         else
+//         {
+//             // Handle errors (log or throw)
+//             throw new Exception("Failed to create admin user");
+//         }
+//     }
+// }

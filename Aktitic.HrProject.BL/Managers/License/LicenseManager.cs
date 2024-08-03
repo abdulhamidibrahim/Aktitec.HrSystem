@@ -17,6 +17,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Aktitic.HrTaskList.BL;
 
 public class LicenseManager(
+    UserUtility userUtility,
     IUnitOfWork unitOfWork) : ILicenseManager
 {
     public Task<int> Add(LicenseAddDto licenseAddDto)
@@ -28,7 +29,7 @@ public class LicenseManager(
           Price = licenseAddDto.Price,
           Active = licenseAddDto.Active,
           CreatedAt = DateTime.Now,
-          CreatedBy = UserUtility.GetUserName(),
+          CreatedBy = userUtility.GetUserName(),
         };
         
         unitOfWork.License.Add(license);
@@ -48,7 +49,7 @@ public class LicenseManager(
         if (license == null) return Task.FromResult(0);
         
         license.UpdatedAt = DateTime.Now;
-        license.UpdatedBy = UserUtility.GetUserName();
+        license.UpdatedBy = userUtility.GetUserName();
         
         unitOfWork.License.Update(license);
         return unitOfWork.SaveChangesAsync();
@@ -60,7 +61,7 @@ public class LicenseManager(
         if (license==null) return Task.FromResult(0);
         license.IsDeleted = true;
         license.DeletedAt = DateTime.Now;
-        license.DeletedBy = UserUtility.GetUserName();
+        license.DeletedBy = userUtility.GetUserName();
         unitOfWork.License.Update(license);
         return unitOfWork.SaveChangesAsync();
     }

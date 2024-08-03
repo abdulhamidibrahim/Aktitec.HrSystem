@@ -3,9 +3,9 @@ using Aktitic.HrProject.DAL.Pagination.Client;
 
 namespace Aktitic.HrProject.BL;
 
-public class CompanyReadDto
+public class CompanyManagerDto
 {
-    public UserDto Manager { get; set; }
-    public CompanyDto Company { get; set; }
+    // public UserDto Manager { get; set; }
+    // public CompanyDto Company { get; set; }
 
 }

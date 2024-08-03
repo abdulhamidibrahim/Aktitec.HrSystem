@@ -1,4 +1,3 @@
-using System.Linq.Dynamic.Core;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -110,5 +109,41 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
         if (_context.ApplicationUsers != null)
             return _context.ApplicationUsers.Any(x => x.Id == adminId && x.IsManager ==true);
         return false;
+    }
+
+    public bool HasAccess(int companyId)
+    {
+        if (_context.ApplicationUsers != null)
+            return _context.ApplicationUsers.Include(x=>x.Company).ThenInclude(x=>x).Any(x => x.CompanyId == companyId);
+        return false;
+    }
+
+    public Task AddConnection(string userId, string connectionId)
+    {
+        var user = _context.ApplicationUsers.Where(u=>u.Id == int.Parse(userId));
+        if (user != null)
+        {
+            user.First().ConnectionId = connectionId;
+            return _context.SaveChangesAsync();
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveConnection(string connectionId)
+    {
+        var user = _context.ApplicationUsers.Where(u => u.ConnectionId == connectionId);
+        if (user != null)
+        {
+            user.First().ConnectionId = null;
+            return _context.SaveChangesAsync();
+        }
+        return Task.CompletedTask;
+    }
+
+    public async Task<ApplicationUser?> GetUser(Func<ApplicationUser?, bool> predicate)
+    {
+        if (_context.ApplicationUsers != null)
+            return  (_context.ApplicationUsers.FirstOrDefault(predicate));
+        return  (new ApplicationUser());
     }
 }

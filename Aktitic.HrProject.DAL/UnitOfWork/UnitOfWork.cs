@@ -77,6 +77,7 @@ public class UnitOfWork : IUnitOfWork
     private EventsRepo _eventsRepo;
     private NotificationRepo _notificationRepo;
     private ChatGroupRepo _chatGroupRepo;
+    private ChatGroupUsersRepo _chatGroupUsersRepo;
 
 
     // complete all other repos
@@ -179,6 +180,7 @@ public class UnitOfWork : IUnitOfWork
     public IEventsRepo Events => _eventsRepo ??= new EventsRepo(_context);
     public INotificationRepo Notification => _notificationRepo ??= new NotificationRepo(_context);
     public IChatGroupRepo ChatGroup => _chatGroupRepo ??= new ChatGroupRepo(_context);
+    public IChatGroupUsersRepo ChatGroupUsers => _chatGroupUsersRepo ??= new ChatGroupUsersRepo(_context);
                 
     
 

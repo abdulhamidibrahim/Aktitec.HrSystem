@@ -1,5 +1,4 @@
 using Aktitic.HrProject.BL.Utilities;
-using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.UnitOfWork;
@@ -9,9 +8,54 @@ using Task = System.Threading.Tasks.Task;
 namespace Aktitic.HrProject.BL.Managers.Company;
 
 public class CompanyManager(IUnitOfWork unitOfWork,
+                            UserUtility userUtility,
                             UserManager<ApplicationUser> userManager) : ICompanyManager
 {
     public async Task<int> Add(CompanyAddDto companyAddDto)
+    {
+        
+        var companyDto = companyAddDto.Company;
+        var company = new DAL.Models.Company()
+        {
+            CompanyName = companyDto.CompanyName,
+            Email    = companyDto.Email,
+            Phone = companyDto.Phone,
+            Address = companyDto.Address,
+            Website = companyDto.Website,
+            Fax = companyDto.Fax,
+            Country = companyDto.Country,
+            City = companyDto.City,
+            Contact = companyDto.Contact,
+            State = companyDto.State,
+            Postal = companyDto.Postal,
+            CreatedAt = DateTime.Now,
+            CreatedBy = userUtility.GetUserId()??"",
+        };
+        
+        var companyId = await unitOfWork.Company.Create(company);
+        var managerDto = companyAddDto.Manager;
+        var manager = new ApplicationUser()
+        {
+            UserName = managerDto.UserName,
+            Email = managerDto.Email,
+            EmailConfirmed = true,
+            CreatedAt = DateTime.Now,
+            Password = managerDto.Password,
+            CreatedBy = userUtility.GetUserId()?? "",
+            FirstName = managerDto.FirstName,
+            LastName = managerDto.LastName,
+            IsManager = true,
+            HasAccess = true,
+            CompanyId = companyId
+        };
+        var created=userManager.CreateAsync(manager,managerDto.Password).Result;
+        if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
+        
+        await unitOfWork.SaveChangesAsync();
+        
+        return company.Id;
+    }
+    public async Task<int> AddAdmin(CompanyAddDto companyAddDto)
     {
         var managerDto = companyAddDto.Manager;
         var manager = new ApplicationUser()
@@ -20,11 +64,14 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             Email = managerDto.Email,
             EmailConfirmed = true,
             CreatedAt = DateTime.Now,
-            CreatedBy = UserUtility.GetUserId(),
+            Password = managerDto.Password,
+            CreatedBy = userUtility.GetUserId()?? "",
             FirstName = managerDto.FirstName,
             LastName = managerDto.LastName,
+            IsAdmin = true,
+            HasAccess = true,
         };
-        var created=userManager.CreateAsync(manager).Result;
+        var created=userManager.CreateAsync(manager,managerDto.Password).Result;
         if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
         
         var companyDto = companyAddDto.Company;
@@ -42,7 +89,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             State = companyDto.State,
             Postal = companyDto.Postal,
             CreatedAt = DateTime.Now,
-            CreatedBy = UserUtility.GetUserId(),
+            CreatedBy = userUtility.GetUserId()??"",
         };
         
         var companyId = await unitOfWork.Company.Create(company);
@@ -73,7 +120,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         company.State = companyDto.State;
         company.Postal = companyDto.Postal;
         company.UpdatedAt = DateTime.Now;
-        company.UpdatedBy = UserUtility.GetUserId();
+        company.UpdatedBy = userUtility.GetUserId();
 
         // Update company in the repository
         unitOfWork.Company.Update(company);
@@ -90,7 +137,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 manager.FirstName = managerDto.FirstName;
                 manager.LastName = managerDto.LastName;
                 manager.UpdatedAt = DateTime.Now;
-                manager.UpdatedBy = UserUtility.GetUserId();
+                manager.UpdatedBy = userUtility.GetUserId();
 
                 var updateResult = await userManager.UpdateAsync(manager);
                 if (!updateResult.Succeeded)
@@ -108,16 +155,17 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         if (company==null) return Task.FromResult(0);
         company.IsDeleted = true;
         company.DeletedAt = DateTime.Now;
-        company.DeletedBy = UserUtility.GetUserId();
+        company.DeletedBy = userUtility.GetUserId();
         unitOfWork.Company.Update(company);
         return unitOfWork.SaveChangesAsync();
     }
 
-    public CompanyReadDto? Get(int id)
+    public async Task<CompanyReadDto>? Get(int id)
     {
-        var company = unitOfWork.Company.GetById(id);
+        var company = await  unitOfWork.Company.GetCompany(id);
         if (company == null) return null;
-        return new CompanyReadDto()
+        
+        var dto = new CompanyReadDto()
         {
             Company = new CompanyDto
             {
@@ -136,26 +184,27 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 CreatedAt = company.CreatedAt,
                 UpdatedAt = company.UpdatedAt
             },
-            Manager = new ApplicationUserDto
+            Manager = new UserDto()
             {
                 Id = company.Manager.Id,
                 UserName = company.Manager.UserName,
                 Email = company.Manager.Email,
                 FirstName = company.Manager.FirstName,
                 LastName = company.Manager.LastName,
-                
+                Password = company.Manager.Password,
                 CreatedAt = company.Manager.CreatedAt,
                 CreatedBy =company.Manager.CreatedBy,
                 UpdatedAt = company.Manager.UpdatedAt,
                 UpdatedBy =company.Manager.UpdatedBy,
             }
         };
+        return dto;
     }
 
-    public Task<List<CompanyReadDto>> GetAll()
+    public async Task<IEnumerable<CompanyReadDto>> GetAll()
     {
-        var company = unitOfWork.Company.GetAll();
-        return Task.FromResult(company.Result.Select(c=> new CompanyReadDto()
+        var company = await unitOfWork.Company.GetAllCompanies();
+        var dto = company.Select(c=> new CompanyReadDto()
         {
             Company = new CompanyDto
             {
@@ -174,21 +223,24 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             },
-            Manager = new ApplicationUserDto
-            {
-                Id = c.Manager.Id,
-                UserName = c.Manager.UserName,
-                Email = c.Manager.Email,
-                FirstName = c.Manager.FirstName,
-                LastName = c.Manager.LastName,
-                
-                CreatedAt = c.Manager.CreatedAt,
-                CreatedBy =c.Manager.CreatedBy,
-                UpdatedAt = c.Manager.UpdatedAt,
-                UpdatedBy =c.Manager.UpdatedBy,
-            }
+            
+            // Manager = new UserDto()
+            // {
+            //     Id = c.Manager.Id,
+            //     UserName = c.Manager.UserName,
+            //     Email = c.Manager.Email,
+            //     FirstName = c.Manager.FirstName,
+            //     LastName = c.Manager.LastName,
+            //     
+            //     CreatedAt = c.Manager.CreatedAt,
+            //     CreatedBy =c.Manager.CreatedBy,
+            //     UpdatedAt = c.Manager.UpdatedAt,
+            //     UpdatedBy =c.Manager.UpdatedBy,
+            // }
 
-        }).ToList());
+        });
+
+        return dto;
     }
 
      public async Task<FilteredCompanyDto> GetFilteredCompaniesAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
@@ -208,39 +260,39 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             var paginatedResults = companyList.Skip((page - 1) * pageSize).Take(pageSize);
 
             var map = paginatedResults
-                .Select(company => new CompanyReadDto()
+                .Select(c => new CompanyReadDto()
                 {
                     Company = new CompanyDto
                     {
-                        Id = company.Id,
-                        CompanyName = company.CompanyName,
-                        Email = company.Email,
-                        Phone = company.Phone,
-                        Address = company.Address,
-                        Website = company.Website,
-                        Fax = company.Fax,
-                        Country = company.Country,
-                        City = company.City,
-                        Contact = company.Contact,
-                        State = company.State,
-                        Postal = company.Postal,
-                        CreatedAt = company.CreatedAt,
-                        CreatedBy = company.CreatedBy,
-                        UpdatedAt = company.UpdatedAt,
-                        UpdatedBy = company.UpdatedBy,
+                        Id = c.Id,
+                        CompanyName = c.CompanyName,
+                        Email = c.Email,
+                        Phone = c.Phone,
+                        Address = c.Address,
+                        Website = c.Website,
+                        Fax = c.Fax,
+                        Country = c.Country,
+                        City = c.City,
+                        Contact = c.Contact,
+                        State = c.State,
+                        Postal = c.Postal,
+                        CreatedAt = c.CreatedAt,
+                        CreatedBy = c.CreatedBy,
+                        UpdatedAt = c.UpdatedAt,
+                        UpdatedBy = c.UpdatedBy,
                     },
-                    Manager = new ApplicationUserDto
+                    Manager = new UserDto()
                     {
-                        Id = company.Manager.Id,
-                        UserName = company.Manager.UserName,
-                        Email = company.Manager.Email,
-                        FirstName = company.Manager.FirstName,
-                        LastName = company.Manager.LastName,
-                
-                        CreatedAt = company.Manager.CreatedAt,
-                        CreatedBy =company.Manager.CreatedBy,
-                        UpdatedAt = company.Manager.UpdatedAt,
-                        UpdatedBy =company.Manager.UpdatedBy,
+                        Id = c.Manager.Id,
+                        UserName = c.Manager.UserName,
+                        Email = c.Manager.Email,
+                        FirstName = c.Manager.FirstName,
+                        LastName = c.Manager.LastName,
+                        
+                        CreatedAt = c.Manager.CreatedAt,
+                        CreatedBy =c.Manager.CreatedBy,
+                        UpdatedAt = c.Manager.UpdatedAt,
+                        UpdatedBy =c.Manager.UpdatedBy,
                     }
                 });
 
@@ -293,7 +345,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                         UpdatedAt = company.UpdatedAt,
                         UpdatedBy = company.UpdatedBy,
                     },
-                    Manager = new ApplicationUserDto
+                    Manager = new UserDto()
                     {
                         Id = company.Manager.Id,
                         UserName = company.Manager.UserName,
@@ -380,7 +432,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                     UpdatedAt = company.UpdatedAt,
                     UpdatedBy = company.UpdatedBy,
                 },
-                Manager = new ApplicationUserDto
+                Manager = new UserDto()
                 {
                     Id = company.Manager.Id,
                     UserName = company.Manager.UserName,
@@ -420,7 +472,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 UpdatedAt = company.UpdatedAt,
                 UpdatedBy = company.UpdatedBy,
             },
-            Manager = new ApplicationUserDto
+            Manager = new UserDto()
             {
                 Id = company.Manager.Id,
                 UserName = company.Manager.UserName,

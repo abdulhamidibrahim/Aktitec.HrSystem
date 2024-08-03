@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>ture</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-<!--        <RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
+        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
         
     </PropertyGroup>
 
@@ -24,7 +24,7 @@
         </PackageReference>
         <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.8" />
     </ItemGroup>
 

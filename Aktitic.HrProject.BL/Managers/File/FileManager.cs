@@ -15,6 +15,7 @@ namespace Aktitic.HrProject.BL;
 
 public class FileManager(
     IUnitOfWork unitOfWork,
+    UserUtility userUtility,
     IWebHostEnvironment webHostEnvironment) : IFileManager
 {
     public async Task<int> Add(FileAddDto fileAddDto)
@@ -28,7 +29,7 @@ public class FileManager(
             VersionNumber = fileAddDto.VersionNumber,
             ProjectId = fileAddDto.ProjectId,
             CreatedAt = DateTime.Now,
-            CreatedBy = UserUtility.GetUserName(),
+            CreatedBy = userUtility.GetUserName(),
         };
         
         // add file users
@@ -40,7 +41,7 @@ public class FileManager(
                     FileUserId = x.UserId, 
                     FileId = file.Id, 
                     CreatedAt = DateTime.Now, 
-                    CreatedBy = UserUtility.GetUserName()
+                    CreatedBy = userUtility.GetUserName()
                 })
                 .ToList();
         }
@@ -101,7 +102,7 @@ public class FileManager(
                     FileUserId = x.UserId, 
                     FileId = file.Id, 
                     CreatedAt = DateTime.Now, 
-                    CreatedBy = UserUtility.GetUserName()
+                    CreatedBy = userUtility.GetUserName()
                 })
                 .ToList();
         }
@@ -122,7 +123,7 @@ public class FileManager(
         }
 
         file.UpdatedAt = DateTime.Now;
-        file.UpdatedBy = UserUtility.GetUserName();
+        file.UpdatedBy = userUtility.GetUserName();
         
         unitOfWork.File.Update(file);
         return await unitOfWork.SaveChangesAsync();
@@ -134,7 +135,7 @@ public class FileManager(
         if (file==null) return Task.FromResult(0);
         file.IsDeleted = true;
         file.DeletedAt = DateTime.Now;
-        file.DeletedBy = UserUtility.GetUserName();
+        file.DeletedBy = userUtility.GetUserName();
         unitOfWork.File.Update(file);
         return unitOfWork.SaveChangesAsync();
     }

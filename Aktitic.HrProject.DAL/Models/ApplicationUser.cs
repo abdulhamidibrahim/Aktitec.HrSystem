@@ -35,6 +35,7 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IAuditable
     public bool IsAdmin { get; set; }
     public bool HasAccess { get; set; } 
     public bool IsDeleted { get; set; }
+    public string? ConnectionId { get; set; }
     public DateTime? DeletedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; }

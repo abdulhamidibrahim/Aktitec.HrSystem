@@ -1,22 +1,25 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Managers.Company;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
+// [Authorize(Roles = "SystemOwner")] 
 [Route("api/[controller]")]
 public class CompaniesController(ICompanyManager companyManager) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<CompanyReadDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<CompanyReadDto>>> GetAll()
     {
-        return await companyManager.GetAll();
+        var result = await companyManager.GetAll();
+        return Ok(result);
     }
     
     [HttpGet("{id}")]
-    public ActionResult<CompanyReadDto?> Get(int id)
+    public ActionResult<Task<CompanyReadDto>?> Get(int id)
     {
         var result = companyManager.Get(id);
         if (result == null) return NotFound("Not Found!");
@@ -27,6 +30,14 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
     public ActionResult Add( CompanyAddDto companyAddDto)
     {
          var result = companyManager.Add(companyAddDto);
+         if (result.Result == 0) return BadRequest("Failed to add");
+         return Ok(new {message ="Created Successfully",CompanyId = result.Result});
+    }
+    
+    [HttpPost("createAdmin")]
+    public ActionResult AddAdmin( CompanyAddDto companyAddDto)
+    {
+         var result = companyManager.AddAdmin(companyAddDto);
          if (result.Result == 0) return BadRequest("Failed to add");
          return Ok(new {message ="Created Successfully",CompanyId = result.Result});
     }

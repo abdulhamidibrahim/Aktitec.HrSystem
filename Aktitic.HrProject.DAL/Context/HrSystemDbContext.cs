@@ -1,35 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Services.TenantServices;
-using Aktitic.HrProject.DAL.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 using Aktitic.HrProject.BL.Utilities;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace Aktitic.HrProject.DAL.Context;
 
 public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
-    // private static int? TenantId { get; set; }
-    // private readonly UserUtility _userUtility;
-    public HrSystemDbContext( ) { }
-
+    private static int? TenantId { get; set; }
+    private readonly UserUtility? _userUtility;
     
-
-    public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options)
-        : base(options)
+    public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
     {
-        // _userUtility = userUtility ?? throw new ArgumentNullException(nameof(userUtility));
-        // TenantId = int.Parse(UserUtility.GetCurrentCompany());
+        _userUtility = userUtility;
+        if (userUtility?.GetCurrentCompany() == "Company")
+            TenantId = 0;
+        else TenantId = string.IsNullOrEmpty(userUtility?.GetCurrentCompany()) ? 0
+            : int.Parse(userUtility.GetCurrentCompany());
+         
         
         
         if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
@@ -146,15 +142,17 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     // }
    
     
+    
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>()
-                     .Where(e=>e.State == EntityState.Added))
+                     .Where(e=>e.State == EntityState.Added && GetCurrentTenantId()!=0))
         {
             entry.Entity.TenantId = GetCurrentTenantId();
         }
         return base.SaveChangesAsync(cancellationToken);
     }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -179,6 +177,55 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
                 method.Invoke(null, new object[] { modelBuilder }); // Ensure the first parameter is null for static methods
             }
         }
+        
+        
+        
+        
+        
+        modelBuilder.Entity<ApplicationUser>().HasData(
+            new ApplicationUser 
+            {
+                Id = 1, 
+                FirstName = "Admin",
+                LastName = "",
+                Email = "abdulhamidibrahim@gmail.com",
+                UserName = "admin",
+                PasswordHash ="AQAAAAIAAYagAAAAEFkhlHHi/upXdct/8yBuHxE6ioCJpxojFizGlWUiW8mjSkzZrAsI+PeYtkNirZmR5Q==",
+                EmailConfirmed = true,
+                Password = "aktitech_admin",
+                Image = "string",
+                IsAdmin = true,
+                HasAccess = true,
+                CreatedBy = "admin",
+                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+                UpdatedBy = "",
+                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+            }
+        );
+        
+        // Seed data for Company
+        modelBuilder.Entity<Company>().HasData(
+            new Company
+            {
+                Id = 1, // Adjust the ID as needed
+                CompanyName = "AKTITECH",
+                Email = "mail@mail.com",
+                Address = "string",
+                Phone = "string",
+                Website = "string",
+                Fax = "string",
+                Country = "string",
+                City = "string",
+                State = "string",
+                Postal = "string",
+                Contact = "string",
+                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+                CreatedBy = "admin",
+                UpdatedBy = "string"
+            }
+        );
+        
         
 
         // modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
@@ -776,16 +823,16 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 
     private static int? GetCurrentTenantId()
     {
-        // Retrieve tenant ID from a source, e.g., HttpContext or a service
-        // Here, we simply return a value for illustration
-        return int.Parse(UserUtility.GetUserId());
+        
+        return TenantId;
     }
     private static void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : BaseEntity
     {
         modelBuilder.Entity<T>().HasQueryFilter(e => e.TenantId == GetCurrentTenantId());
     }
-    
-    private static readonly MethodInfo SetTenantIdFilterMethod = typeof(HrSystemDbContext)
-        .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Static, null, new[] { typeof(ModelBuilder) }, null);
-  
+
+        private static readonly MethodInfo SetTenantIdFilterMethod = typeof(HrSystemDbContext)
+        .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Static, null,
+              new[] { typeof(ModelBuilder) }, null);
 }
+

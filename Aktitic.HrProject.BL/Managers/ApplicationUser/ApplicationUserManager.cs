@@ -23,6 +23,7 @@ public class ApplicationUserManager(
     IWebHostEnvironment webHostEnvironment,
     IMapper mapper,
     IUnitOfWork unitOfWork,
+    UserUtility userUtility,
     UserManager<ApplicationUser> userManager)
     : IApplicationUserManager
 {
@@ -46,7 +47,7 @@ public class ApplicationUserManager(
             Date = applicationUserAddDto.Date,
             UserName = applicationUserAddDto.UserName,
             EmailConfirmed = false,
-            CreatedBy = UserUtility.GetUserName() ?? string.Empty,
+            CreatedBy = userUtility.GetUserName() ?? string.Empty,
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -97,7 +98,7 @@ public class ApplicationUserManager(
             UserName = applicationUserAddDto.UserName,
             EmailConfirmed = true,
             CreatedAt = DateTime.Now,
-            CreatedBy = UserUtility.GetUserName() ?? string.Empty,
+            CreatedBy = userUtility.GetUserName() ?? string.Empty,
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -183,7 +184,7 @@ public class ApplicationUserManager(
             applicationUser.UserName = applicationUserUpdateDto.UserName;
         
         applicationUser.UpdatedAt = DateTime.Now;
-        applicationUser.UpdatedBy = UserUtility.GetUserName();
+        applicationUser.UpdatedBy = userUtility.GetUserName();
         
         // Update permissions
         if (permissions != null)

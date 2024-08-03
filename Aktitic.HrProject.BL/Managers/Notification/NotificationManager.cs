@@ -15,7 +15,8 @@ namespace Aktitic.HrTaskList.BL;
 
 public class NotificationManager(
     IUnitOfWork unitOfWork,
-    IHubContext<ChatHub> hubContext) : INotificationManager
+    UserUtility userUtility,
+    ChatHub chatHub) : INotificationManager
 {
     public Task<int> AddGeneral(NotificationAddDto notificationAddDto)
     {
@@ -25,7 +26,7 @@ public class NotificationManager(
             Content = notificationAddDto.Content,
             IsAll = notificationAddDto.IsAll,
             Priority = notificationAddDto.Priority,
-            CreatedBy = UserUtility.GetUserId(),
+            CreatedBy = userUtility.GetUserId(),
             CreatedAt = DateTime.Now,
         };
 
@@ -36,7 +37,7 @@ public class NotificationManager(
                 IsRead = false,
                 UserId = receiver,
                 CreatedAt = DateTime.Now,
-                CreatedBy = UserUtility.GetUserId(),
+                CreatedBy = userUtility.GetUserId(),
             }).ToList();
         }
         
@@ -52,9 +53,9 @@ public class NotificationManager(
             Content = notificationAddDto.Content,
             IsAll = notificationAddDto.IsAll,
             Priority = notificationAddDto.Priority,
-            CreatedBy = UserUtility.GetUserId(),
+            CreatedBy = userUtility.GetUserId(),
             CreatedAt = DateTime.Now,
-            CompanyId = int.Parse(UserUtility.GetCurrentCompany()),
+            CompanyId = int.Parse(userUtility.GetCurrentCompany()),
         };
 
         if (!notification.IsAll)
@@ -64,7 +65,7 @@ public class NotificationManager(
                 IsRead = false,
                 UserId = receiver,
                 CreatedAt = DateTime.Now,
-                CreatedBy = UserUtility.GetUserId(),
+                CreatedBy = userUtility.GetUserId(),
             }).ToList();
         }
         unitOfWork.Notification.Add(notification);
@@ -82,7 +83,7 @@ public class NotificationManager(
 
         notification.IsDeleted = true;
         notification.DeletedAt = DateTime.Now;
-        notification.DeletedBy = UserUtility.GetUserId();
+        notification.DeletedBy = userUtility.GetUserId();
         
         unitOfWork.Notification.Update(notification);
             
@@ -120,7 +121,7 @@ public class NotificationManager(
     
     public async Task SendNotification(string message)
     {
-        await hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+        await chatHub.Clients.All.SendAsync("ReceiveNotification", message);
     }
 
     public async Task SendNotificationToSpecificCompany(int companyId, string message)
@@ -130,7 +131,7 @@ public class NotificationManager(
         {
             var userIdsAsStrings = users.Select(id => id.ToString()).ToList();
 
-            await hubContext.Clients.Users(userIdsAsStrings).SendAsync("ReceiveNotification", message);
+            await chatHub.Clients.Users(userIdsAsStrings).SendAsync("ReceiveNotification", message);
         }
     }
     
@@ -139,7 +140,7 @@ public class NotificationManager(
        
             var userIdsAsStrings = users.Select(id => id.ToString()).ToList();
 
-            await hubContext.Clients.Users(userIdsAsStrings).SendAsync("ReceiveNotification", message);
+            await chatHub.Clients.Users(userIdsAsStrings).SendAsync("ReceiveNotification", message);
         
     }
 }

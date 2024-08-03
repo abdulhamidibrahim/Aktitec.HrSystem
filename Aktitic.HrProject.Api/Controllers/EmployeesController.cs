@@ -58,11 +58,11 @@ public class EmployeesController: ControllerBase
     }
     
     // [ValidateAntiForgeryToken]
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]//
     // [EmployeeEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
-    public  ActionResult Create([FromForm] EmployeeAddDto employeeAddDto,[FromForm] IFormFile? image)
+    public  ActionResult Create([FromForm] EmployeeAddDto employeeAddDto, IFormFile? image)
     {
         
         var result =_employeeManager.Add(employeeAddDto,image);
@@ -74,10 +74,10 @@ public class EmployeesController: ControllerBase
         // return BadRequest(errors);
     }
     
-    [Consumes("multipart/form-data")]
+    // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id,[FromForm] IFormFile? image)
+    public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image)
     {
         var result= _employeeManager.Update(employeeUpdateDto,id,image);
         if (result.Result == 0) return BadRequest("Failed to update");

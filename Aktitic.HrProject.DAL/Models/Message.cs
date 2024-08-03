@@ -20,8 +20,13 @@ public class Message : BaseEntity
     public string? FileName { get; set; }
     
     [NotMapped]
-    public Dictionary<string,string>? FilePath { get; set; }
+    public string? FilePath { get; set; }
     
     public Task? Task { get; set; }
     public int? TaskId { get; set; }
+    public int? GroupId { get; set; }
+    public ApplicationUser? Sender { get; set; }
+    public ApplicationUser? Receiver { get; set; }
+    public ChatGroup? Group { get; set; }
+        
 }

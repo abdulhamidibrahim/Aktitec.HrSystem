@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
@@ -14,8 +13,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NETCore.MailKit.Core;
-using Newtonsoft.Json;
 using IEmailService = User.Management.Services.Services.IEmailService;
 using Message = User.Management.Services.Models.Message;
 using Task = System.Threading.Tasks.Task;
@@ -42,7 +39,7 @@ public class UsersController(
         var result = applicationUserManager.Add(userAddDto);
         var user = await userManager.CreateAsync(result,userAddDto.Password);
         if (!user.Succeeded) return BadRequest(user.Errors);
-
+        
         var token = userManager.GenerateEmailConfirmationTokenAsync(result).Result;
         var confirmationLink = Url.Action
             (nameof(ConfirmEmail), 
@@ -73,13 +70,13 @@ public class UsersController(
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(nameof(Company),user.CompanyId.ToString())
+                new Claim(nameof(Company),user.CompanyId.ToString() ?? string.Empty)
             }),
             Expires = DateTime.UtcNow.AddMinutes(30),
-            Issuer = jwtOptions.Value.Issuer,
-            Audience = jwtOptions.Value.Audience,
+            Issuer = configuration["Jwt:Issuer"],
+            Audience = configuration["Jwt:Audience"],
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SigningKey))
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SigningKey"]))
                     ,SecurityAlgorithms.HmacSha256)
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
