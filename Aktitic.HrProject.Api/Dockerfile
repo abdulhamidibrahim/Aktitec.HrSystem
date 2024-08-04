@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["Aktitic.HrProject.Api/Aktitic.HrProject.Api.csproj", "Aktitic.HrProject.Api/"]
 COPY ["Aktitic.HrProject.BL/Aktitic.HrProject.BL.csproj", "Aktitic.HrProject.BL/"]
 COPY ["Aktitic.HrProject.DAL/Aktitic.HrProject.DAL.csproj", "Aktitic.HrProject.DAL/"]
-RUN dotnet restore "Aktitic.HrProject.Api/Aktitic.HrProject.Api.csproj"
+RUN dotnet restore "Aktitic.HrProject.Api/Aktitic.HrProject.Api.csproj"    
 COPY . .
 WORKDIR "/src/Aktitic.HrProject.Api"
 RUN dotnet build "Aktitic.HrProject.Api.csproj" -c Release -o /app/build

@@ -69,6 +69,13 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         return Ok();
     }
     
+    [HttpGet("GetAllGroups/{page}/{pageSize}")]
+    public async Task<IActionResult> GetAllGroups(int page, int pageSize)
+    {
+        var groups = await chatGroupManager.GetAll(page, pageSize);
+        return Ok(groups);
+    }
+    
     [HttpDelete("deleteGroup/{chatGroupId}")]
     public async Task<IActionResult> DeleteGroup(int chatGroupId)
     {

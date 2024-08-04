@@ -13,7 +13,7 @@ public interface IChatGroupManager
     public Task<int> Update(ChatGroupUpdateDto chatGroupUpdateDto, int id);
     public Task<int> Delete(int id);
     public ChatGroupReadDto? Get(int id);
-    public Task<List<ChatGroupReadDto>> GetAll();
+    public Task<List<ChatGroupReadDto>> GetAll(int page, int pageSize);
     public Task<List<MessageDto>> GetMessagesInPrivateChat(int userId1, int userId2, int page, int pageSize);
 
     public Task<List<MessageReadDto>> GetGroupMessages(int chatGroupId, int page, int pageSize);
