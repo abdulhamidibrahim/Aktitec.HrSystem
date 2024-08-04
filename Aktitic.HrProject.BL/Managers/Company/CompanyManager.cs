@@ -48,6 +48,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             HasAccess = true,
             CompanyId = companyId
         };
+        company.Manager = manager;
         var created=userManager.CreateAsync(manager,managerDto.Password).Result;
         if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
         

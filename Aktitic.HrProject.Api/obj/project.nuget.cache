@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UYi+PoqdJUVYvyJ/LafrkG606GfY033/CN+Kn9euPiZjVua9rckEJ5QFTB4OrPa7m8lPmY8mapL/8Um+SDGrbA==",
+  "dgSpecHash": "ZKklYAXidIZRp/7KPoxNN/BCGx56fbxDiI1LtnDvNn7rotwt4Fk1Z8HIPBffCKS+CN4CVvxuDJUX89tYX5Tmqw==",
   "success": true,
   "projectFilePath": "/Users/abdulhamid/Documents/GitHub/Aktitic.HrProject/Aktitic.HrProject.Api/Aktitic.HrProject.Api.csproj",
   "expectedPackageFiles": [
@@ -100,8 +100,7 @@
     "/Users/abdulhamid/.nuget/packages/system.text.json/8.0.0/system.text.json.8.0.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/system.threading.channels/6.0.0/system.threading.channels.6.0.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",
-    "/Users/abdulhamid/.nuget/packages/microsoft.netcore.app.host.win-x86/8.0.0/microsoft.netcore.app.host.win-x86.8.0.0.nupkg.sha512"
+    "/Users/abdulhamid/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }

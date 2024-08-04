@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>ture</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+<!--        <RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
         
     </PropertyGroup>
 

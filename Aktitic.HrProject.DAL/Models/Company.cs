@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Aktitic.HrProject.DAL.Models;
 
 public class Company 
@@ -23,6 +25,8 @@ public class Company
     public string? DeletedBy { get; set; }
     public bool IsDeleted { get; set; }
     public ApplicationUser Manager { get; set; }
+    
+    [ForeignKey(nameof(Manager))]
     public int ManagerId { get; set; }
     
 }
