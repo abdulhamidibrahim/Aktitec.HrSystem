@@ -18,4 +18,14 @@ public class ChatGroupRepo(HrSystemDbContext context) : GenericRepo<ChatGroup>(c
             .Take(pageSize)
             .ToList();
     }
+
+    public async Task<List<ChatGroup>> GetGroups(int page, int pageSize)
+    {
+        return await _context.ChatGroups
+            .Include(x => x.ChatGroupUsers)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
 }

@@ -179,9 +179,24 @@ public class ChatGroupManager(
         return chatG;
     }
 
-    public Task<List<ChatGroupReadDto>> GetAll()
+    public async Task<List<ChatGroupReadDto>> GetAll(int page, int pageSize)
     {
-        throw new NotImplementedException();
+        var chatGroups = await unitOfWork.ChatGroup.GetGroups(page,pageSize);
+        var chatGroupsDto = chatGroups.Select(x => new ChatGroupReadDto()
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Description = x.Description,
+            CreatedBy = x.CreatedBy,
+            CreatedAt = x.CreatedAt,
+            // ChatGroupUsers = x.ChatGroupUsers?.Select(y => new ChatGroupUserDto()
+            // {
+            //     ChatGroupId = y.ChatGroupId,
+            //     UserId = y.UserId,
+            //     IsAdmin = y.IsAdmin,
+            // }).ToList()
+        }).ToList();
+        return (chatGroupsDto);        
     }
 
     public async Task<List<MessageDto>> GetMessagesInPrivateChat(int userId1, int userId2, int page, int pageSize)

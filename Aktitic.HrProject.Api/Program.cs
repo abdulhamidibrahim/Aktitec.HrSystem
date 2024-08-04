@@ -23,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using User.Management.Services.Models;
 using User.Management.Services.Services;
+using Task = System.Threading.Tasks.Task;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -306,68 +307,68 @@ app.MapControllers();
 
 app.MapHub<ChatHub>("/chat");
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var services = scope.ServiceProvider;
-//     try
-//     {
-//         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-//         var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-//
-//         // Seed the admin user and roles
-//         await SeedDataAsync(userManager, roleManager);
-//     }
-//     catch (Exception ex)
-//     {
-//         var logger = services.GetRequiredService<ILogger<Program>>();
-//         logger.LogError(ex, "An error occurred while seeding the database.");
-//     }
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
+        // Seed the admin user and roles
+        await SeedDataAsync(userManager, roleManager);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 
 app.Run();
 
-//
-// static async Task SeedDataAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<int>> roleManager)
-// {
-//     // Check if the admin role exists, if not, create it
-//     if (!await roleManager.RoleExistsAsync("SystemOwner"))
-//     {
-//         await roleManager.CreateAsync(new IdentityRole<int>("SystemOwner"));
-//     }
-//
-//     // Check if the admin user exists, if not, create it
-//     var adminUser = await userManager.FindByNameAsync("admin");
-//     if (adminUser == null)
-//     {
-//         // Create the admin user
-//         adminUser = new ApplicationUser
-//         {
-//             UserName = "admin",
-//             Email = "admin@system.com",
-//             FirstName = "Aktitech",
-//             LastName = "Company",
-//             EmailConfirmed = true,
-//             Password = "aktitech_admin@123",
-//             Image = "string",
-//             IsAdmin = true,
-//             HasAccess = true,
-//             CreatedBy = "admin",
-//             CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-//             UpdatedBy = "",
-//             UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-//         };
-//
-//         var result = await userManager.CreateAsync(adminUser, "aktitech_admin@123"); // Set a strong password
-//         if (result.Succeeded)
-//         {
-//             // Assign the SystemOwner role to the admin user
-//             await userManager.AddToRoleAsync(adminUser, "SystemOwner");
-//         }
-//         else
-//         {
-//             // Handle errors (log or throw)
-//             throw new Exception("Failed to create admin user");
-//         }
-//     }
-// }
+
+static async Task SeedDataAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<int>> roleManager)
+{
+    // Check if the admin role exists, if not, create it
+    if (!await roleManager.RoleExistsAsync("SystemOwner"))
+    {
+        await roleManager.CreateAsync(new IdentityRole<int>("SystemOwner"));
+    }
+
+    // Check if the admin user exists, if not, create it
+    var adminUser = await userManager.FindByNameAsync("admin");
+    if (adminUser == null)
+    {
+        // Create the admin user
+        adminUser = new ApplicationUser
+        {
+            UserName = "admin",
+            Email = "admin@system.com",
+            FirstName = "Aktitech",
+            LastName = "Company",
+            EmailConfirmed = true,
+            Password = "aktitech_admin@123",
+            Image = "string",
+            IsAdmin = true,
+            HasAccess = true,
+            CreatedBy = "admin",
+            CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+            UpdatedBy = "",
+            UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
+        };
+
+        var result = await userManager.CreateAsync(adminUser, "aktitech_admin@123"); // Set a strong password
+        if (result.Succeeded)
+        {
+            // Assign the SystemOwner role to the admin user
+            await userManager.AddToRoleAsync(adminUser, "SystemOwner");
+        }
+        else
+        {
+            // Handle errors (log or throw)
+            throw new Exception("Failed to create admin user");
+        }
+    }
+}
