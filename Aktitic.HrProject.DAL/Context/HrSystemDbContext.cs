@@ -25,21 +25,20 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             TenantId = 0;
         else TenantId = string.IsNullOrEmpty(userUtility?.GetCurrentCompany()) ? 0
             : int.Parse(userUtility.GetCurrentCompany());
-         
         
         
-        if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
+        if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreator)
         {
             // Create Database 
-            if (!dbCreater.CanConnect())
+            if (!dbCreator.CanConnect())
             {
-                dbCreater.Create();
+                dbCreator.Create();
             }
         
             // Create Tables
-            if (!dbCreater.HasTables())
+            if (!dbCreator.HasTables())
             {
-                dbCreater.CreateTables();
+                dbCreator.CreateTables();
             }
         }
     }
@@ -178,53 +177,6 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             }
         }
         
-        
-        
-        
-        
-        modelBuilder.Entity<ApplicationUser>().HasData(
-            new ApplicationUser 
-            {
-                Id = 1, 
-                FirstName = "Admin",
-                LastName = "",
-                Email = "abdulhamidibrahim@gmail.com",
-                UserName = "admin",
-                PasswordHash ="AQAAAAIAAYagAAAAEFkhlHHi/upXdct/8yBuHxE6ioCJpxojFizGlWUiW8mjSkzZrAsI+PeYtkNirZmR5Q==",
-                EmailConfirmed = true,
-                Password = "aktitech_admin",
-                Image = "string",
-                IsAdmin = true,
-                HasAccess = true,
-                CreatedBy = "admin",
-                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                UpdatedBy = "",
-                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-            }
-        );
-        
-        // Seed data for Company
-        modelBuilder.Entity<Company>().HasData(
-            new Company
-            {
-                Id = 1, // Adjust the ID as needed
-                CompanyName = "AKTITECH",
-                Email = "mail@mail.com",
-                Address = "string",
-                Phone = "string",
-                Website = "string",
-                Fax = "string",
-                Country = "string",
-                City = "string",
-                State = "string",
-                Postal = "string",
-                Contact = "string",
-                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                CreatedBy = "admin",
-                UpdatedBy = "string"
-            }
-        );
         
         
 
@@ -368,6 +320,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             entity.Property(e => e.Approved).HasColumnName("approved");
             entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
             entity.Property(e => e.Days).HasColumnName("days");
+            // entity.Property(e => e.Status).HasColumnName("Status")
+            //     .HasMaxLength(50);
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.FromDate).HasColumnName("from");
             entity.Property(e => e.Reason)

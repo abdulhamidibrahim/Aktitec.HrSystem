@@ -21,9 +21,9 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
     }
 
     [HttpPost("sendGroupMessage")]
-    public async Task<IActionResult> SendGroupMessage(int senderId, string groupName, string message,IFormFile? attachment = null)
+    public async Task<IActionResult> SendGroupMessage(int senderId, int groupId, string message,IFormFile? attachment = null)
     {
-        await messageService.SendGroupMessage(senderId, groupName, message,attachment);
+        await messageService.SendGroupMessage(senderId, groupId, message,attachment);
         return Ok();
     }
 
@@ -40,13 +40,6 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         var messages = await chatGroupManager.GetMessagesInPrivateChat(userId1, userId2, page, pageSize);
         return Ok(messages);
     }
-    
-    // [HttpGet("getGroups")]
-    // public async Task<IActionResult> GetGroups()
-    // {
-    //     var groups = await chatGroupManager.GetAll();
-    //     return Ok(groups);
-    // }
     
     [HttpPost("createGroup")]
     public async Task<IActionResult> CreateGroup(ChatGroupAddDto dto)
@@ -69,7 +62,7 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         return Ok();
     }
     
-    [HttpGet("GetAllGroups/{page}/{pageSize}")]
+    [HttpGet("GetAllGroups/{page:int}/{pageSize:int}")]
     public async Task<IActionResult> GetAllGroups(int page, int pageSize)
     {
         var groups = await chatGroupManager.GetAll(page, pageSize);

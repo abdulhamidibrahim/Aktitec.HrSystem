@@ -229,6 +229,8 @@ builder.Services.AddScoped<IContractsManager, ContractsManager>();
 builder.Services.AddScoped<IChatGroupManager, ChatGroupManager>();
 builder.Services.AddScoped<ICompanyManager, CompanyManager>();
 builder.Services.AddScoped<INotificationManager, NotificationManager>();
+builder.Services.AddScoped<IMessageManager, MessageManager>();
+builder.Services.AddScoped<IChatGroupManager, ChatGroupManager>();
 
 #endregion
 
