@@ -12,8 +12,8 @@ public interface IApplicationUserManager
     public Task<int> Delete(int id);
     public ApplicationUserReadDto? Get(int id);
     public Task<List<ApplicationUserReadDto>> GetAll();
-    public Task<FilteredApplicationUserDto> GetFilteredApplicationUsersAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
+    public Task<FilteredApplicationUserDto> GetFilteredApplicationUsersAsync(int companyId, string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
-    public Task<List<ApplicationUserDto>> GlobalSearch(string searchKey,string? column);
+    public Task<List<ApplicationUserDto>> GlobalSearch(int companyId, string searchKey,string? column);
     // bool IsEmailUnique(string email);
 }

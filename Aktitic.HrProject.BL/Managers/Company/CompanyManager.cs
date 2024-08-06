@@ -13,12 +13,14 @@ public class CompanyManager(IUnitOfWork unitOfWork,
 {
     public async Task<int> Add(CompanyAddDto companyAddDto)
     {
-        
+        var managerDto = companyAddDto.Manager;
+      
         var companyDto = companyAddDto.Company;
+        
         var company = new DAL.Models.Company()
         {
             CompanyName = companyDto.CompanyName,
-            Email    = companyDto.Email,
+            Email = companyDto.Email,
             Phone = companyDto.Phone,
             Address = companyDto.Address,
             Website = companyDto.Website,
@@ -29,11 +31,10 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             State = companyDto.State,
             Postal = companyDto.Postal,
             CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId()??"",
+            CreatedBy = userUtility.GetUserId() ?? "",
         };
-        
-        var companyId = await unitOfWork.Company.Create(company);
-        var managerDto = companyAddDto.Manager;
+
+        // Create the ApplicationUser entity for the manager
         var manager = new ApplicationUser()
         {
             UserName = managerDto.UserName,
@@ -41,20 +42,36 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             EmailConfirmed = true,
             CreatedAt = DateTime.Now,
             Password = managerDto.Password,
-            CreatedBy = userUtility.GetUserId()?? "",
+            CreatedBy = userUtility.GetUserId() ?? "",
             FirstName = managerDto.FirstName,
             LastName = managerDto.LastName,
             IsManager = true,
             HasAccess = true,
-            CompanyId = companyId
         };
-        company.Manager = manager;
-        var created=userManager.CreateAsync(manager,managerDto.Password).Result;
-        if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
+
+        // Save the manager to the database and get the generated ID
+        var created = await userManager.CreateAsync(manager, managerDto.Password);
+        if (!created.Succeeded)
+        {
+            throw new Exception(created.Errors.FirstOrDefault()?.Description);
+        }
+
+        // Retrieve the ID of the newly created manager
+        var managerId = manager.Id;
+
+        // Set the manager for the company
+        company.ManagerId = managerId;
         
+
+        // Save the company to the database
+        await unitOfWork.Company.Create(company);
+        
+        manager.TenantId = company.Id;
+        // Commit the transaction
         await unitOfWork.SaveChangesAsync();
-        
+
         return company.Id;
+
     }
     public async Task<int> AddAdmin(CompanyAddDto companyAddDto)
     {
@@ -72,7 +89,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             IsAdmin = true,
             HasAccess = true,
         };
-        var created=userManager.CreateAsync(manager,managerDto.Password).Result;
+        var created= userManager.CreateAsync(manager,managerDto.Password).Result;
         if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
         
         var companyDto = companyAddDto.Company;
@@ -95,7 +112,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         
         var companyId = await unitOfWork.Company.Create(company);
         
-        manager.CompanyId = companyId;
+        manager.TenantId = companyId;
         
         await unitOfWork.SaveChangesAsync();
         

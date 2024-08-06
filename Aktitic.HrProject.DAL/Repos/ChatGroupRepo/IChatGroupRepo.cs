@@ -6,4 +6,5 @@ public interface IChatGroupRepo :IGenericRepo<ChatGroup>
 {
       List<Message> GetMessages(int chatGroupId, int page, int pageSize);
       Task<List<ChatGroup>> GetGroups(int page, int pageSize);
+      object? GetUserGroups(int userId, int page, int pageSize);
 }

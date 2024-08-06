@@ -24,9 +24,9 @@ public class Company
     public DateTime? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
     public bool IsDeleted { get; set; }
+    public ICollection<ApplicationUser>? Users { get; set; }
     public ApplicationUser Manager { get; set; }
     
-    [ForeignKey(nameof(Manager))]
     public int ManagerId { get; set; }
     
 }

@@ -16,6 +16,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\abdou9aeabefb-d886-4c10-b448-e17d0a1d63b5\WhatsApp Image 2024-02-15 at 10.33.21 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\abdoud099f369-5257-48c5-918c-2a3eed719dcc\WhatsApp Image 2024-02-15 at 10.33.21 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/clients/abdoud099f369-5257-48c5-918c-2a3eed719dcc/WhatsApp Image 2024-02-15 at 10.33.21 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\abdoud099f369-5257-48c5-918c-2a3eed719dcc\WhatsApp Image 2024-02-15 at 10.33.21 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\abdualhamid273aaac4-e551-4abb-949c-a2fa1baccc59\WhatsApp Image 2024-03-17 at 9.45.25 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -496,6 +512,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali1ca3b52f-d71f-4216-9fba-69aad8faf38a\4.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali25d9398a-7db8-4410-9d5e-211a34d43fdb\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali25d9398a-7db8-4410-9d5e-211a34d43fdb/WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali25d9398a-7db8-4410-9d5e-211a34d43fdb\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali3054081a-0c7a-43e0-abfb-e353f2263325\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -575,6 +607,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali480ef546-6214-4de0-94a2-9332f9cf2404\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali4b8345ca-07f6-48f3-9896-39bc0aa9d644\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/ali4b8345ca-07f6-48f3-9896-39bc0aa9d644/WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali4b8345ca-07f6-48f3-9896-39bc0aa9d644\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\ali519c4409-1c9c-4338-b822-148fba725990\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>
@@ -800,6 +848,38 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alibe8b94bf-eec5-4dc1-8a72-70e54d1097e1\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alicd8e0097-698d-4faf-9d68-bd285a77c45a\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/alicd8e0097-698d-4faf-9d68-bd285a77c45a/WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alicd8e0097-698d-4faf-9d68-bd285a77c45a\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alicf277320-1adf-4c3e-ad65-79a7773dd91c\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/employees/alicf277320-1adf-4c3e-ad65-79a7773dd91c/WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alicf277320-1adf-4c3e-ad65-79a7773dd91c\WhatsApp Image 2024-02-15 at 10.32.24 PM-3.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\alifbea351c-e163-4729-bf85-cf44b81a2838\Notations for Traditional ERD-Page-1.png))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -1008,6 +1088,54 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\sayed078f20dc-e1f7-4664-9aa9-e8011fc7796d\Notations for Traditional ERD-Page-1.png\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\name))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/name</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\name))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid11614d920-169e-45d2-93de-e4d9b65b8e6f\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid11614d920-169e-45d2-93de-e4d9b65b8e6f/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid11614d920-169e-45d2-93de-e4d9b65b8e6f\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid12acf5cd4-3088-4966-9b7d-5cf08932ae75\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid12acf5cd4-3088-4966-9b7d-5cf08932ae75/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid12acf5cd4-3088-4966-9b7d-5cf08932ae75\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid12cb76a4a-e27f-444b-bf5b-a79e44c66dfb\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -1040,6 +1168,38 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid169df4373-1f5f-4e0c-8ac8-2b5fa1c374e6\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid16aeff2e7-3778-4bb7-bdde-9bf8e9b078ee\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid16aeff2e7-3778-4bb7-bdde-9bf8e9b078ee/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid16aeff2e7-3778-4bb7-bdde-9bf8e9b078ee\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid177e16778-637e-45df-b9c5-37f1e1bbda7a\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid177e16778-637e-45df-b9c5-37f1e1bbda7a/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid177e16778-637e-45df-b9c5-37f1e1bbda7a\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid188cb841a-ceed-4b30-bc8d-3b70e6dabcc7\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -1056,6 +1216,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid188cb841a-ceed-4b30-bc8d-3b70e6dabcc7\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid1e426225b-95c7-46d9-9226-04b56c3d1f0c\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid1e426225b-95c7-46d9-9226-04b56c3d1f0c/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid1e426225b-95c7-46d9-9226-04b56c3d1f0c\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid1f6178574-f5dd-4405-a96b-a4a7b0308ce4\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -1071,6 +1247,54 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid1f6178574-f5dd-4405-a96b-a4a7b0308ce4\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid223204583c-83d0-45d5-be2f-346d0dfacfd9\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid223204583c-83d0-45d5-be2f-346d0dfacfd9/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid223204583c-83d0-45d5-be2f-346d0dfacfd9\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid8f842921-2af6-4779-9c17-9c4514d34ceb\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid8f842921-2af6-4779-9c17-9c4514d34ceb/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid8f842921-2af6-4779-9c17-9c4514d34ceb\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamidee171163-31b0-4c6b-b093-948cbbf99c16\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamidee171163-31b0-4c6b-b093-948cbbf99c16/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamidee171163-31b0-4c6b-b093-948cbbf99c16\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

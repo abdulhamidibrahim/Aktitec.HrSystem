@@ -5,9 +5,6 @@ namespace Aktitic.HrProject.BL;
 
 public class MessageAddDto
 {
-    
-    public string? SenderName { get; set; }=string.Empty;
-    public string? SenderPhotoUrl { get; set; }=string.Empty;
         
     public int? SenderId { get; set; }
     

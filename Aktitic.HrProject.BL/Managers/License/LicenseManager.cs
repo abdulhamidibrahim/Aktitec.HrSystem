@@ -28,6 +28,7 @@ public class LicenseManager(
           EndDate = licenseAddDto.EndDate,
           Price = licenseAddDto.Price,
           Active = licenseAddDto.Active,
+          CompanyId = licenseAddDto.CompanyId,
           CreatedAt = DateTime.Now,
           CreatedBy = userUtility.GetUserName(),
         };

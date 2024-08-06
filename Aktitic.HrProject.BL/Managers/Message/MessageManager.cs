@@ -16,7 +16,7 @@ public class MessageManager(
     IWebHostEnvironment webHostEnvironment)
     : IMessageManager
 {
-    public async Task SendPrivateMessage(int senderId, int receiverId, string message,IFormFile? attachment = null)
+    public async Task SendPrivateMessage( int receiverId, string message,IFormFile? attachment = null)
     {
         var fileName = attachment?.FileName;
         var filePath = SaveFile(attachment);
@@ -24,7 +24,7 @@ public class MessageManager(
         
           var newMessage = new Message
         {
-            SenderId = int.TryParse(userUtility.GetUserId(),out var id )? id : 0,
+            SenderId = int.Parse(userUtility.GetUserId()),
             ReceiverId = receiverId,
             Text = message,
             Date = DateTime.UtcNow,
@@ -35,7 +35,7 @@ public class MessageManager(
 
         await hubContext.Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", new
         {
-            SenderId = senderId,
+            SenderId = int.Parse(userUtility.GetUserId()),
             ReceiverId = receiverId,
             Message = message,
             FileName = fileName,
@@ -43,7 +43,7 @@ public class MessageManager(
         });
     }
 
-    public async Task SendGroupMessage(int senderId, int groupId, string message, IFormFile? attachment=null)
+    public async Task SendGroupMessage(int groupId, string message, IFormFile? attachment=null)
     {
         var fileName = attachment?.FileName;
 
@@ -51,7 +51,7 @@ public class MessageManager(
         
         var newMessage = new Message
         {
-            SenderId = senderId,
+            SenderId = int.Parse(userUtility.GetUserId()),
             GroupId = groupId,
             Text = message,
             Date = DateTime.UtcNow,
@@ -113,10 +113,10 @@ public class MessageManager(
     //         {
     //             var chatGroupUser = new ChatGroupUser
     //             {
-    //                 ChatGroupId = group.Id,
+    //                 GroupId = group.Id,
     //                 UserId = user.Id
     //             };
-    //             _unitOfWork.ChatGroupUsers.Add(chatGroupUser);
+    //             _unitOfWork.GroupUsers.Add(chatGroupUser);
     //             await _unitOfWork.SaveChangesAsync();
     //
     //             // Add user to Hubs group

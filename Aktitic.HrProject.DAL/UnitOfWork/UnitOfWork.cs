@@ -1,3 +1,4 @@
+using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
@@ -78,6 +79,7 @@ public class UnitOfWork : IUnitOfWork
     private NotificationRepo _notificationRepo;
     private ChatGroupRepo _chatGroupRepo;
     private ChatGroupUsersRepo _chatGroupUsersRepo;
+    private UserUtility _userUtility;
 
 
     // complete all other repos
@@ -91,7 +93,7 @@ public class UnitOfWork : IUnitOfWork
     }
    public INotesRepo Notes => _notesRepo ??= new NotesRepo(_context);
     
-    public IApplicationUserRepo ApplicationUser => _applicationUser ??= new ApplicationUserRepo(_context);
+    public IApplicationUserRepo ApplicationUser => _applicationUser ??= new ApplicationUserRepo(_context,_userUtility);
     public IAttendanceRepo Attendance => _attendanceRepo ??= new AttendanceRepo(_context);
     
     public IDepartmentRepo Department => _departmentRepo ??= new DepartmentRepo(_context);
