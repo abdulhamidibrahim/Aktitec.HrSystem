@@ -18,11 +18,11 @@ public partial class File : BaseEntity
     
     [ForeignKey(nameof(User))]
     public int? UserId { get; set; }
-    public ApplicationUser? User { get; set; } = new();/// <summary>
+    public ApplicationUser? User { get; set; } /// <summary>
                                                        /// User who uploaded the file
                                                        /// </summary>
 
-    public List<FileUsers> FileUsers { get; set; }
+    public List<FileUsers>? FileUsers { get; set; }
     
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }

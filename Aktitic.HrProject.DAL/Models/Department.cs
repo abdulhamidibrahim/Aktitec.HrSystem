@@ -18,5 +18,6 @@ public partial class Department : BaseEntity
     public virtual ICollection<Scheduling> Schedulings { get; set; } = new List<Scheduling>();
     
     public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
-    
+    public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
+    public ICollection<InterviewQuestion>? InterviewQuestions { get; set; }
 }

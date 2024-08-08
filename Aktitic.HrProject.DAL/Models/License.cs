@@ -10,7 +10,7 @@ public class License : BaseEntity
     public DateTime EndDate { get; set; }
     public decimal Price { get; set; }
     public bool Active { get; set; }
-    public Company Company { get; set; } = new();
+    public Company Company { get; set; } 
     [ForeignKey(nameof(Company))]
     public int CompanyId { get; set; }
 }

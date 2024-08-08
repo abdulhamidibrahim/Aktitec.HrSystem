@@ -17,5 +17,8 @@ public interface IChatGroupManager
     public Task<List<MessageDto>> GetMessagesInPrivateChat(int userId1, int userId2, int page, int pageSize);
 
     public Task<List<MessageReadDto>> GetGroupMessages(int chatGroupId, int page, int pageSize);
+    public Task<int> SendGroupMessage(MessageAddDto messageAddDto, int chatGroupId);
 
+
+    Task<object?> GetUserGroups(int userId, int page, int pageSize);
 }

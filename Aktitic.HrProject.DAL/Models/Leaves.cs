@@ -24,7 +24,7 @@ public partial class Leaves : BaseEntity
     public bool? Approved { get; set; }
     
     public int? ApprovedBy { get; set; }
-
+    
     public string? Status { get; set; } = string.Empty;
     public virtual Employee? ApprovedByNavigation { get; set; }
 

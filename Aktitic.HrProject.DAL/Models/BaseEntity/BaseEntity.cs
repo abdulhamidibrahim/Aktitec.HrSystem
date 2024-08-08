@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class BaseEntity : ISoftDelete , IAuditable ,IMustHaveTenant
+public class BaseEntity : IBaseEntity , ISoftDelete , IAuditable ,IMustHaveTenant
 {
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }

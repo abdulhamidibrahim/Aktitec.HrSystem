@@ -70,7 +70,7 @@ public class UsersController(
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(nameof(Company),user.CompanyId.ToString() ?? string.Empty)
+                new Claim(nameof(Company),user.TenantId.ToString() ?? string.Empty)
             }),
             Expires = DateTime.UtcNow.AddMinutes(30),
             Issuer = configuration["Jwt:Issuer"],
@@ -91,7 +91,7 @@ public class UsersController(
             LastName = user.LastName,
             Role = user.Role,
             Email = user.Email,
-            CompanyId = user.CompanyId,
+            CompanyId = user.TenantId,
             Image = user.Image,
             EmployeeId = user.EmployeeId,
             UserName = user.UserName,
@@ -144,10 +144,9 @@ public class UsersController(
     }
     
     [HttpGet("getFilteredUsers")]
-    public Task<FilteredApplicationUserDto> GetFilteredUsersAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    public Task<FilteredApplicationUserDto> GetFilteredUsersAsync(int companyId, string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
-        
-        return applicationUserManager.GetFilteredApplicationUsersAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return applicationUserManager.GetFilteredApplicationUsersAsync(companyId,column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     
@@ -184,9 +183,9 @@ public class UsersController(
     }
     
     [HttpGet("GlobalSearch")]
-    public async Task<IEnumerable<ApplicationUserDto>> GlobalSearch(string search,string? column)
+    public async Task<IEnumerable<ApplicationUserDto>> GlobalSearch(int companyId, string search,string? column)
     {
-        return await applicationUserManager.GlobalSearch(search,column);
+        return await applicationUserManager.GlobalSearch(companyId, search,column);
     }
     
     

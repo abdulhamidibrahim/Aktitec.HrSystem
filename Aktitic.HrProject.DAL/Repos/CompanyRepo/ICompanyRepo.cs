@@ -7,7 +7,7 @@ public interface ICompanyRepo :IGenericRepo<Company>
 {
     IQueryable<Company> GlobalSearch(string? searchKey);
     public Task<IEnumerable<Company>> GetAllCompanies();
-    public Task<Company> GetCompany(int companyId);
+    public Company GetCompany(int companyId);
     public Task<int> Create(Company company);
     
 }

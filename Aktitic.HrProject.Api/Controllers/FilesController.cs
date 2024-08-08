@@ -30,7 +30,7 @@ public class FilesController :ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult Add( FileAddDto fileAddDto)
+    public ActionResult Add( [FromForm] FileAddDto fileAddDto)
     {
         var result = _fileManager.Add(fileAddDto);
         if (result.Result == 0) return BadRequest("Failed to add");
@@ -38,7 +38,7 @@ public class FilesController :ControllerBase
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update( FileUpdateDto fileUpdateDto,int id)
+    public ActionResult Update([FromForm] FileUpdateDto fileUpdateDto,int id)
     {
         var result  =_fileManager.Update(fileUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");

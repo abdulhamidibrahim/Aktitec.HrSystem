@@ -19,7 +19,7 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
     }
     
     [HttpGet("{id}")]
-    public ActionResult<Task<CompanyReadDto>?> Get(int id)
+    public ActionResult<CompanyReadDto?> Get(int id)
     {
         var result = companyManager.Get(id);
         if (result == null) return NotFound("Not Found!");

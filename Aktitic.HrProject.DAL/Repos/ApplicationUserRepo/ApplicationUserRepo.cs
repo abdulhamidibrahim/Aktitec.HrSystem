@@ -1,3 +1,4 @@
+using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,12 @@ namespace Aktitic.HrProject.DAL.Repos;
 public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserRepo
 {
     private readonly HrSystemDbContext _context;
+    private readonly UserUtility _userUtility;
 
-    public ApplicationUserRepo(HrSystemDbContext context) : base(context)
+    public ApplicationUserRepo(HrSystemDbContext context,UserUtility userUtility) : base(context)
     {
         _context = context;
+        _userUtility = userUtility;
     }
     public IQueryable<ApplicationUser> GlobalSearch(string? searchKey)
     {
@@ -66,7 +69,7 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
         if (_context.ApplicationUsers != null)
         {
             return await _context.ApplicationUsers
-                .Where(x => x.CompanyId == companyId && x.IsManager)
+                .Where(x => x.TenantId == companyId && x.IsManager)
                 .FirstOrDefaultAsync();
         }
         return (new ApplicationUser());
@@ -82,10 +85,11 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
         return await Task.FromResult<IEnumerable<ApplicationUser>>(new List<ApplicationUser>());
     }
 
-    public async Task<IEnumerable<ApplicationUser>> GetAllWithEmployeesAsync()
+    public async Task<IEnumerable<ApplicationUser>> GetAllWithEmployeesAsync(int companyId)
     {
         if (_context.ApplicationUsers != null)
             return await _context.ApplicationUsers!
+                .Where(x=>x.TenantId == companyId && companyId != 0)
                 .Include(a => a.Employee)
                 // .Include(a=>a.Permissions)
                 .AsQueryable()
@@ -97,7 +101,7 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
     {
         if (_context.ApplicationUsers != null)
             return await _context.ApplicationUsers!
-                .Where(x => x.CompanyId == companyId)
+                .Where(x => x.TenantId == companyId)
                 .Select(x => x.Id)
                 .ToListAsync();
         return (new List<int>());
@@ -114,7 +118,7 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
     public bool HasAccess(int companyId)
     {
         if (_context.ApplicationUsers != null)
-            return _context.ApplicationUsers.Include(x=>x.Company).ThenInclude(x=>x).Any(x => x.CompanyId == companyId);
+            return _context.ApplicationUsers.Include(x=>x.Company).ThenInclude(x=>x).Any(x => x.TenantId == companyId);
         return false;
     }
 

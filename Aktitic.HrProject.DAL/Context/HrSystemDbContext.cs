@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 using Aktitic.HrProject.BL.Utilities;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace Aktitic.HrProject.DAL.Context;
@@ -21,27 +19,26 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
     {
         _userUtility = userUtility;
-        if (userUtility?.GetCurrentCompany() == "Company")
-            TenantId = 0;
-        else TenantId = string.IsNullOrEmpty(userUtility?.GetCurrentCompany()) ? 0
-            : int.Parse(userUtility.GetCurrentCompany());
-         
-        
-        
-        if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
-        {
-            // Create Database 
-            if (!dbCreater.CanConnect())
-            {
-                dbCreater.Create();
-            }
-        
-            // Create Tables
-            if (!dbCreater.HasTables())
-            {
-                dbCreater.CreateTables();
-            }
-        }
+        var currentCompany = _userUtility?.GetCurrentCompany();           
+        if (_userUtility != null)
+            if (currentCompany != null)
+                TenantId = int.Parse(currentCompany);
+
+
+        // if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreator)
+        // {
+        //     // Create Database 
+        //     if (!dbCreator.CanConnect())
+        //     {
+        //         dbCreator.Create();
+        //     }
+        //
+        //     // Create Tables
+        //     if (!dbCreator.HasTables())
+        //     {
+        //         dbCreator.CreateTables();
+        //     
+        // }
     }
 
     #region Entities
@@ -120,6 +117,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<ReceivedNotification>? ReceivedNotifications { get; set; }   
     public virtual DbSet<ChatGroup>? ChatGroups { get; set; }   
     public virtual DbSet<ChatGroupUser>? ChatGroupUsers { get; set; }   
+    public virtual DbSet<Asset>? Assets { get; set; }   
+    public virtual DbSet<Job>? Jobs { get; set; }   
+    public virtual DbSet<Shortlist>? Shortlists { get; set; }   
+    public virtual DbSet<InterviewQuestion>? InterviewQuestions { get; set; }   
+    public virtual DbSet<OfferApproval>? OfferApprovals { get; set; }   
 
     #endregion
 
@@ -148,8 +150,15 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>()
                      .Where(e=>e.State == EntityState.Added && GetCurrentTenantId()!=0))
         {
-            entry.Entity.TenantId = GetCurrentTenantId();
+            entry.Entity.TenantId ??= GetCurrentTenantId();
         }
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>().Where(e=>e.State ==EntityState.Added))
+        {
+            entry.Entity.CreatedAt = DateTime.Now;
+            entry.Entity.CreatedBy = _userUtility?.GetUserId();
+        }
+        
         return base.SaveChangesAsync(cancellationToken);
     }
     
@@ -161,7 +170,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         // Apply global query filters for all entities that derive from BaseEntity
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
             {
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(CreateIsDeletedFilter(entityType.ClrType));
             }
@@ -169,65 +178,21 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         
         
         // Apply tenant filter
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+       foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
             {
                 var method = SetTenantIdFilterMethod.MakeGenericMethod(entityType.ClrType);
-                method.Invoke(null, new object[] { modelBuilder }); // Ensure the first parameter is null for static methods
+                method.Invoke(this, new object[] { modelBuilder });
             }
         }
         
         
+        // add the configuration 
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrSystemDbContext).Assembly);   
+      
         
         
-        
-        modelBuilder.Entity<ApplicationUser>().HasData(
-            new ApplicationUser 
-            {
-                Id = 1, 
-                FirstName = "Admin",
-                LastName = "",
-                Email = "abdulhamidibrahim@gmail.com",
-                UserName = "admin",
-                PasswordHash ="AQAAAAIAAYagAAAAEFkhlHHi/upXdct/8yBuHxE6ioCJpxojFizGlWUiW8mjSkzZrAsI+PeYtkNirZmR5Q==",
-                EmailConfirmed = true,
-                Password = "aktitech_admin",
-                Image = "string",
-                IsAdmin = true,
-                HasAccess = true,
-                CreatedBy = "admin",
-                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                UpdatedBy = "",
-                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-            }
-        );
-        
-        // Seed data for Company
-        modelBuilder.Entity<Company>().HasData(
-            new Company
-            {
-                Id = 1, // Adjust the ID as needed
-                CompanyName = "AKTITECH",
-                Email = "mail@mail.com",
-                Address = "string",
-                Phone = "string",
-                Website = "string",
-                Fax = "string",
-                Country = "string",
-                City = "string",
-                State = "string",
-                Postal = "string",
-                Contact = "string",
-                CreatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                UpdatedAt = DateTime.Parse("2024-07-31T12:54:42.231Z"),
-                CreatedBy = "admin",
-                UpdatedBy = "string"
-            }
-        );
-        
-        
-
         // modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
         
         
@@ -243,8 +208,40 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             .HasOne(cgu => cgu.User)
             .WithMany(u => u.ChatGroupUsers)
             .HasForeignKey(cgu => cgu.UserId);
+
+
+
+        // modelBuilder.Entity<License>()
+        //     .HasQueryFilter(e => e.TenantId == TenantId);
+        
+        // modelBuilder.Entity<ApplicationUser>()
+        //     .HasQueryFilter(e => e.TenantId == TenantId);
         
         
+        
+        // application user 
+        // modelBuilder.Entity<ApplicationUser>(entity =>
+        // {
+        //     entity.HasOne(x => x.ManagedCompany)
+        //         .WithOne(x => x.Manager)
+        //         .HasForeignKey<Company>(x => x.ManagerId);
+        //     
+        //     entity.HasOne<Company>(x => x.Company)
+        //         .WithMany(x => x.Users)
+        //         .OnDelete(DeleteBehavior.Cascade);
+        // });
+        
+        
+        modelBuilder.Entity<Company>()
+            .HasOne(c => c.Manager)
+            .WithOne(u => u.ManagedCompany)
+            .HasForeignKey<Company>(c => c.ManagerId);
+
+        // One-to-Many relationship between Company and Users
+        modelBuilder.Entity<Company>()
+            .HasMany(c => c.Users)
+            .WithOne(u => u.Company)
+            .HasForeignKey(u => u.TenantId);
         
         modelBuilder.Entity<Attendance>(entity =>
         {
@@ -262,7 +259,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
                 .HasColumnType("datetime")
                 .HasColumnName("punch_out");
 
-            entity.HasOne(d => d.Employee).WithMany(p => p.Attendances)
+            entity.HasOne(d => d.Employee)
+                .WithMany(p => p.Attendances)
                 .HasForeignKey(d => d.EmployeeId)
                 .HasConstraintName("FK_Attendance_Employee");
 
@@ -288,7 +286,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             entity.Property(e => e.DepartmentId).HasColumnName("department_id");
             entity.Property(e => e.Name).HasColumnName("name");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.Designations)
+            entity.HasOne(d => d.Department)
+                .WithMany(p => p.Designations)
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_Designation_Department");
         });
@@ -368,6 +367,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
             entity.Property(e => e.Approved).HasColumnName("approved");
             entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
             entity.Property(e => e.Days).HasColumnName("days");
+            // entity.Property(e => e.Status).HasColumnName("Status")
+            //     .HasMaxLength(50);
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.FromDate).HasColumnName("from");
             entity.Property(e => e.Reason)
@@ -826,13 +827,13 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         
         return TenantId;
     }
-    private static void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : BaseEntity
+    private static void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : class, IBaseEntity
     {
         modelBuilder.Entity<T>().HasQueryFilter(e => e.TenantId == GetCurrentTenantId());
     }
 
-        private static readonly MethodInfo SetTenantIdFilterMethod = typeof(HrSystemDbContext)
+    private static readonly MethodInfo SetTenantIdFilterMethod = typeof(HrSystemDbContext)
         .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Static, null,
-              new[] { typeof(ModelBuilder) }, null);
+            new[] { typeof(ModelBuilder) }, null);
 }
 

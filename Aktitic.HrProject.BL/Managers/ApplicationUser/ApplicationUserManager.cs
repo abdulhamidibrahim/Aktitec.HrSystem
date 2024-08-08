@@ -1,5 +1,4 @@
 
-
 using System.Security.Cryptography;
 using System.Text;
 using Aktitic.HrProject.BL.Utilities;
@@ -39,7 +38,7 @@ public class ApplicationUserManager(
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
             Role = applicationUserAddDto.Role,
-            CompanyId = applicationUserAddDto.CompanyId,
+            TenantId = applicationUserAddDto.CompanyId,
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
             Permissions = mappedPermissions,
@@ -88,7 +87,7 @@ public class ApplicationUserManager(
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
             Role = applicationUserAddDto.Role,
-            CompanyId = applicationUserAddDto.CompanyId,
+            TenantId = int.Parse(userUtility.GetCurrentCompany()),
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
             Permissions = mappedPermissions,
@@ -99,6 +98,7 @@ public class ApplicationUserManager(
             EmailConfirmed = true,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserName() ?? string.Empty,
+            
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -156,7 +156,7 @@ public class ApplicationUserManager(
         
         if (applicationUserUpdateDto.CompanyId != 0)
             if (applicationUserUpdateDto.CompanyId != null)
-                applicationUser.CompanyId = (int)applicationUserUpdateDto.CompanyId;
+                applicationUser.TenantId = (int)applicationUserUpdateDto.CompanyId;
 
         if (applicationUserUpdateDto.EmployeeId != null)
             applicationUser.EmployeeId = applicationUserUpdateDto.EmployeeId;
@@ -258,7 +258,7 @@ public class ApplicationUserManager(
             LastName = applicationUser.LastName,
             Role = applicationUser.Role,
             Email = applicationUser.Email,
-            CompanyId = applicationUser.CompanyId,
+            CompanyId = applicationUser.TenantId,
             Image = applicationUser.Image,
             EmployeeId = applicationUser.EmployeeId,
             Password = applicationUser.Password,
@@ -281,7 +281,7 @@ public class ApplicationUserManager(
             LastName = applicationUser.LastName,
             Phone = applicationUser.PhoneNumber,
             Email = applicationUser.Email,
-            CompanyId = applicationUser.CompanyId,
+            CompanyId = applicationUser.TenantId,
             Image = applicationUser.Image,
             Role= applicationUser.Role,
             UserName = applicationUser.UserName,
@@ -298,9 +298,9 @@ public class ApplicationUserManager(
 
    
 
-    public async Task<FilteredApplicationUserDto> GetFilteredApplicationUsersAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+    public async Task<FilteredApplicationUserDto> GetFilteredApplicationUsersAsync(int companyId,string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var ApplicationUsers = await unitOfWork.ApplicationUser.GetAllWithEmployeesAsync();
+        var ApplicationUsers = await unitOfWork.ApplicationUser.GetAllWithEmployeesAsync(companyId);
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -326,7 +326,7 @@ public class ApplicationUserManager(
                     UserName = applicationUser.UserName,
                     Email = applicationUser.Email,
                     Phone = applicationUser.PhoneNumber,
-                    CompanyId = applicationUser.CompanyId,
+                    CompanyId = applicationUser.TenantId,
                     Role = applicationUser.Role,
                     Image = applicationUser.Image,
                     Date = applicationUser.Date,
@@ -376,7 +376,7 @@ public class ApplicationUserManager(
                     UserName = user.UserName?? string.Empty,
                     Email = user.Email?? string.Empty,
                     Phone = user.PhoneNumber?? string.Empty,
-                    CompanyId= user.CompanyId,
+                    CompanyId= user.TenantId,
                     Role = user.Role,
                     Image = user.Image,
                     Date = user.Date,
@@ -428,12 +428,12 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
 }
 
 
-    public Task<List<ApplicationUserDto>> GlobalSearch(string searchKey, string? column)
+    public Task<List<ApplicationUserDto>> GlobalSearch(int companyId, string searchKey, string? column)
     {
         
         if(column!=null)
         {
-            IEnumerable<ApplicationUser> enumerable = unitOfWork.ApplicationUser.GetAllWithEmployeesAsync().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<ApplicationUser> enumerable = unitOfWork.ApplicationUser.GetAllWithEmployeesAsync(companyId).Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var applicationUser = enumerable.Select(user => new ApplicationUserDto()
             {
                 Id = user.Id,
@@ -442,7 +442,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
                 UserName = user.UserName?? string.Empty,
                 Email = user.Email?? string.Empty,
                 Phone = user.PhoneNumber?? string.Empty,
-                CompanyId = user.CompanyId,
+                CompanyId = user.TenantId,
                 Role = user.Role,
                 Image = user.Image,
                 Date = user.Date,
@@ -463,7 +463,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
             UserName = user.UserName?? string.Empty,
             Email = user.Email?? string.Empty,
             Phone = user.PhoneNumber?? string.Empty,
-            CompanyId = user.CompanyId,
+            CompanyId = user.TenantId,
             Role = user.Role,
             Image = user.Image,
             Date = user.Date,

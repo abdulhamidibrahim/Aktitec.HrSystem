@@ -8,8 +8,8 @@ namespace Aktitic.HrTaskList.BL;
 
 public interface IMessageManager
 {
-    Task SendPrivateMessage(int senderId, int receiverId, string message, IFormFile attachment = null);
-    Task SendGroupMessage(int senderId, string groupName, string message, IFormFile attachment = null);
+    Task SendPrivateMessage(int receiverId, string message, IFormFile? attachment = null);
+    // Task SendGroupMessage(int groupId, string message, IFormFile? attachment = null);
     
     
 }

@@ -1,14 +1,7 @@
-
-using System.Collections;
-using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.SignalR;
-using Aktitic.HrProject.DAL.Dtos;
-using Aktitic.HrProject.DAL.Helpers;
+using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -16,39 +9,33 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
-public class MessageManager:IMessageManager
+public class MessageManager(
+    IUnitOfWork unitOfWork,
+    IHubContext<ChatHub> hubContext,
+    UserUtility userUtility,
+    IWebHostEnvironment webHostEnvironment)
+    : IMessageManager
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly IHubContext<ChatHub> _hubContext;
-
-    public MessageManager(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext, IWebHostEnvironment webHostEnvironment)
+    public async Task SendPrivateMessage( int receiverId, string message,IFormFile? attachment = null)
     {
-        _unitOfWork = unitOfWork;
-        _hubContext = hubContext;
-        _webHostEnvironment = webHostEnvironment;
-    }
-    
-    public async Task SendPrivateMessage(int senderId, int receiverId, string message,IFormFile? Attatchment = null)
-    {
-        var fileName = Attatchment?.FileName;
-        var filePath = SaveFile(Attatchment);
+        var fileName = attachment?.FileName;
+        var filePath = SaveFile(attachment);
             
         
           var newMessage = new Message
         {
-            SenderId = senderId,
+            SenderId = int.Parse(userUtility.GetUserId()),
             ReceiverId = receiverId,
             Text = message,
             Date = DateTime.UtcNow,
             FilePath = filePath
         };
-        _unitOfWork.Message.Add(newMessage);
-        await _unitOfWork.SaveChangesAsync();
+        unitOfWork.Message.Add(newMessage);
+        await unitOfWork.SaveChangesAsync();
 
-        await _hubContext.Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", new
+        await hubContext.Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", new
         {
-            SenderId = senderId,
+            SenderId = int.Parse(userUtility.GetUserId()),
             ReceiverId = receiverId,
             Message = message,
             FileName = fileName,
@@ -56,36 +43,36 @@ public class MessageManager:IMessageManager
         });
     }
 
-    public async Task SendGroupMessage(int senderId, string groupName, string message, IFormFile? Attatchment=null)
+    public async Task SendGroupMessage(int groupId, string message, IFormFile? attachment=null)
     {
-        var fileName = Attatchment?.FileName;
+        var fileName = attachment?.FileName;
 
-        var filePath = SaveFile(Attatchment);
+        var filePath = SaveFile(attachment);
         
         var newMessage = new Message
         {
-            SenderId = senderId,
-            GroupName = groupName,
+            SenderId = int.Parse(userUtility.GetUserId()),
+            GroupId = groupId,
             Text = message,
             Date = DateTime.UtcNow,
             FilePath = filePath
         };
-        _unitOfWork.Message.Add(newMessage);
-        await _unitOfWork.SaveChangesAsync();
+        unitOfWork.Message.Add(newMessage);
+        await unitOfWork.SaveChangesAsync();
 
-        await _hubContext.Clients.Group(groupName).SendAsync("ReceiveMessage", new
-        {
-            SenderId = senderId,
-            GroupName = groupName,
-            Message = message,
-            FileName = fileName,
-            FilePath = filePath
-        });
+        // await _hubContext.Clients.Group(groupId.ToString()).SendAsync("ReceiveMessage", new
+        // {
+        //     SenderId = senderId,
+        //     GroupName = groupId,
+        //     Message = message,
+        //     FileName = fileName,
+        //     FilePath = filePath
+        // });
     }
     
     private string? SaveFile(IFormFile? file)
     {
-        var uploads = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/MessageFiles");
+        var uploads = Path.Combine(webHostEnvironment.WebRootPath, "uploads/MessageFiles");
         if (!Directory.Exists(uploads))
         {
             Directory.CreateDirectory(uploads);
@@ -98,12 +85,12 @@ public class MessageManager:IMessageManager
     }
     
     // create group 
-    // public async Task<ChatGroup> CreateGroupAsync(string groupName, string createdBy)
+    // public async Task<ChatGroup> CreateGroupAsync(string groupId, string createdBy)
     // {
     //     // Create group in database
     //     var group = new ChatGroup
     //     {
-    //         Name = groupName,
+    //         Name = groupId,
     //         CreatedAt = DateTime.UtcNow,
     //         CreatedBy = createdBy
     //     };
@@ -111,7 +98,7 @@ public class MessageManager:IMessageManager
     //     await _context.SaveChangesAsync();
     //
     //     // Add admin to the Hubs group (if necessary)
-    //     // await _hubContext.Groups.AddToGroupAsync(connectionId, groupName);
+    //     // await _hubContext.Groups.AddToGroupAsync(connectionId, groupId);
     //
     //     return group;
     // }
@@ -126,10 +113,10 @@ public class MessageManager:IMessageManager
     //         {
     //             var chatGroupUser = new ChatGroupUser
     //             {
-    //                 ChatGroupId = group.Id,
+    //                 GroupId = group.Id,
     //                 UserId = user.Id
     //             };
-    //             _unitOfWork.ChatGroupUsers.Add(chatGroupUser);
+    //             _unitOfWork.GroupUsers.Add(chatGroupUser);
     //             await _unitOfWork.SaveChangesAsync();
     //
     //             // Add user to Hubs group

@@ -75,12 +75,12 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
         return await Task.FromResult(Enumerable.Empty<Company>());
     }
 
-    public async Task<Company> GetCompany(int companyId)
+    public Company GetCompany(int companyId)
     {
 
-        var company = await _context.Companies
-            // .Include(x=>x.Manager)
-            .FirstAsync(x => x.Id == companyId);
+        var company = _context.Companies
+            .Include(x=>x.Manager)
+            .FirstOrDefault(x => x.Id == companyId);
         return company;
 
     }

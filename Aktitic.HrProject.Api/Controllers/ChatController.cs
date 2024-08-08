@@ -13,17 +13,17 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
 {
     [HttpPost("sendPrivateMessage")]
     public async Task<IActionResult> SendPrivateMessage
-        (int senderId, int receiverId, string message, 
+        ( int receiverId, string message, 
             IFormFile? attachment = null)
     {
-        await messageService.SendPrivateMessage(senderId, receiverId, message, attachment);
+        await messageService.SendPrivateMessage( receiverId, message, attachment);
         return Ok();
     }
 
     [HttpPost("sendGroupMessage")]
-    public async Task<IActionResult> SendGroupMessage(int senderId, string groupName, string message,IFormFile? attachment = null)
+    public async Task<IActionResult> SendGroupMessage( MessageAddDto message, int groupId)
     {
-        await messageService.SendGroupMessage(senderId, groupName, message,attachment);
+        await chatGroupManager.SendGroupMessage(message, groupId );
         return Ok();
     }
 
@@ -40,13 +40,6 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         var messages = await chatGroupManager.GetMessagesInPrivateChat(userId1, userId2, page, pageSize);
         return Ok(messages);
     }
-    
-    // [HttpGet("getGroups")]
-    // public async Task<IActionResult> GetGroups()
-    // {
-    //     var groups = await chatGroupManager.GetAll();
-    //     return Ok(groups);
-    // }
     
     [HttpPost("createGroup")]
     public async Task<IActionResult> CreateGroup(ChatGroupAddDto dto)
@@ -69,10 +62,17 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         return Ok();
     }
     
-    [HttpGet("GetAllGroups/{page}/{pageSize}")]
+    [HttpGet("GetAllGroups")]
     public async Task<IActionResult> GetAllGroups(int page, int pageSize)
     {
         var groups = await chatGroupManager.GetAll(page, pageSize);
+        return Ok(groups);
+    }
+    
+    [HttpGet("GetUserGroups")]
+    public async Task<IActionResult> GetUserGroups(int userId, int page, int pageSize)
+    {
+        var groups = await chatGroupManager.GetUserGroups(userId, page, pageSize);
         return Ok(groups);
     }
     

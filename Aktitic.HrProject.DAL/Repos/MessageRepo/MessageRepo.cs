@@ -36,7 +36,6 @@ public class MessageRepo :GenericRepo<Message>,IMessageRepo
                 query = query
                     .Where(x =>
                         x.Text!.ToLower().Contains(searchKey) ||
-                        x.SenderName!.ToLower().Contains(searchKey) ||
                         x.SenderId!.ToString().Contains(searchKey) );
                        
                         
@@ -67,7 +66,7 @@ public class MessageRepo :GenericRepo<Message>,IMessageRepo
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-        return null!;
+        return await Task.FromResult(new List<Message>());
     }
 
     public void DeleteRange(List<Message> oldMessages)

@@ -1,19 +1,9 @@
-
-using System.Text.Json.Serialization;
-using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Helpers;
-using Aktitic.HrProject.DAL.Migrations;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;
 

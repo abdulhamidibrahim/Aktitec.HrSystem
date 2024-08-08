@@ -24,16 +24,16 @@ public class FileManager(
         {
             FileName = fileAddDto.FileName,
             FileSize = fileAddDto.FileSize,
-            UserId = fileAddDto.UserId,
+            UserId = int.Parse(fileAddDto.UserId),
             Status = fileAddDto.Status,
             VersionNumber = fileAddDto.VersionNumber,
-            ProjectId = fileAddDto.ProjectId,
+            ProjectId = int.TryParse(fileAddDto.ProjectId,out var id) ? id : null,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserName(),
         };
         
         // add file users
-        if(fileAddDto.Status == Status.Shared)
+        if(fileAddDto is { Status: Status.Shared, FileUsers: not null })
         {
             file.FileUsers = fileAddDto.FileUsers
                 .Select(x => new FileUsers()
@@ -47,17 +47,20 @@ public class FileManager(
         }
         
         // upload file  
-        var filePath = Path.Combine(webHostEnvironment.WebRootPath, "uploads/files",fileAddDto.ProjectId.ToString());
-        if (!Directory.Exists(filePath))
+        if (fileAddDto is {File: not null, ProjectId:not null })
         {
-            Directory.CreateDirectory(filePath);
-        }
+            var filePath = Path.Combine(webHostEnvironment.WebRootPath, "uploads/files",fileAddDto.ProjectId.ToString());
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
 
-        var path = Path.Combine(filePath, fileAddDto.FileName);
-        await using var stream = new FileStream(path, FileMode.Create);
-        await fileAddDto.File.CopyToAsync(stream);
-        file.FilePath = path;
-        
+            var path = Path.Combine(filePath, fileAddDto.FileName);
+            await using var stream = new FileStream(path, FileMode.Create);
+            await fileAddDto.File.CopyToAsync(stream);
+            file.FilePath = path;
+
+        }
         unitOfWork.File.Add(file);
         return await unitOfWork.SaveChangesAsync();
     }

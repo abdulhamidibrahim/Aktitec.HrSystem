@@ -1,13 +1,16 @@
 
+using System.Text.Json.Serialization;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;
-
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.UnitOfWork;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using File = System.IO.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
@@ -15,6 +18,7 @@ namespace Aktitic.HrTaskList.BL;
 public class ChatGroupManager(
     IUnitOfWork unitOfWork,
     UserUtility userUtility,
+    IWebHostEnvironment webHostEnvironment,
     ChatHub hubContext) : IChatGroupManager
 {
     public async Task<int> Add(ChatGroupAddDto chatGroupAddDto)
@@ -25,36 +29,63 @@ public class ChatGroupManager(
             Description = chatGroupAddDto.Description,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserId(),
-            ChatGroupUsers = chatGroupAddDto.ChatGroupUsers.Select(x => new ChatGroupUser()
-            {
-                UserId = x.UserId,
-                ChatGroupId = x.ChatGroupId,
-                IsAdmin = x.IsAdmin,
-                CreatedAt = DateTime.Now,
-                CreatedBy = userUtility.GetUserId(),
-            }).ToList()
+            
         };
+        
+        var chatUsers = JsonConvert.DeserializeObject<List<ChatGroupUserDto>>(chatGroupAddDto.GroupUsers!);
+        chatGroup.ChatGroupUsers = chatUsers?.Select(x => new ChatGroupUser()
+        {
+            UserId = x.UserId,
+            ChatGroupId = chatGroup.Id,
+            IsAdmin = x.IsAdmin,
+            CreatedAt = DateTime.Now,
+            CreatedBy = userUtility.GetUserId(),
+        }).ToList();
 
+
+
+        if (chatGroupAddDto.Image != null)
+        {
+            var unique = Guid.NewGuid();
+
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/chats", unique.ToString());
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            await using var fileStream = new FileStream(Path.Combine(path, chatGroupAddDto.Image.FileName), FileMode.Create);
+            await chatGroupAddDto.Image.CopyToAsync(fileStream);
+
+            chatGroup.Image = "uploads/chats"+ unique + "/" + chatGroupAddDto.Image?.FileName;
+
+
+        }
+      
+        // send the SignalR Request 
+        
         var admin = unitOfWork.ApplicationUser.GetUserAdmin(chatGroup.TenantId).Id;
         if (chatGroup.TenantId != null)
-            await hubContext.AddUsersToGroup(admin, chatGroupAddDto.ChatGroupUsers
+            await hubContext.AddUsersToGroup(admin, chatGroup.ChatGroupUsers
                     .Select(x => x.UserId).ToList(),
                 chatGroup.TenantId.Value);
 
         unitOfWork.ChatGroup.Add(chatGroup);
         return await unitOfWork.SaveChangesAsync();
+        
     }
 
     public async Task<int> AddGroupUsers(List<ChatGroupUserDto> chatGroupAddDto, int chatGroupId)
     {
         var chatGroup = unitOfWork.ChatGroup.GetById(chatGroupId);
         if (chatGroup == null) return (0);
-        chatGroup.ChatGroupUsers = chatGroup.ChatGroupUsers
+        chatGroup.ChatGroupUsers = chatGroup.ChatGroupUsers?
             .Union(chatGroupAddDto
                 .Select(x => new ChatGroupUser()
                 {
                     UserId = x.UserId,
-                    ChatGroupId = x.ChatGroupId,
+                    ChatGroupId = x.GroupId,
                     IsAdmin = x.IsAdmin,
                     CreatedAt = DateTime.Now,
                     CreatedBy = userUtility.GetUserId(),
@@ -82,6 +113,7 @@ public class ChatGroupManager(
             var message = new Message()
             {
                 GroupId = chatGroupId,
+                SenderId = messageAddDto.SenderId,
                 Text = messageAddDto.Text,
                 CreatedAt = DateTime.Now,
                 CreatedBy = userUtility.GetUserId(),
@@ -95,6 +127,13 @@ public class ChatGroupManager(
             
             return await unitOfWork.SaveChangesAsync(); ;
     }
+
+    public Task<object?> GetUserGroups(int userId, int page, int pageSize)
+    {
+        var groups = unitOfWork.ChatGroup.GetUserGroups(userId,page,pageSize);
+        return Task.FromResult(groups);
+    }
+
     public async Task<List<MessageReadDto>> GetGroupMessages(int chatGroupId, int page, int pageSize)
     {
         var messages = unitOfWork.ChatGroup.GetMessages(chatGroupId,page,pageSize);
@@ -131,16 +170,56 @@ public class ChatGroupManager(
         if(!chatGroupUpdateDto.Description.IsNullOrEmpty()) chatGroup.Description = chatGroupUpdateDto.Description;
         
         // update chat group users 
-        var chatGroupUsers = chatGroupUpdateDto.ChatGroupUsers
-            .Select(x=> new ChatGroupUser()
+        var chatGroupUsers = JsonConvert.DeserializeObject<List<ChatGroupUserDto>>(chatGroupUpdateDto.GroupUsers!);
+        
+        var groupUsers = chatGroupUsers?.Select(x => new ChatGroupUser()
         {
             UserId = x.UserId,
-            ChatGroupId = x.ChatGroupId,
-            UpdatedBy = userUtility.GetUserId(),
-            UpdatedAt = DateTime.Now,
+            ChatGroupId = chatGroup.Id,
+            IsAdmin = x.IsAdmin,
+            CreatedAt = DateTime.Now,
+            CreatedBy = userUtility.GetUserId(),
         }).ToList();
 
-        chatGroup.ChatGroupUsers = chatGroup.ChatGroupUsers.Intersect(chatGroupUsers).ToList();
+
+        if (groupUsers != null) chatGroup.ChatGroupUsers = chatGroup.ChatGroupUsers?.Intersect(groupUsers).ToList();
+        
+        if (chatGroupUpdateDto?.Image != null)
+        {
+            // Construct the path for the current image
+            var oldImagePath = Path.Combine(webHostEnvironment.WebRootPath, chatGroup.Image);
+
+            // Delete the old image file if it exists
+            if (File.Exists(oldImagePath))
+            {
+                try
+                {
+                    File.Delete(oldImagePath);
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception (you might want to use a logging framework)
+                    Console.WriteLine($"Failed to delete old image: {ex.Message}");
+                }
+            }
+
+            // Use the same path for the new image
+            var unique = Path.GetDirectoryName(chatGroup.Image);
+            var path = Path.Combine(webHostEnvironment.WebRootPath, unique);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var filePath = Path.Combine(path, chatGroupUpdateDto.Image.FileName);
+
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            chatGroupUpdateDto.Image.CopyTo(fileStream);
+
+            chatGroup.Image = Path.Combine(unique, chatGroupUpdateDto.Image.FileName);
+        }
+
         
         chatGroup.UpdatedAt = DateTime.Now;
         chatGroup.UpdatedBy = userUtility.GetUserId();
@@ -172,7 +251,7 @@ public class ChatGroupManager(
         };
         chatG.ChatGroupUsers = chatGroup.ChatGroupUsers.Select(x => new ChatGroupUserDto()
         {
-            ChatGroupId = x.ChatGroupId,
+            GroupId = x.ChatGroupId,
             UserId = x.UserId,
             IsAdmin = x.IsAdmin,
         }).ToList();
@@ -189,9 +268,9 @@ public class ChatGroupManager(
             Description = x.Description,
             CreatedBy = x.CreatedBy,
             CreatedAt = x.CreatedAt,
-            // ChatGroupUsers = x.ChatGroupUsers?.Select(y => new ChatGroupUserDto()
+            // GroupUsers = x.GroupUsers?.Select(y => new ChatGroupUserDto()
             // {
-            //     ChatGroupId = y.ChatGroupId,
+            //     GroupId = y.GroupId,
             //     UserId = y.UserId,
             //     IsAdmin = y.IsAdmin,
             // }).ToList()
