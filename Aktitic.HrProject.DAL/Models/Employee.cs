@@ -70,13 +70,5 @@ public partial class Employee : BaseEntity
     public virtual ICollection<TicketFollowers> TicketFollowers { get; set; } = new List<TicketFollowers>();
 
     public virtual TimeSheet? Timesheet { get; set; }
-    
-
-    
+    public ICollection<OfferApproval>? OfferApprovals { get; set; }
 }
-
-// public class ManagerTree
-// {
-//     public EmployeeDto Employee { get; set; }
-//     public List<ManagerTree> Subordinates { get; set; } = new ();
-// }

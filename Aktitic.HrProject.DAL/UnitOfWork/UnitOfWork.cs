@@ -73,13 +73,18 @@ public class UnitOfWork : IUnitOfWork
     private TicketFollowersRepo _ticketFollowersRepo;
     private TicketRepo _ticketRepo;
     private TrainerRepo _trainerRepo;
-    private ITrainingListRepo _trainingListRepo;
+    private TrainingListRepo _trainingListRepo;
     private TrainingTypeRepo _trainingTypeRepo;
     private EventsRepo _eventsRepo;
     private NotificationRepo _notificationRepo;
     private ChatGroupRepo _chatGroupRepo;
     private ChatGroupUsersRepo _chatGroupUsersRepo;
     private UserUtility _userUtility;
+    private AssetsRepo _assetsRepo;
+    private JobsRepo _jobsRepo;
+    private ShortlistsRepo _shortlistsRepo;
+    private InterviewQuestionsRepo _interviewQuestions;
+    private OfferApprovalsRepo _offerApprovals;
 
 
     // complete all other repos
@@ -150,7 +155,6 @@ public class UnitOfWork : IUnitOfWork
     
     public ITrainerRepo Trainer => _trainerRepo ??= new TrainerRepo(_context);
     
-    
     public IInvoiceRepo Invoice => _invoiceRepo ??= new InvoiceRepo(_context);
         
     public ITicketRepo Ticket => _ticketRepo ??= new TicketRepo(_context);
@@ -183,6 +187,11 @@ public class UnitOfWork : IUnitOfWork
     public INotificationRepo Notification => _notificationRepo ??= new NotificationRepo(_context);
     public IChatGroupRepo ChatGroup => _chatGroupRepo ??= new ChatGroupRepo(_context);
     public IChatGroupUsersRepo ChatGroupUsers => _chatGroupUsersRepo ??= new ChatGroupUsersRepo(_context);
+    public IAssetsRepo Assets => _assetsRepo ??= new AssetsRepo(_context);
+    public IJobsRepo Jobs => _jobsRepo ??= new JobsRepo(_context);
+    public IShortlistsRepo Shortlists => _shortlistsRepo ??= new ShortlistsRepo(_context);
+    public IInterviewQuestionsRepo InterviewQuestions => _interviewQuestions ??= new InterviewQuestionsRepo(_context);
+    public IOfferApprovalsRepo OfferApprovals => _offerApprovals ??= new OfferApprovalsRepo(_context);
                 
     
 

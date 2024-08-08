@@ -87,15 +87,6 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
 
     public async Task<IEnumerable<ApplicationUser>> GetAllWithEmployeesAsync(int companyId)
     {
-        if (companyId == 0)
-        {
-            return await _context.ApplicationUsers!
-                .Include(a => a.Employee)
-                // .Include(a=>a.Permissions)
-                .AsQueryable()
-                .ToListAsync();
-        }
-        
         if (_context.ApplicationUsers != null)
             return await _context.ApplicationUsers!
                 .Where(x=>x.TenantId == companyId && companyId != 0)

@@ -4,19 +4,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace Aktitic.HrProject.BL.Utilities;
 
-public class UserUtility
+public class UserUtility(HttpContextAccessor contextAccessor)
 {
-    private readonly HttpContextAccessor? _contextAccessor;
+    private readonly HttpContextAccessor? _contextAccessor = contextAccessor;
 
-    public  UserUtility(HttpContextAccessor contextAccessor)
-    {
-        _contextAccessor = contextAccessor;
-    }
-    
-    
-    public string GetUserId() => _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier); // ClaimTypes.NameIdentifier
+
+    public string GetUserId() => _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier); 
     public string? GetUserName() => _contextAccessor?.HttpContext?.User.FindFirstValue(claimType: ClaimTypes.Name);
     
-    public string GetCurrentCompany() => _contextAccessor?.HttpContext?.User.FindFirstValue(nameof(Company))
-                                             ?? "Company";
+    public string? GetCurrentCompany() => _contextAccessor?.HttpContext?.User.FindFirst(nameof(Company))?.Value;
 }

@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 using Aktitic.HrProject.BL.Utilities;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace Aktitic.HrProject.DAL.Context;
@@ -21,12 +19,12 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
     {
         _userUtility = userUtility;
-        if (userUtility?.GetCurrentCompany() == "Company")
-            TenantId = 0;
-        else TenantId = string.IsNullOrEmpty(userUtility?.GetCurrentCompany()) ? 0
-            : int.Parse(userUtility.GetCurrentCompany());
-        
-        
+        var currentCompany = _userUtility?.GetCurrentCompany();           
+        if (_userUtility != null)
+            if (currentCompany != null)
+                TenantId = int.Parse(currentCompany);
+
+
         // if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreator)
         // {
         //     // Create Database 
@@ -119,6 +117,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<ReceivedNotification>? ReceivedNotifications { get; set; }   
     public virtual DbSet<ChatGroup>? ChatGroups { get; set; }   
     public virtual DbSet<ChatGroupUser>? ChatGroupUsers { get; set; }   
+    public virtual DbSet<Asset>? Assets { get; set; }   
+    public virtual DbSet<Job>? Jobs { get; set; }   
+    public virtual DbSet<Shortlist>? Shortlists { get; set; }   
+    public virtual DbSet<InterviewQuestion>? InterviewQuestions { get; set; }   
+    public virtual DbSet<OfferApproval>? OfferApprovals { get; set; }   
 
     #endregion
 
@@ -147,8 +150,15 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>()
                      .Where(e=>e.State == EntityState.Added && GetCurrentTenantId()!=0))
         {
-            entry.Entity.TenantId = GetCurrentTenantId();
+            entry.Entity.TenantId ??= GetCurrentTenantId();
         }
+
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>().Where(e=>e.State ==EntityState.Added))
+        {
+            entry.Entity.CreatedAt = DateTime.Now;
+            entry.Entity.CreatedBy = _userUtility?.GetUserId();
+        }
+        
         return base.SaveChangesAsync(cancellationToken);
     }
     
@@ -178,8 +188,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         }
         
         
+        // add the configuration 
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrSystemDbContext).Assembly);   
+      
         
-
+        
         // modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
         
         
@@ -198,8 +211,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 
 
 
-        modelBuilder.Entity<License>()
-            .HasQueryFilter(e => e.TenantId == TenantId);
+        // modelBuilder.Entity<License>()
+        //     .HasQueryFilter(e => e.TenantId == TenantId);
         
         // modelBuilder.Entity<ApplicationUser>()
         //     .HasQueryFilter(e => e.TenantId == TenantId);

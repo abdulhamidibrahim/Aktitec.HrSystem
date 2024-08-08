@@ -118,13 +118,14 @@ namespace Aktitic.HrProject.DAL.Migrations
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: true),
-                    CompanyId = table.Column<int>(type: "int", nullable: true),
+                    TenantId = table.Column<int>(type: "int", nullable: true),
                     IsManager = table.Column<bool>(type: "bit", nullable: false),
                     IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     HasAccess = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     ConnectionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -255,6 +256,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -2590,14 +2592,14 @@ namespace Aktitic.HrProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUser_CompanyId",
-                table: "ApplicationUser",
-                column: "tenantId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUser_EmployeeId",
                 table: "ApplicationUser",
                 column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUser_TenantId",
+                table: "ApplicationUser",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attendance_employee_id",
@@ -2665,7 +2667,8 @@ namespace Aktitic.HrProject.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_ManagerId",
                 table: "Companies",
-                column: "ManagerId");
+                column: "ManagerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contacts_TenantId",
@@ -2929,7 +2932,7 @@ namespace Aktitic.HrProject.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Licenses_CompanyId",
                 table: "Licenses",
-                column: "tenantId");
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Licenses_TenantId",
@@ -2982,7 +2985,7 @@ namespace Aktitic.HrProject.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_CompanyId",
                 table: "Notifications",
-                column: "tenantId");
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Overtimes_approvedBy",
@@ -3382,9 +3385,9 @@ namespace Aktitic.HrProject.DAL.Migrations
                 column: "TenantId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ApplicationUser_Companies_CompanyId",
+                name: "FK_ApplicationUser_Companies_TenantId",
                 table: "ApplicationUser",
-                column: "tenantId",
+                column: "TenantId",
                 principalTable: "Companies",
                 principalColumn: "Id");
 
@@ -3501,7 +3504,7 @@ namespace Aktitic.HrProject.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ApplicationUser_Companies_CompanyId",
+                name: "FK_ApplicationUser_Companies_TenantId",
                 table: "ApplicationUser");
 
             migrationBuilder.DropForeignKey(

@@ -178,9 +178,9 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         return unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<CompanyReadDto>? Get(int id)
+    public  CompanyReadDto? Get(int id)
     {
-        var company = await  unitOfWork.Company.GetCompany(id);
+        var company =  unitOfWork.Company.GetCompany(id);
         if (company == null) return null;
         
         var dto = new CompanyReadDto()
@@ -242,19 +242,19 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 UpdatedAt = c.UpdatedAt
             },
             
-            // Manager = new UserDto()
-            // {
-            //     Id = c.Manager.Id,
-            //     UserName = c.Manager.UserName,
-            //     Email = c.Manager.Email,
-            //     FirstName = c.Manager.FirstName,
-            //     LastName = c.Manager.LastName,
-            //     
-            //     CreatedAt = c.Manager.CreatedAt,
-            //     CreatedBy =c.Manager.CreatedBy,
-            //     UpdatedAt = c.Manager.UpdatedAt,
-            //     UpdatedBy =c.Manager.UpdatedBy,
-            // }
+            Manager = new UserDto()
+            {
+                Id = c.Manager.Id,
+                UserName = c.Manager.UserName,
+                Email = c.Manager.Email,
+                FirstName = c.Manager.FirstName,
+                LastName = c.Manager.LastName,
+                
+                CreatedAt = c.Manager.CreatedAt,
+                CreatedBy =c.Manager.CreatedBy,
+                UpdatedAt = c.Manager.UpdatedAt,
+                UpdatedBy =c.Manager.UpdatedBy,
+            }
 
         });
 

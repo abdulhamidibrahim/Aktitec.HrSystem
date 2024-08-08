@@ -75,4 +75,9 @@ public interface IUnitOfWork : IDisposable
     INotificationRepo Notification { get; }
     IChatGroupRepo ChatGroup { get; }
     IChatGroupUsersRepo ChatGroupUsers { get; }
+    IAssetsRepo Assets { get; }
+    IJobsRepo Jobs { get; }
+    IShortlistsRepo Shortlists { get; }
+    IInterviewQuestionsRepo InterviewQuestions { get; }
+    IOfferApprovalsRepo OfferApprovals { get; }
 }

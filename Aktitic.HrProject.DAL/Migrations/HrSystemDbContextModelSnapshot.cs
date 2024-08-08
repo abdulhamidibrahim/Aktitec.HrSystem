@@ -141,7 +141,101 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ApplicationUser", (string)null);
+                    b.ToTable("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Asset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssetId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AssetName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Condition")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Manufacturer")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Model")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("PurchaseFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PurchaseTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Supplier")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("Warranty")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Assets");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Attendance", b =>
@@ -275,7 +369,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Budgets", (string)null);
+                    b.ToTable("Budgets");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.BudgetExpenses", b =>
@@ -334,7 +428,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("BudgetsExpenses", (string)null);
+                    b.ToTable("BudgetsExpenses");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.BudgetRevenue", b =>
@@ -393,7 +487,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("BudgetsRevenues", (string)null);
+                    b.ToTable("BudgetsRevenues");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Category", b =>
@@ -439,7 +533,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ChatGroup", b =>
@@ -490,7 +584,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ChatGroups", (string)null);
+                    b.ToTable("ChatGroups");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ChatGroupUser", b =>
@@ -534,7 +628,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChatGroupUsers", (string)null);
+                    b.ToTable("ChatGroupUsers");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Client", b =>
@@ -707,7 +801,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("ManagerId")
                         .IsUnique();
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contact", b =>
@@ -772,7 +866,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contract", b =>
@@ -858,7 +952,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Contracts", (string)null);
+                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CustomPolicy", b =>
@@ -1327,7 +1421,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Expenses", b =>
@@ -1449,7 +1543,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ExpensesOfBudgets", (string)null);
+                    b.ToTable("ExpensesOfBudgets");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
@@ -1581,7 +1675,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("FileUsers", (string)null);
+                    b.ToTable("FileUsers");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.GoalList", b =>
@@ -1645,7 +1739,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("GoalLists", (string)null);
+                    b.ToTable("GoalLists");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.GoalType", b =>
@@ -1694,7 +1788,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("GoalTypes", (string)null);
+                    b.ToTable("GoalTypes");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Holiday", b =>
@@ -1743,6 +1837,99 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Holiday", "employee");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.InterviewQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnswerExplanation")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeSnippets")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("CorrectAnswer")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OptionA")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OptionB")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OptionC")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("OptionD")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoLink")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("InterviewQuestions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Invoice", b =>
@@ -1911,7 +2098,98 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Job", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Experience")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobLocation")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("JobType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NoOfVacancies")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("SalaryFrom")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("SalaryTo")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Jobs");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.LeaveSettings", b =>
@@ -2004,7 +2282,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("LeaveSettings", (string)null);
+                    b.ToTable("LeaveSettings");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Leaves", b =>
@@ -2140,7 +2418,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Licenses", (string)null);
+                    b.ToTable("Licenses");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Message", b =>
@@ -2211,7 +2489,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notes", b =>
@@ -2330,7 +2608,68 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.OfferApproval", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnnualIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Pay")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("OfferApprovals");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Overtime", b =>
@@ -2485,7 +2824,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollAddition", b =>
@@ -2547,7 +2886,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("PayrollAdditions", (string)null);
+                    b.ToTable("PayrollAdditions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollDeduction", b =>
@@ -2604,7 +2943,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("PayrollDeductions", (string)null);
+                    b.ToTable("PayrollDeductions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollOvertime", b =>
@@ -2652,7 +2991,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("PayrollOvertimes", (string)null);
+                    b.ToTable("PayrollOvertimes");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PerformanceAppraisal", b =>
@@ -2702,7 +3041,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("PerformanceAppraisals", (string)null);
+                    b.ToTable("PerformanceAppraisals");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PerformanceIndicator", b =>
@@ -2804,7 +3143,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("PerformanceIndicators", (string)null);
+                    b.ToTable("PerformanceIndicators");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Permission", b =>
@@ -2933,7 +3272,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Polices", (string)null);
+                    b.ToTable("Polices");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Project", b =>
@@ -3091,7 +3430,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Promotions", (string)null);
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ProvidentFunds", b =>
@@ -3156,7 +3495,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ProvidentFunds", (string)null);
+                    b.ToTable("ProvidentFunds");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ReceivedNotification", b =>
@@ -3206,7 +3545,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("ReceivedNotifications", (string)null);
+                    b.ToTable("ReceivedNotifications");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Resignation", b =>
@@ -3259,7 +3598,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Resignations", (string)null);
+                    b.ToTable("Resignations");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revenue", b =>
@@ -3309,7 +3648,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Revenues", (string)null);
+                    b.ToTable("Revenues");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Salary", b =>
@@ -3407,7 +3746,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Salaries", (string)null);
+                    b.ToTable("Salaries");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Scheduling", b =>
@@ -3617,6 +3956,60 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Shift", "employee");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Shortlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Shortlists");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Task", b =>
@@ -3856,7 +4249,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Taxes", (string)null);
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Termination", b =>
@@ -3912,7 +4305,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Terminations", (string)null);
+                    b.ToTable("Terminations");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Ticket", b =>
@@ -4190,7 +4583,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Trainers", (string)null);
+                    b.ToTable("Trainers");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TrainingList", b =>
@@ -4259,7 +4652,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TrainingTypeId");
 
-                    b.ToTable("TrainingLists", (string)null);
+                    b.ToTable("TrainingLists");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TrainingType", b =>
@@ -4308,7 +4701,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TrainingTypes", (string)null);
+                    b.ToTable("TrainingTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -4330,7 +4723,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -4352,7 +4745,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoleClaims", (string)null);
+                    b.ToTable("RoleClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -4374,7 +4767,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("UserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -4393,7 +4786,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.ToTable("UserLogins", (string)null);
+                    b.ToTable("UserLogins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -4406,7 +4799,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("UserId", "RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -4425,7 +4818,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("UserTokens");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
@@ -4441,6 +4834,23 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Asset", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "User")
+                        .WithMany("Assets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Attendance", b =>
@@ -4835,6 +5245,23 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.InterviewQuestion", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Department", "Department")
+                        .WithMany("InterviewQuestions")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Invoice", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Client", "Client")
@@ -4875,6 +5302,23 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Estimate");
 
                     b.Navigation("Invoice");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Job", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Department", "Department")
+                        .WithMany("Jobs")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Tenant");
                 });
@@ -4992,6 +5436,31 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.OfferApproval", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany("OfferApprovals")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", "Job")
+                        .WithMany("OfferApprovals")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Overtime", b =>
@@ -5327,6 +5796,31 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Shortlist", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", "Job")
+                        .WithMany("Shortlists")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Task", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "AssignEmployee")
@@ -5531,6 +6025,8 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("Assets");
+
                     b.Navigation("ChatGroupUsers");
 
                     b.Navigation("FileUsers");
@@ -5576,6 +6072,10 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Navigation("Employees");
 
+                    b.Navigation("InterviewQuestions");
+
+                    b.Navigation("Jobs");
+
                     b.Navigation("Schedulings");
                 });
 
@@ -5588,6 +6088,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("LeafApprovedByNavigations");
 
                     b.Navigation("LeafEmployees");
+
+                    b.Navigation("OfferApprovals");
 
                     b.Navigation("OvertimeApprovedByNavigations");
 
@@ -5622,6 +6124,13 @@ namespace Aktitic.HrProject.DAL.Migrations
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Invoice", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Job", b =>
+                {
+                    b.Navigation("OfferApprovals");
+
+                    b.Navigation("Shortlists");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notification", b =>
