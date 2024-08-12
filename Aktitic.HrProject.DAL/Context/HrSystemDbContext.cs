@@ -13,17 +13,14 @@ namespace Aktitic.HrProject.DAL.Context;
 
 public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
-    private static int? TenantId { get; set; }
+    public int? TenantId { get; private set; }
     private readonly UserUtility? _userUtility;
     
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
     {
         _userUtility = userUtility;
-        var currentCompany = _userUtility?.GetCurrentCompany();           
-        if (_userUtility != null)
-            if (currentCompany != null)
-                TenantId = int.Parse(currentCompany);
-
+        
+        SetTenantId();           
 
         // if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreator)
         // {
@@ -39,6 +36,15 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         //         dbCreator.CreateTables();
         //     
         // }
+        
+    }
+
+    private void SetTenantId()
+    {
+        if (_userUtility is not null)
+        {
+            TenantId = int.TryParse(_userUtility.GetCurrentCompany(), out var id) ? id : (int?)null;
+        }
     }
 
     #region Entities
@@ -122,26 +128,33 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<Shortlist>? Shortlists { get; set; }   
     public virtual DbSet<InterviewQuestion>? InterviewQuestions { get; set; }   
     public virtual DbSet<OfferApproval>? OfferApprovals { get; set; }   
+    public virtual DbSet<Experience>? Experiences { get; set; }   
+    public virtual DbSet<Candidate>? Candidates { get; set; }   
+    public virtual DbSet<ScheduleTiming>? ScheduleTimings { get; set; }   
+    public virtual DbSet<AptitudeResult>? AptitudeResults { get; set; }   
+    public virtual DbSet<JobApplicant>? JobApplicants { get; set; }   
 
     #endregion
 
 
-    //  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //  {
-    //
-    //      var tenantConnectionString = _tenantServices.GetConnectionString();
-    //      
-    //      if (!string.IsNullOrEmpty(tenantConnectionString))
-    //      {
-    //          var dbProvider = _tenantServices.GetDatabaseProvider();
-    //          
-    //          if (dbProvider?.ToLower() == "mssql")
-    //          {
-    //              optionsBuilder.UseSqlServer(tenantConnectionString);
-    //          }
-    //          
-    //      }
-    // }
+     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+     {
+         
+         SetTenantId();
+    
+         // var tenantConnectionString = _tenantServices.GetConnectionString();
+         //
+         // if (!string.IsNullOrEmpty(tenantConnectionString))
+         // {
+         //     var dbProvider = _tenantServices.GetDatabaseProvider();
+         //     
+         //     if (dbProvider?.ToLower() == "mssql")
+         //     {
+         //         optionsBuilder.UseSqlServer(tenantConnectionString);
+         //     }
+         //     
+         // 
+     }
    
     
     
@@ -182,8 +195,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         {
             if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                var method = SetTenantIdFilterMethod.MakeGenericMethod(entityType.ClrType);
-                method.Invoke(this, new object[] { modelBuilder });
+                var method = _setTenantIdFilterMethod?.MakeGenericMethod(entityType.ClrType);
+                method?.Invoke(this, new object[] { modelBuilder });
             }
         }
         
@@ -822,18 +835,18 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         builder.Entity<T>().HasQueryFilter(e => e.TenantId == tenantId);
     }
 
-    private static int? GetCurrentTenantId()
+    private int? GetCurrentTenantId()
     {
-        
         return TenantId;
     }
-    private static void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : class, IBaseEntity
+
+    private void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : class, IBaseEntity
     {
         modelBuilder.Entity<T>().HasQueryFilter(e => e.TenantId == GetCurrentTenantId());
     }
 
-    private static readonly MethodInfo SetTenantIdFilterMethod = typeof(HrSystemDbContext)
-        .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Static, null,
-            new[] { typeof(ModelBuilder) }, null);
+    private readonly MethodInfo? _setTenantIdFilterMethod = typeof(HrSystemDbContext)
+        .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Instance);
+
 }
 

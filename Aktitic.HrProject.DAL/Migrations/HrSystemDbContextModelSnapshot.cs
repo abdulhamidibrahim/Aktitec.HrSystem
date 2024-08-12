@@ -144,6 +144,67 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AptitudeResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryWiseMark")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TotalMark")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AptitudeResults");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Asset", b =>
                 {
                     b.Property<int>("Id")
@@ -488,6 +549,66 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("BudgetsRevenues");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Candidate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Candidates");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Category", b =>
@@ -1546,6 +1667,53 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("ExpensesOfBudgets");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Experience", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExperienceLevel")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Experiences");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
                 {
                     b.Property<int>("Id")
@@ -2192,6 +2360,71 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Jobs");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.JobApplicant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(22)
+                        .HasColumnType("nvarchar(22)");
+
+                    b.Property<string>("Resume")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("JobApplicants");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.LeaveSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -2643,6 +2876,10 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Property<int>("JobId")
                         .HasColumnType("int");
+
+                    b.Property<string>("LongTermIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Pay")
                         .HasMaxLength(50)
@@ -3749,6 +3986,76 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Salaries");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ScheduleTiming", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ScheduleDate1")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ScheduleDate2")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ScheduleDate3")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SelectTime1")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SelectTime2")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SelectTime3")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ScheduleTimings");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Scheduling", b =>
                 {
                     b.Property<int>("Id")
@@ -4836,6 +5143,31 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AptitudeResult", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany("AptitudeResults")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", "Job")
+                        .WithMany("AptitudeResults")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Asset", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
@@ -4906,6 +5238,23 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasForeignKey("TenantId");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Candidate", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany("Candidates")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Tenant");
                 });
@@ -5153,6 +5502,15 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Experience", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Expenses", "Expenses")
@@ -5319,6 +5677,15 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasForeignKey("TenantId");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.JobApplicant", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
 
                     b.Navigation("Tenant");
                 });
@@ -5758,6 +6125,31 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ScheduleTiming", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany("ScheduleTimings")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", "Job")
+                        .WithMany("ScheduleTimings")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Scheduling", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Department", "Department")
@@ -6081,7 +6473,11 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Employee", b =>
                 {
+                    b.Navigation("AptitudeResults");
+
                     b.Navigation("Attendances");
+
+                    b.Navigation("Candidates");
 
                     b.Navigation("EmployeeProjects");
 
@@ -6096,6 +6492,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("OvertimeEmployees");
 
                     b.Navigation("Projects");
+
+                    b.Navigation("ScheduleTimings");
 
                     b.Navigation("SchedulingEmployees");
 
@@ -6128,7 +6526,11 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Job", b =>
                 {
+                    b.Navigation("AptitudeResults");
+
                     b.Navigation("OfferApprovals");
+
+                    b.Navigation("ScheduleTimings");
 
                     b.Navigation("Shortlists");
                 });

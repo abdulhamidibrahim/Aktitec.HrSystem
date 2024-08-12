@@ -1,3 +1,5 @@
+using Aktitic.HrProject.DAL.Dtos;
+
 namespace Aktitic.HrProject.BL;
 
 public class AssetsDto
@@ -16,6 +18,7 @@ public class AssetsDto
     public string? Description { get; set; }
     public decimal? Warranty { get; set; }
     public required int UserId { get; set; }
+    public required ApplicationUserDto User { get; set; }
     public required string Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }

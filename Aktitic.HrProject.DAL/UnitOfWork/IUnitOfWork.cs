@@ -80,4 +80,9 @@ public interface IUnitOfWork : IDisposable
     IShortlistsRepo Shortlists { get; }
     IInterviewQuestionsRepo InterviewQuestions { get; }
     IOfferApprovalsRepo OfferApprovals { get; }
+    IExperiencesRepo Experiences { get; }
+    ICandidatesRepo Candidates { get; }
+    IScheduleTimingsRepo ScheduleTimings { get; }
+    IAptitudeResultsRepo AptitudeResults { get; }
+    IJobApplicantsRepo JobApplicants { get; }
 }

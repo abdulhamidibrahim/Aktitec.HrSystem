@@ -12,30 +12,28 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
         _context = context;
     }
 
-    public Task<List<T>> GetAll()
+    public async Task<List<T>> GetAll()
     { 
-        return Task.FromResult(_context.Set<T>()
+        return await _context.Set<T>()
             .AsNoTracking()
-            .ToList());
+            .ToListAsync();
     }
 
     public T? GetById(int? id) => _context.Set<T>().Find(id);
                  
     
 
-    public void Add(T entity) =>_context.Set<T>().Add(entity);
-         
-    
+    public async void Add(T entity) => await _context.Set<T>().AddAsync(entity);
 
     public void Update(T entity) => _context.Set<T>().Update(entity);
         
-    public async void Delete(T entity) => _context.Remove(entity);
+    public void Delete(T entity) => _context.Remove(entity);
         
     // soft delete
     
     public async void SoftDelete(int id) => _context.Set<T>()
-        .Update(_context.Set<T>()
-            .Find(id) ?? throw new InvalidOperationException("Entity not found"));
+        .Update(await _context.Set<T>()
+            .FindAsync(id) ?? throw new InvalidOperationException("Entity not found"));
 
     public void Delete(int id) =>  _context.Set<T>()
         .Remove(_context.Set<T>().Find(id) 

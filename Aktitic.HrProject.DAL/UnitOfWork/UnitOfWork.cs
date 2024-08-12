@@ -1,6 +1,5 @@
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
-using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.ClientRepo;
@@ -9,8 +8,6 @@ using Aktitic.HrProject.DAL.Repos.GoalListRepo;
 using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
 using Aktitic.HrProject.DAL.Repos.TrainingListRepo;
 using ExpensesOfBudgetRepo = Aktitic.HrProject.DAL.Repos.AttendanceRepo.ExpensesOfBudgetRepo;
-using File = Aktitic.HrProject.DAL.Models.File;
-using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.UnitOfWork;
 
@@ -84,7 +81,12 @@ public class UnitOfWork : IUnitOfWork
     private JobsRepo _jobsRepo;
     private ShortlistsRepo _shortlistsRepo;
     private InterviewQuestionsRepo _interviewQuestions;
-    private OfferApprovalsRepo _offerApprovals;
+    private OfferApprovalsRepo _offerApprovalsRepo;
+    private ExperiencesRepo _experiencesRepo;
+    private CandidatesRepo _candidatesRepo;
+    private ScheduleTimingsRepo _scheduleTimingsRepo;
+    private AptitudeResultsRepo _aptitudeResultsRepo;
+    private JobApplicantsRepo _jobApplicantsRepo;
 
 
     // complete all other repos
@@ -191,7 +193,12 @@ public class UnitOfWork : IUnitOfWork
     public IJobsRepo Jobs => _jobsRepo ??= new JobsRepo(_context);
     public IShortlistsRepo Shortlists => _shortlistsRepo ??= new ShortlistsRepo(_context);
     public IInterviewQuestionsRepo InterviewQuestions => _interviewQuestions ??= new InterviewQuestionsRepo(_context);
-    public IOfferApprovalsRepo OfferApprovals => _offerApprovals ??= new OfferApprovalsRepo(_context);
+    public IOfferApprovalsRepo OfferApprovals => _offerApprovalsRepo ??= new OfferApprovalsRepo(_context);
+    public IExperiencesRepo Experiences => _experiencesRepo ??= new ExperiencesRepo(_context);
+    public ICandidatesRepo Candidates => _candidatesRepo ??= new CandidatesRepo(_context);
+    public IScheduleTimingsRepo ScheduleTimings => _scheduleTimingsRepo ??= new ScheduleTimingsRepo(_context);
+    public IAptitudeResultsRepo AptitudeResults => _aptitudeResultsRepo ??= new AptitudeResultsRepo(_context);
+    public IJobApplicantsRepo JobApplicants => _jobApplicantsRepo ??= new JobApplicantsRepo(_context);
                 
     
 

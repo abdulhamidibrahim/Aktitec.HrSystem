@@ -20,6 +20,8 @@ public class Job : BaseEntity
     public Department Department { get; set; }
     public ICollection<Shortlist>? Shortlists { get; set; }
     public ICollection<OfferApproval>? OfferApprovals { get; set; }
+    public ICollection<ScheduleTiming>? ScheduleTimings { get; set; }
+    public ICollection<AptitudeResult>? AptitudeResults { get; set; }
 }
 
 

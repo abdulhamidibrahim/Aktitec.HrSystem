@@ -19,6 +19,7 @@ namespace Aktitic.HrTaskList.BL;
 
 public class JobsManager(
     UserUtility userUtility,
+    IMapper mapper,
     IUnitOfWork unitOfWork) : IJobsManager
 {
     public Task<int> Add(JobsAddDto jobsAddDto)
@@ -39,7 +40,7 @@ public class JobsManager(
             ExpiredDate = jobsAddDto.ExpiredDate,
             Description = jobsAddDto.Description,
             CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName(),
+            CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Jobs.Add(jobs);
@@ -72,7 +73,7 @@ public class JobsManager(
 
         
         jobs.UpdatedAt = DateTime.Now;
-        jobs.UpdatedBy = userUtility.GetUserName();
+        jobs.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Jobs.Update(jobs);
         return unitOfWork.SaveChangesAsync();
@@ -84,7 +85,7 @@ public class JobsManager(
         if (jobs==null) return Task.FromResult(0);
         jobs.IsDeleted = true;
         jobs.DeletedAt = DateTime.Now;
-        jobs.DeletedBy = userUtility.GetUserName();
+        jobs.DeletedBy = userUtility.GetUserId();
         unitOfWork.Jobs.Update(jobs);
         return unitOfWork.SaveChangesAsync();
     }
@@ -148,7 +149,7 @@ public class JobsManager(
 
     public async Task<FilteredJobsDto> GetFilteredJobsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var jobsList = await unitOfWork.Jobs.GetAll();
+        var jobsList =  unitOfWork.Jobs.GetAllJobs();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -181,6 +182,7 @@ public class JobsManager(
                     StartDate = jobs.StartDate,
                     ExpiredDate = jobs.ExpiredDate,
                     Description = jobs.Description,
+                    Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                     CreatedAt = jobs.CreatedAt,
                     CreatedBy = jobs.CreatedBy,
                     UpdatedAt = jobs.UpdatedAt,
@@ -238,6 +240,7 @@ public class JobsManager(
                     StartDate = jobs.StartDate,
                     ExpiredDate = jobs.ExpiredDate,
                     Description = jobs.Description,
+                    Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                     CreatedAt = jobs.CreatedAt,
                     CreatedBy = jobs.CreatedBy,
                     UpdatedAt = jobs.UpdatedAt,
@@ -290,7 +293,7 @@ public class JobsManager(
         
         if(column!=null)
         {
-            IEnumerable<Job> enumerable = unitOfWork.Jobs.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<Job> enumerable = unitOfWork.Jobs.GetAllJobs().Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var jobs = enumerable.Select(jobs => new JobsDto()
             {
                 Id = jobs.Id,
@@ -307,6 +310,7 @@ public class JobsManager(
                 StartDate = jobs.StartDate,
                 ExpiredDate = jobs.ExpiredDate,
                 Description = jobs.Description,
+                Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                 CreatedAt = jobs.CreatedAt,
                 CreatedBy = jobs.CreatedBy,
                 UpdatedAt = jobs.UpdatedAt,
@@ -332,6 +336,7 @@ public class JobsManager(
             StartDate = jobs.StartDate,
             ExpiredDate = jobs.ExpiredDate,
             Description = jobs.Description,
+            Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
             CreatedAt = jobs.CreatedAt,
             CreatedBy = jobs.CreatedBy,
             UpdatedAt = jobs.UpdatedAt,

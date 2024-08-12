@@ -1,4 +1,5 @@
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
 
 namespace Aktitic.HrProject.BL;
 
@@ -7,6 +8,7 @@ public class InterviewQuestionsDto
     public int Id { get; set; }
     public required string Category { get; set; }
     public required int DepartmentId { get; set; }
+    public required DepartmentDto Department { get; set; }
     public required string Question { get; set; }
     public required string OptionA { get; set; }
     public required string OptionB { get; set; }

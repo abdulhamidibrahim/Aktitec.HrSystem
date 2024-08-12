@@ -5,4 +5,5 @@ namespace Aktitic.HrProject.DAL.Repos;
 public interface IAssetsRepo :IGenericRepo<Asset>
 {
     IQueryable<Asset> GlobalSearch(string? searchKey);
+    Task<IEnumerable<Asset>>  GetAllAssets();
 }

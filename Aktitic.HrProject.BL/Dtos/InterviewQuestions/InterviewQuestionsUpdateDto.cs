@@ -19,6 +19,6 @@ public class InterviewQuestionsUpdateDto
     public string? CodeSnippets { get; set; }
     public string? AnswerExplanation { get; set; }
     public string? VideoLink { get; set; }
-    public string? Image { get; set; }
+    public IFormFile? Image { get; set; }
 
 }

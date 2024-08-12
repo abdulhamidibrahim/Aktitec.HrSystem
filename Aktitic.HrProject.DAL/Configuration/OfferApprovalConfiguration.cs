@@ -21,8 +21,10 @@ public class OfferApprovalConfiguration : IEntityTypeConfiguration<OfferApproval
 
         builder.Property(e => e.AnnualIp)
             .HasMaxLength(50);
+  builder.Property(e => e.LongTermIp)
+            .HasMaxLength(50);
 
-        builder.Property(e => e.Status)
+        builder.Property(e => e.Status)  
             .HasMaxLength(50);
 
         builder.HasOne(e => e.Employee)

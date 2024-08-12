@@ -40,5 +40,12 @@ public class ShortlistsRepo(HrSystemDbContext context) : GenericRepo<Shortlist>(
 
         return _context.Shortlists!.AsQueryable();
     }
-    
+
+    public async Task<IEnumerable<Shortlist>> GetAllShortlists()
+    {
+        return await _context.Shortlists!
+            .Include(x=>x.Employee)
+            .Include(x=>x.Job)
+            .ToListAsync();
+    }
 }

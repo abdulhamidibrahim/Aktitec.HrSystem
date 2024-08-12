@@ -13,6 +13,7 @@ public class OfferApprovalAddDto
     public required int JobId { get; set; }
     public string? Pay { get; set; }
     public string? AnnualIp { get; set; }
+    public string? LongTermIp { get; set; }
     public string? Status { get; set; }
 
 }
