@@ -56,5 +56,9 @@ public class AssetsRepo :GenericRepo<Asset>,IAssetsRepo
 
         return _context.Assets!.AsQueryable();
     }
-    
+
+    public async Task<IEnumerable<Asset>> GetAllAssets()
+    {
+        return await _context.Assets!.Include(x=>x.User).ToListAsync();
+    }
 }

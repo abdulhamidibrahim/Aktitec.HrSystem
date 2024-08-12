@@ -1,3 +1,6 @@
+using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Client;
+
 namespace Aktitic.HrProject.BL;
 
 public class JobsDto
@@ -5,6 +8,7 @@ public class JobsDto
     public int Id { get; set; }
     public required string JobTitle { get; set; }
     public required int DepartmentId { get; set; }
+    public required DepartmentDto Department { get; set; }
     public string? JobLocation { get; set; }
     public string? NoOfVacancies { get; set; }
     public int Age { get; set; }

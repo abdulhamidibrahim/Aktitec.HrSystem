@@ -1,24 +1,22 @@
-
-using System.Collections;
 using System.Net;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Utilities;
-using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
+using File = System.IO.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
 public class InterviewQuestionsManager(
     UserUtility userUtility,
+    IMapper mapper,
+    IWebHostEnvironment webHostEnvironment,
     IUnitOfWork unitOfWork) : IInterviewQuestionsManager
 {
     public Task<int> Add(InterviewQuestionsAddDto interviewQuestionsAddDto)
@@ -36,11 +34,29 @@ public class InterviewQuestionsManager(
             CodeSnippets = interviewQuestionsAddDto.CodeSnippets,
             AnswerExplanation = interviewQuestionsAddDto.AnswerExplanation,
             VideoLink = interviewQuestionsAddDto.VideoLink,
-            Image = interviewQuestionsAddDto.Image,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserName(),
         };
+
+        if (interviewQuestionsAddDto.Image is not null)
+        {
+            var unique = Guid.NewGuid();
+
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/interviews", unique.ToString());
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            using var fileStream = new FileStream(Path.Combine(path, interviewQuestionsAddDto.Image.FileName), FileMode.Create);
+       
+            interviewQuestionsAddDto.Image.CopyTo(fileStream);
         
+            interviewQuestions.Image = "uploads/contacts"+ unique + "/" + interviewQuestionsAddDto.Image.FileName;
+
+        }
+
         unitOfWork.InterviewQuestions.Add(interviewQuestions);
         return unitOfWork.SaveChangesAsync();
     }
@@ -67,6 +83,42 @@ public class InterviewQuestionsManager(
         if (interviewQuestionsUpdateDto.CorrectAnswer != interviewQuestions.CorrectAnswer )
             interviewQuestions.VideoLink = interviewQuestionsUpdateDto.VideoLink;
 
+        
+        if (interviewQuestionsUpdateDto.Image != null)
+        {
+            // Construct the path for the current image
+            var oldImagePath = Path.Combine(webHostEnvironment.WebRootPath, interviewQuestions.Image);
+
+            // Delete the old image file if it exists
+            if (File.Exists(oldImagePath))
+            {
+                try
+                {
+                    File.Delete(oldImagePath);
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception (you might want to use a logging framework)
+                    Console.WriteLine($"Failed to delete old image: {ex.Message}");
+                }
+            }
+
+            // Use the same path for the new image
+            var unique = Path.GetDirectoryName(interviewQuestions.Image);
+            var path = Path.Combine(webHostEnvironment.WebRootPath, unique);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var filePath = Path.Combine(path, interviewQuestionsUpdateDto.Image.FileName);
+
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            interviewQuestionsUpdateDto.Image.CopyTo(fileStream);
+
+            interviewQuestions.Image = Path.Combine(unique, interviewQuestionsUpdateDto.Image.FileName);
+        }
         
         interviewQuestions.UpdatedAt = DateTime.Now;
         interviewQuestions.UpdatedBy = userUtility.GetUserName();
@@ -143,7 +195,7 @@ public class InterviewQuestionsManager(
 
     public async Task<FilteredInterviewQuestionsDto> GetFilteredInterviewQuestionsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var interviewQuestionsList = await unitOfWork.InterviewQuestions.GetAll();
+        var interviewQuestionsList = await unitOfWork.InterviewQuestions.GetAllInterviewQuestions();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -175,6 +227,7 @@ public class InterviewQuestionsManager(
                     AnswerExplanation = interviewQuestions.AnswerExplanation,
                     VideoLink = interviewQuestions.VideoLink,
                     Image = interviewQuestions.Image,
+                    Department = mapper.Map<Department,DepartmentDto>(interviewQuestions.Department),
                     CreatedAt = interviewQuestions.CreatedAt,
                     CreatedBy = interviewQuestions.CreatedBy,
                     UpdatedAt = interviewQuestions.UpdatedAt,
@@ -230,6 +283,7 @@ public class InterviewQuestionsManager(
                     CodeSnippets = interviewQuestions.CodeSnippets,
                     AnswerExplanation = interviewQuestions.AnswerExplanation,
                     VideoLink = interviewQuestions.VideoLink,
+                    Department = mapper.Map<Department,DepartmentDto>(interviewQuestions.Department),
                     Image = interviewQuestions.Image,
                     CreatedAt = interviewQuestions.CreatedAt,
                     CreatedBy = interviewQuestions.CreatedBy,
@@ -283,7 +337,7 @@ public class InterviewQuestionsManager(
         
         if(column!=null)
         {
-            IEnumerable<InterviewQuestion> enumerable = unitOfWork.InterviewQuestions.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<InterviewQuestion> enumerable = unitOfWork.InterviewQuestions.GetAllInterviewQuestions().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var interviewQuestions = enumerable.Select(interviewQuestions => new InterviewQuestionsDto()
             {
                 Id = interviewQuestions.Id,
@@ -299,6 +353,7 @@ public class InterviewQuestionsManager(
                 AnswerExplanation = interviewQuestions.AnswerExplanation,
                 VideoLink = interviewQuestions.VideoLink,
                 Image = interviewQuestions.Image,
+                Department = mapper.Map<Department,DepartmentDto>(interviewQuestions.Department),
                 CreatedAt = interviewQuestions.CreatedAt,
                 CreatedBy = interviewQuestions.CreatedBy,
                 UpdatedAt = interviewQuestions.UpdatedAt,
@@ -323,6 +378,7 @@ public class InterviewQuestionsManager(
             AnswerExplanation = interviewQuestions.AnswerExplanation,
             VideoLink = interviewQuestions.VideoLink,
             Image = interviewQuestions.Image,
+            Department = mapper.Map<Department,DepartmentDto>(interviewQuestions.Department),
             CreatedAt = interviewQuestions.CreatedAt,
             CreatedBy = interviewQuestions.CreatedBy,
             UpdatedAt = interviewQuestions.UpdatedAt,

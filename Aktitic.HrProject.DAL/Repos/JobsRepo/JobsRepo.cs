@@ -58,5 +58,9 @@ public class JobsRepo :GenericRepo<Job>,IJobsRepo
 
         return _context.Jobs!.AsQueryable();
     }
-    
+
+    public IEnumerable<Job> GetAllJobs()
+    {
+        return _context.Jobs!.Include(x => x.Department).ToList();
+    }
 }

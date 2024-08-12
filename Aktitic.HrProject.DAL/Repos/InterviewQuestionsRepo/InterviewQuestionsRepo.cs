@@ -46,5 +46,11 @@ public class InterviewQuestionsRepo :GenericRepo<InterviewQuestion>,IInterviewQu
 
         return _context.InterviewQuestions!.AsQueryable();
     }
-    
+
+    public async Task<IEnumerable<InterviewQuestion>> GetAllInterviewQuestions()
+    {
+        return await _context.InterviewQuestions!
+            .Include(x=>x.Department)
+            .ToListAsync();
+    }
 }

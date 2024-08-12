@@ -30,7 +30,7 @@ public class LicenseManager(
           Active = licenseAddDto.Active,
           CompanyId = licenseAddDto.CompanyId,
           CreatedAt = DateTime.Now,
-          CreatedBy = userUtility.GetUserName(),
+          CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.License.Add(license);
@@ -50,7 +50,7 @@ public class LicenseManager(
         if (license == null) return Task.FromResult(0);
         
         license.UpdatedAt = DateTime.Now;
-        license.UpdatedBy = userUtility.GetUserName();
+        license.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.License.Update(license);
         return unitOfWork.SaveChangesAsync();
@@ -62,7 +62,7 @@ public class LicenseManager(
         if (license==null) return Task.FromResult(0);
         license.IsDeleted = true;
         license.DeletedAt = DateTime.Now;
-        license.DeletedBy = userUtility.GetUserName();
+        license.DeletedBy = userUtility.GetUserId();
         unitOfWork.License.Update(license);
         return unitOfWork.SaveChangesAsync();
     }

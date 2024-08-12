@@ -19,6 +19,7 @@ namespace Aktitic.HrTaskList.BL;
 
 public class AssetsManager(
     UserUtility userUtility,
+    IMapper mapper,
     IUnitOfWork unitOfWork) : IAssetsManager
 {
     public Task<int> Add(AssetsAddDto assetsAddDto)
@@ -40,7 +41,7 @@ public class AssetsManager(
             Description = assetsAddDto.Description,
             Warranty = assetsAddDto.Warranty,
             CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName(),
+            CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Assets.Add(assets);
@@ -71,7 +72,7 @@ public class AssetsManager(
 
         
         assets.UpdatedAt = DateTime.Now;
-        assets.UpdatedBy = userUtility.GetUserName();
+        assets.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Assets.Update(assets);
         return unitOfWork.SaveChangesAsync();
@@ -83,7 +84,7 @@ public class AssetsManager(
         if (assets==null) return Task.FromResult(0);
         assets.IsDeleted = true;
         assets.DeletedAt = DateTime.Now;
-        assets.DeletedBy = userUtility.GetUserName();
+        assets.DeletedBy = userUtility.GetUserId();
         unitOfWork.Assets.Update(assets);
         return unitOfWork.SaveChangesAsync();
     }
@@ -149,7 +150,7 @@ public class AssetsManager(
 
     public async Task<FilteredAssetsDto> GetFilteredAssetsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var assetsList = await unitOfWork.Assets.GetAll();
+        var assetsList = await unitOfWork.Assets.GetAllAssets();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -183,6 +184,7 @@ public class AssetsManager(
                     Value = assets.Value,
                     Description = assets.Description,
                     Warranty = assets.Warranty,
+                    User = mapper.Map<ApplicationUser,ApplicationUserDto>(assets.User),
                     CreatedAt = assets.CreatedAt,
                     CreatedBy = assets.CreatedBy,
                     UpdatedAt = assets.UpdatedAt,
@@ -241,6 +243,7 @@ public class AssetsManager(
                     Value = assets.Value,
                     Description = assets.Description,
                     Warranty = assets.Warranty,
+                    User = mapper.Map<ApplicationUser,ApplicationUserDto>(assets.User),
                     CreatedAt = assets.CreatedAt,
                     CreatedBy = assets.CreatedBy,
                     UpdatedAt = assets.UpdatedAt,
@@ -293,7 +296,7 @@ public class AssetsManager(
         
         if(column!=null)
         {
-            IEnumerable<Asset> enumerable = unitOfWork.Assets.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<Asset> enumerable = unitOfWork.Assets.GetAllAssets().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var assets = enumerable.Select(assets => new AssetsDto()
             {
                 Id = assets.Id,
@@ -311,6 +314,7 @@ public class AssetsManager(
                 Value = assets.Value,
                 Description = assets.Description,
                 Warranty = assets.Warranty,
+                User = mapper.Map<ApplicationUser,ApplicationUserDto>(assets.User),
                 CreatedAt = assets.CreatedAt,
                 CreatedBy = assets.CreatedBy,
                 UpdatedAt = assets.UpdatedAt,
@@ -337,6 +341,7 @@ public class AssetsManager(
             Value = assets.Value,
             Description = assets.Description,
             Warranty = assets.Warranty,
+            User = mapper.Map<ApplicationUser,ApplicationUserDto>(assets.User),
             CreatedAt = assets.CreatedAt,
             CreatedBy = assets.CreatedBy,
             UpdatedAt = assets.UpdatedAt,

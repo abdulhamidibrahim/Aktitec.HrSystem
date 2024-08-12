@@ -2,7 +2,9 @@ using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.UnitOfWork;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 
@@ -10,6 +12,7 @@ namespace Aktitic.HrTaskList.BL;
 
 public class OfferApprovalsManager(
     UserUtility userUtility,
+    IMapper mapper,
     IUnitOfWork unitOfWork) : IOfferApprovalsManager
 {
     public Task<int> Add(OfferApprovalAddDto offerApprovalsAddDto)
@@ -21,6 +24,7 @@ public class OfferApprovalsManager(
             Status = offerApprovalsAddDto.Status,
             Pay = offerApprovalsAddDto.Pay,
             AnnualIp = offerApprovalsAddDto.AnnualIp,
+            LongTermIp = offerApprovalsAddDto.LongTermIp,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserName(),
         };
@@ -41,6 +45,8 @@ public class OfferApprovalsManager(
             offerApprovals.Pay = offerApprovalsUpdateDto.Pay;
         if (offerApprovalsUpdateDto.AnnualIp.IsNullOrEmpty()) 
             offerApprovals.AnnualIp = offerApprovalsUpdateDto.AnnualIp;
+        if (offerApprovalsUpdateDto.LongTermIp.IsNullOrEmpty()) 
+            offerApprovals.LongTermIp = offerApprovalsUpdateDto.LongTermIp;
         if (offerApprovalsUpdateDto.Status.IsNullOrEmpty()) 
             offerApprovals.Status = offerApprovalsUpdateDto.Status;
       
@@ -76,6 +82,7 @@ public class OfferApprovalsManager(
             Pay = offerApprovals.Pay,
             Status = offerApprovals.Status,
             AnnualIp = offerApprovals.AnnualIp,
+            LongTermIp = offerApprovals.LongTermIp,
             CreatedAt = offerApprovals.CreatedAt,
             CreatedBy = offerApprovals.CreatedBy,
             UpdatedAt = offerApprovals.UpdatedAt,
@@ -94,6 +101,7 @@ public class OfferApprovalsManager(
             Pay = approval.Pay,
             Status = approval.Status,
             AnnualIp = approval.AnnualIp,
+            LongTermIp = approval.LongTermIp,
             CreatedAt = approval.CreatedAt,
             CreatedBy = approval.CreatedBy,
             UpdatedAt = approval.UpdatedAt,
@@ -106,7 +114,7 @@ public class OfferApprovalsManager(
 
     public async Task<FilteredOfferApprovalsDto> GetFilteredOfferApprovalsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var offerApprovalsList = await unitOfWork.OfferApprovals.GetAll();
+        var offerApprovalsList = await unitOfWork.OfferApprovals.GetAllOfferApprovals();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -131,6 +139,9 @@ public class OfferApprovalsManager(
                     Pay = approval.Pay,
                     Status = approval.Status,
                     AnnualIp = approval.AnnualIp,
+                    LongTermIp = approval.LongTermIp,
+                    Employee = mapper.Map<Employee,EmployeeDto>(approval.Employee),
+                    Job = mapper.Map<Job,JobsDto>(approval.Job),
                     CreatedAt = approval.CreatedAt,
                     CreatedBy = approval.CreatedBy,
                     UpdatedAt = approval.UpdatedAt,
@@ -180,6 +191,9 @@ public class OfferApprovalsManager(
                     Pay = approval.Pay,
                     Status = approval.Status,
                     AnnualIp = approval.AnnualIp,
+                    LongTermIp = approval.LongTermIp,
+                    Employee = mapper.Map<Employee,EmployeeDto>(approval.Employee),
+                    Job = mapper.Map<Job,JobsDto>(approval.Job),
                     CreatedAt = approval.CreatedAt,
                     CreatedBy = approval.CreatedBy,
                     UpdatedAt = approval.UpdatedAt,
@@ -232,7 +246,7 @@ public class OfferApprovalsManager(
         
         if(column!=null)
         {
-            IEnumerable<OfferApproval> enumerable = unitOfWork.OfferApprovals.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<OfferApproval> enumerable = unitOfWork.OfferApprovals.GetAllOfferApprovals().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var offerApprovals = enumerable.Select(approval => new OfferApprovalDto()
             {
                 Id = approval.Id,
@@ -241,6 +255,9 @@ public class OfferApprovalsManager(
                 Pay = approval.Pay,
                 Status = approval.Status,
                 AnnualIp = approval.AnnualIp,
+                LongTermIp = approval.LongTermIp,
+                Employee = mapper.Map<Employee,EmployeeDto>(approval.Employee),
+                Job = mapper.Map<Job,JobsDto>(approval.Job),
                 CreatedAt = approval.CreatedAt,
                 CreatedBy = approval.CreatedBy,
                 UpdatedAt = approval.UpdatedAt,
@@ -258,6 +275,9 @@ public class OfferApprovalsManager(
             Pay = approval.Pay,
             Status = approval.Status,
             AnnualIp = approval.AnnualIp,
+            LongTermIp = approval.LongTermIp,
+            Employee = mapper.Map<Employee,EmployeeDto>(approval.Employee),
+            Job = mapper.Map<Job,JobsDto>(approval.Job),
             CreatedAt = approval.CreatedAt,
             CreatedBy = approval.CreatedBy,
             UpdatedAt = approval.UpdatedAt,

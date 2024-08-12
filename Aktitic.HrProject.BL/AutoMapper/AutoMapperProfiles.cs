@@ -121,6 +121,7 @@ public class AutoMapperProfiles : Profile
                                 LastName = src.Project.Client.LastName!
                             }
                         }));
+        CreateMap<Job, JobsDto>();
         CreateMap<TaskList, TaskListDto>();
         CreateMap<Salary, SalaryDto>();
         CreateMap<Shift, ShiftDto>();

@@ -8,6 +8,7 @@ using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Helpers.Connection_Strings;
+using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Services.TenantServices;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
@@ -150,7 +151,7 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddSingleton<HttpContextAccessor>();
-builder.Services.AddTransient<UserUtility>();
+builder.Services.AddScoped<UserUtility>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<JwtOptions>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
@@ -218,6 +219,10 @@ builder.Services.AddScoped<IShortlistsManager, ShortlistManager>();
 builder.Services.AddScoped<IInterviewQuestionsManager, InterviewQuestionsManager>();
 builder.Services.AddScoped<ILicenseManager, LicenseManager>();
 builder.Services.AddScoped<IOfferApprovalsManager, OfferApprovalsManager>();
+builder.Services.AddScoped<IExperienceManager, ExperienceManager>();
+builder.Services.AddScoped<ICandidatesManager, CandidatesManager>();
+builder.Services.AddScoped<IAptitudeResultsManager, AptitudeResultsManager>();
+builder.Services.AddScoped<IJobApplicantsManager, JobApplicantsManager>();
 
 #endregion
 

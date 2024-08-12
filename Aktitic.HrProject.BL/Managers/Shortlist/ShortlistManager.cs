@@ -7,6 +7,7 @@ using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
@@ -19,6 +20,7 @@ namespace Aktitic.HrTaskList.BL;
 
 public class ShortlistManager(
     UserUtility userUtility,
+    IMapper mapper,
     IUnitOfWork unitOfWork) : IShortlistsManager
 {
     public Task<int> Add(ShortlistAddDto assetsAddDto)
@@ -29,7 +31,7 @@ public class ShortlistManager(
             JobId = assetsAddDto.JobId,
             Status = assetsAddDto.Status,
             CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName(),
+            CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Shortlists.Add(assets);
@@ -48,7 +50,7 @@ public class ShortlistManager(
         
         
         assets.UpdatedAt = DateTime.Now;
-        assets.UpdatedBy = userUtility.GetUserName();
+        assets.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Shortlists.Update(assets);
         return unitOfWork.SaveChangesAsync();
@@ -60,7 +62,7 @@ public class ShortlistManager(
         if (assets==null) return Task.FromResult(0);
         assets.IsDeleted = true;
         assets.DeletedAt = DateTime.Now;
-        assets.DeletedBy = userUtility.GetUserName();
+        assets.DeletedBy = userUtility.GetUserId();
         unitOfWork.Shortlists.Update(assets);
         return unitOfWork.SaveChangesAsync();
     }
@@ -103,7 +105,7 @@ public class ShortlistManager(
 
     public async Task<FilteredShortlistsDto> GetFilteredShortlistsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var assetsList = await unitOfWork.Shortlists.GetAll();
+        var assetsList = await unitOfWork.Shortlists.GetAllShortlists();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -126,6 +128,8 @@ public class ShortlistManager(
                     JobId = assets.JobId,
                     EmployeeId = assets.EmployeeId,
                     Status = assets.Status,
+                    Job = mapper.Map<Job,JobsDto>(assets.Job),
+                    Employee = mapper.Map<Employee,EmployeeDto>(assets.Employee),
                     CreatedAt = assets.CreatedAt,
                     CreatedBy = assets.CreatedBy,
                     UpdatedAt = assets.UpdatedAt,
@@ -173,6 +177,8 @@ public class ShortlistManager(
                     JobId = assets.JobId,
                     EmployeeId = assets.EmployeeId,
                     Status = assets.Status,
+                    Job = mapper.Map<Job,JobsDto>(assets.Job),
+                    Employee = mapper.Map<Employee,EmployeeDto>(assets.Employee),
                     CreatedAt = assets.CreatedAt,
                     CreatedBy = assets.CreatedBy,
                     UpdatedAt = assets.UpdatedAt,
@@ -225,13 +231,15 @@ public class ShortlistManager(
         
         if(column!=null)
         {
-            IEnumerable<Shortlist> enumerable = unitOfWork.Shortlists.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<Shortlist> enumerable = unitOfWork.Shortlists.GetAllShortlists().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var assets = enumerable.Select(assets => new ShortlistDto()
             {
                 Id = assets.Id,
                 JobId = assets.JobId,
                 EmployeeId = assets.EmployeeId,
                 Status = assets.Status,
+                Job = mapper.Map<Job,JobsDto>(assets.Job),
+                Employee = mapper.Map<Employee,EmployeeDto>(assets.Employee),
                 CreatedAt = assets.CreatedAt,
                 CreatedBy = assets.CreatedBy,
                 UpdatedAt = assets.UpdatedAt,
@@ -247,6 +255,8 @@ public class ShortlistManager(
             JobId = assets.JobId,
             EmployeeId = assets.EmployeeId,
             Status = assets.Status,
+            Job = mapper.Map<Job,JobsDto>(assets.Job),
+            Employee = mapper.Map<Employee,EmployeeDto>(assets.Employee),
             CreatedAt = assets.CreatedAt,
             CreatedBy = assets.CreatedBy,
             UpdatedAt = assets.UpdatedAt,

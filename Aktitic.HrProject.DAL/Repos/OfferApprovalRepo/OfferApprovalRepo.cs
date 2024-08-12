@@ -47,5 +47,12 @@ public class OfferApprovalsRepo :GenericRepo<OfferApproval>,IOfferApprovalsRepo
 
         return _context.OfferApprovals!.AsQueryable();
     }
-    
+
+    public async Task<IEnumerable<OfferApproval>> GetAllOfferApprovals()
+    {
+        return await _context.OfferApprovals!
+            .Include(x=>x.Employee)
+            .Include(x=>x.Job)
+            .ToListAsync();
+    }
 }

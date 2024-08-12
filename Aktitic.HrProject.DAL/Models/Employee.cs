@@ -71,4 +71,7 @@ public partial class Employee : BaseEntity
 
     public virtual TimeSheet? Timesheet { get; set; }
     public ICollection<OfferApproval>? OfferApprovals { get; set; }
+    public ICollection<Candidate>? Candidates { get; set; }
+    public ICollection<ScheduleTiming>? ScheduleTimings { get; set; }
+    public ICollection<AptitudeResult>? AptitudeResults { get; set; }
 }
