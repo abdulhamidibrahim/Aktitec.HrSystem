@@ -13,13 +13,11 @@ using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
 public class AptitudeResultsManager(
-    UserUtility userUtility,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IAptitudeResultsManager
 {
@@ -32,8 +30,6 @@ public class AptitudeResultsManager(
             CategoryWiseMark = aptitudeResultsAddDto.CategoryWiseMark,
             Status = aptitudeResultsAddDto.Status,
             TotalMark = aptitudeResultsAddDto.TotalMark,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.AptitudeResults.Add(aptitudeResults);
@@ -53,8 +49,6 @@ public class AptitudeResultsManager(
         if (aptitudeResultsUpdateDto.Status.IsNullOrEmpty()) aptitudeResults.Status = aptitudeResultsUpdateDto.Status;
         
         
-        aptitudeResults.UpdatedAt = DateTime.Now;
-        aptitudeResults.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.AptitudeResults.Update(aptitudeResults);
         return unitOfWork.SaveChangesAsync();
@@ -65,8 +59,6 @@ public class AptitudeResultsManager(
         var aptitudeResults = unitOfWork.AptitudeResults.GetById(id);
         if (aptitudeResults==null) return Task.FromResult(0);
         aptitudeResults.IsDeleted = true;
-        aptitudeResults.DeletedAt = DateTime.Now;
-        aptitudeResults.DeletedBy = userUtility.GetUserId();
         unitOfWork.AptitudeResults.Update(aptitudeResults);
         return unitOfWork.SaveChangesAsync();
     }

@@ -17,7 +17,8 @@ public partial class Employee : BaseEntity
     public  string? Email { get; set; }
     public string? ImgUrl { get; set; }
     public int? ImgId { get; set; }
-
+    public string? PublicKey { get; set; }
+    public string? PrivateKey { get; set; }
     public string? Gender { get; set; }
 
     public string? Phone { get; set; }
@@ -74,4 +75,5 @@ public partial class Employee : BaseEntity
     public ICollection<Candidate>? Candidates { get; set; }
     public ICollection<ScheduleTiming>? ScheduleTimings { get; set; }
     public ICollection<AptitudeResult>? AptitudeResults { get; set; }
+    
 }

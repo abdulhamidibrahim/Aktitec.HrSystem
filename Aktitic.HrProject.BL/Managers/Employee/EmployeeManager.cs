@@ -1,17 +1,13 @@
 
+using System.Security.Cryptography;
 using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
-using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
@@ -39,11 +35,13 @@ public class EmployeeManager(
             ManagerId = employeeAddDto.ManagerId,
             Age = employeeAddDto.Age,
             FileName = image?.FileName,
+            PublicKey = RSA.Create(2048).ExportRSAPublicKeyPem(),
+            PrivateKey = RSA.Create(2048).ExportRSAPrivateKeyPem(),
             FileExtension = image?.ContentType,
             UserName = employeeAddDto.Email?.Substring(0,employeeAddDto.Email.IndexOf('@')),
             CreatedAt = DateTime.Now,
         };
-
+        
         #region commented
 
         // var file = new UserFile()
@@ -437,6 +435,31 @@ public class EmployeeManager(
         }
 
         return managerTrees;
+    }
+
+    public async Task<int> AddEmployeesAsync(EmployeesAddDto employeeAddDtos)
+    {
+        foreach (var employee in employeeAddDtos.Employees)
+        {
+            var obj = new Employee()
+            {
+                FullName = employee.FullName!,
+                Phone = employee.Phone,
+                Email = employee.Email,
+                DepartmentId = employee.DepartmentId,
+                JoiningDate = employee.JoiningDate,
+                Salary = employee.Salary,
+                JobPosition = employee.JobPosition,
+                YearsOfExperience = employee.YearsOfExperience,
+                Gender = employee.Gender,
+                ManagerId = employee.ManagerId,
+                Age = employee.Age,
+                UserName = employee.Email?.Substring(0,employee.Email.IndexOf('@')),
+                CreatedAt = DateTime.Now,
+            };
+            unitOfWork.Employee.Add(obj);
+        }
+        return await unitOfWork.SaveChangesAsync();
     }
 
     private async Task<ManagerTree?> BuildManagerTreeAsync(Employee manager)

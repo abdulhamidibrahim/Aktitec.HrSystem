@@ -12,7 +12,6 @@ using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
@@ -38,9 +37,9 @@ public class JobsManager(
             JobType = jobsAddDto.JobType,
             StartDate = jobsAddDto.StartDate,
             ExpiredDate = jobsAddDto.ExpiredDate,
+            Category = jobsAddDto.Category,
             Description = jobsAddDto.Description,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
+           
         };
         
         unitOfWork.Jobs.Add(jobs);
@@ -72,8 +71,8 @@ public class JobsManager(
             jobs.SalaryTo = jobsUpdateDto.SalaryTo;
 
         
-        jobs.UpdatedAt = DateTime.Now;
-        jobs.UpdatedBy = userUtility.GetUserId();
+        // jobs.UpdatedAt = DateTime.Now;
+        // jobs.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Jobs.Update(jobs);
         return unitOfWork.SaveChangesAsync();
@@ -84,8 +83,8 @@ public class JobsManager(
         var jobs = unitOfWork.Jobs.GetById(id);
         if (jobs==null) return Task.FromResult(0);
         jobs.IsDeleted = true;
-        jobs.DeletedAt = DateTime.Now;
-        jobs.DeletedBy = userUtility.GetUserId();
+        // jobs.DeletedAt = DateTime.Now;
+        // jobs.DeletedBy = userUtility.GetUserId();
         unitOfWork.Jobs.Update(jobs);
         return unitOfWork.SaveChangesAsync();
     }
@@ -108,6 +107,7 @@ public class JobsManager(
             SalaryTo = jobs.SalaryTo,
             JobType = jobs.JobType,
             Status = jobs.Status,
+            Category = jobs.Category,
             StartDate = jobs.StartDate,
             ExpiredDate = jobs.ExpiredDate,
             Description = jobs.Description,
@@ -137,6 +137,7 @@ public class JobsManager(
             StartDate = jobs.StartDate,
             ExpiredDate = jobs.ExpiredDate,
             Description = jobs.Description,
+            Category = jobs.Category,
             CreatedAt = jobs.CreatedAt,
             CreatedBy = jobs.CreatedBy,
             UpdatedAt = jobs.UpdatedAt,
@@ -147,9 +148,16 @@ public class JobsManager(
 
    
 
-    public async Task<FilteredJobsDto> GetFilteredJobsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
+    public async Task<FilteredJobsDto> GetFilteredJobsAsync
+        (string? column, string? value1, string? operator1, string? value2,
+            string? operator2, int page, int pageSize, string? category)
     {
-        var jobsList =  unitOfWork.Jobs.GetAllJobs();
+        IEnumerable<Job> jobsList; 
+        
+        if (!category.IsNullOrEmpty())
+            jobsList = await unitOfWork.Jobs.GetByCategory(category);
+        else
+            jobsList = await unitOfWork.Jobs.GetAllJobs();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -182,6 +190,7 @@ public class JobsManager(
                     StartDate = jobs.StartDate,
                     ExpiredDate = jobs.ExpiredDate,
                     Description = jobs.Description,
+                    Category = jobs.Category,
                     Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                     CreatedAt = jobs.CreatedAt,
                     CreatedBy = jobs.CreatedBy,
@@ -240,6 +249,7 @@ public class JobsManager(
                     StartDate = jobs.StartDate,
                     ExpiredDate = jobs.ExpiredDate,
                     Description = jobs.Description,
+                    Category = jobs.Category,
                     Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                     CreatedAt = jobs.CreatedAt,
                     CreatedBy = jobs.CreatedBy,
@@ -293,7 +303,7 @@ public class JobsManager(
         
         if(column!=null)
         {
-            IEnumerable<Job> enumerable = unitOfWork.Jobs.GetAllJobs().Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<Job> enumerable = unitOfWork.Jobs.GetAllJobs().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var jobs = enumerable.Select(jobs => new JobsDto()
             {
                 Id = jobs.Id,
@@ -310,6 +320,7 @@ public class JobsManager(
                 StartDate = jobs.StartDate,
                 ExpiredDate = jobs.ExpiredDate,
                 Description = jobs.Description,
+                Category = jobs.Category,
                 Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
                 CreatedAt = jobs.CreatedAt,
                 CreatedBy = jobs.CreatedBy,
@@ -336,6 +347,7 @@ public class JobsManager(
             StartDate = jobs.StartDate,
             ExpiredDate = jobs.ExpiredDate,
             Description = jobs.Description,
+            Category = jobs.Category,
             Department = mapper.Map<Department,DepartmentDto>(jobs.Department),
             CreatedAt = jobs.CreatedAt,
             CreatedBy = jobs.CreatedBy,
@@ -345,4 +357,8 @@ public class JobsManager(
         return Task.FromResult(jobss.ToList());
     }
 
+    public async Task<object> GetTotalJobs()
+    {
+        return  await unitOfWork.Jobs.GetTotalCount();
+    }
 }

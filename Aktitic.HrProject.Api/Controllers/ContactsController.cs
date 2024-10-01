@@ -9,25 +9,18 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ContactsController: ControllerBase
+public class ContactsController(IContactsManager contactManager) : ControllerBase
 {
-    private readonly IContactsManager _contactManager;
-
-    public ContactsController(IContactsManager contactManager)
-    {
-        _contactManager = contactManager;
-    }
-    
     [HttpGet]
     public Task<List<ContactReadDto>> GetAll()
     {
-        return _contactManager.GetAll();
+        return contactManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<ContactReadDto?> Get(int id)
     {
-        var result = _contactManager.Get(id);
+        var result = contactManager.Get(id);
         if (result == null) return NotFound();
         return Ok(result);
     }
@@ -35,7 +28,7 @@ public class ContactsController: ControllerBase
     [HttpPost("create")]
     public ActionResult<Task> Add([FromForm] ContactAddDto contactAddDto)
     {
-        var result = _contactManager.Add(contactAddDto);
+        var result = contactManager.Add(contactAddDto);
         if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Added Successfully");
     }
@@ -43,7 +36,7 @@ public class ContactsController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult<Task> Update([FromForm] ContactUpdateDto contactUpdateDto,int id)
     {
-        var result= _contactManager.Update(contactUpdateDto,id);
+        var result= contactManager.Update(contactUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated successfully");
     }
@@ -51,7 +44,7 @@ public class ContactsController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        var result= _contactManager.Delete(id);
+        var result= contactManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
@@ -60,13 +53,13 @@ public class ContactsController: ControllerBase
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<ContactDto>> GlobalSearch(string search,string? column)
     {
-        return await _contactManager.GlobalSearch(search,column);
+        return await contactManager.GlobalSearch(search,column);
     }
 
     [HttpGet("getByType")]
     public async Task<List<ContactReadDto>> GetByType(string type)
     {
-        return await _contactManager.GetByType(type);
+        return await contactManager.GetByType(type);
     }
 
 }

@@ -1,6 +1,5 @@
 ﻿using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 namespace Aktitic.HrProject.BL;
 

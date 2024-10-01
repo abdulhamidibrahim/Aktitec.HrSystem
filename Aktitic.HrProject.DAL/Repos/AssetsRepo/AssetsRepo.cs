@@ -61,4 +61,11 @@ public class AssetsRepo :GenericRepo<Asset>,IAssetsRepo
     {
         return await _context.Assets!.Include(x=>x.User).ToListAsync();
     }
+
+    public Task<Asset> GetAssetById(int id)
+    {
+        return _context.Assets!
+            .Include(x=>x.User)
+            .FirstOrDefaultAsync(x=>x.Id == id);
+    }
 }

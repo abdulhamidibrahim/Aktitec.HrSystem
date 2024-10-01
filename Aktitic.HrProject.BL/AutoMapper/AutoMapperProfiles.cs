@@ -5,7 +5,6 @@ using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using AutoMapper;
 using EmployeeDto = Aktitic.HrProject.DAL.Pagination.Employee.EmployeeDto;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.BL.AutoMapper;
@@ -32,7 +31,7 @@ public class AutoMapperProfiles : Profile
                     Export = permission.Export
                 }).ToList()));
         
-        CreateMap<FileDto,File>();
+        CreateMap<FileDto,Document>();
         CreateMap<Project,ProjectDto>();
         CreateMap<Task, TaskDto>().ForMember(dest =>
             dest.AssignEmployee, opt =>
@@ -121,6 +120,9 @@ public class AutoMapperProfiles : Profile
                                 LastName = src.Project.Client.LastName!
                             }
                         }));
+        CreateMap<LogAction, LogActionDto>();
+        CreateMap<AppPages, AppPagesDto>();
+        CreateMap<ModifiedRecord, ModifiedRecordDto>();
         CreateMap<Job, JobsDto>();
         CreateMap<TaskList, TaskListDto>();
         CreateMap<Salary, SalaryDto>();
@@ -169,7 +171,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<Promotion, PromotionDto>();
         CreateMap<Termination, TerminationDto>();
         CreateMap<Overtime, OvertimeDto>();
-        CreateMap<FileDto, File>();
+        CreateMap<FileDto, Document>();
         CreateMap<Permission, PermissionsDto>()
             .ForMember( dest => dest.Permission, 
                 opt => 

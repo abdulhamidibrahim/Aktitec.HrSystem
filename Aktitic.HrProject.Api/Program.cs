@@ -1,14 +1,16 @@
 using System.Text;
 using Aktitic.HrProject.Api.Configuration;
+using Aktitic.HrProject.Api.Configuration.Middlewares;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.AutoMapper;
+using Aktitic.HrProject.BL.Managers;
 using Aktitic.HrProject.BL.Managers.Company;
 using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Helpers.Connection_Strings;
-using Aktitic.HrProject.DAL.Repos;
+using Aktitic.HrProject.DAL.Repos.DatabaseSizeRepo;
 using Aktitic.HrProject.DAL.Services.TenantServices;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
@@ -28,6 +30,7 @@ using User.Management.Services.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddLogging();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -104,6 +107,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtOptions?.Audience,
         ValidateIssuerSigningKey = true,
+        ValidateLifetime = false, // false for testing
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions?.SigningKey))
     };
 });
@@ -117,6 +121,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.SignIn.RequireConfirmedEmail = false;
     options.User.RequireUniqueEmail = true;
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 });
 
 
@@ -170,7 +175,7 @@ builder.Services.AddScoped<IOvertimeManager, OvertimeManager>();
 builder.Services.AddScoped<ISchedulingManager, SchedulingManager>();
 builder.Services.AddScoped<IShiftManager, ShiftManager>();
 builder.Services.AddScoped<ITimesheetManager, TimesheetManager>();
-builder.Services.AddScoped<IFileManager, FileManager>();
+builder.Services.AddScoped<IDocumentManager, DocumentManager>();
 builder.Services.AddScoped<INoteManager, NoteManager>();
 builder.Services.AddScoped<IClientManager, ClientManager>();
 builder.Services.AddScoped<ICustomPolicyManager, CustomPolicyManager>();
@@ -223,12 +228,26 @@ builder.Services.AddScoped<IExperienceManager, ExperienceManager>();
 builder.Services.AddScoped<ICandidatesManager, CandidatesManager>();
 builder.Services.AddScoped<IAptitudeResultsManager, AptitudeResultsManager>();
 builder.Services.AddScoped<IJobApplicantsManager, JobApplicantsManager>();
+builder.Services.AddScoped<IMessageManager, MessageManager>();
+builder.Services.AddScoped<IScheduleTimingsManager, ScheduleTimingsManager>();
+builder.Services.AddScoped<ILogsManager, LogsManager>();
+builder.Services.AddScoped<DatabaseSizeService>();
+builder.Services.AddScoped<GetDatabaseSize>();
+builder.Services.AddScoped<IEmailsManager, EmailsManager>();
+builder.Services.AddScoped<IDocumentManager, DocumentManager>();
+builder.Services.AddScoped<IDocumentFileManager, DocumentFileManager>();
+builder.Services.AddScoped<IRevisorManager, RevisorManager>();
+
 
 #endregion
 
 builder.Services.AddScoped<NotificationHub>();
 builder.Services.AddScoped<ChatHub>();
 builder.Services.AddSingleton<ITenantServices,TenantServices>();
+// builder.Services.AddScoped<RequestDelegate>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -289,6 +308,9 @@ var app = builder.Build();
 
 // app.UseHttpsRedirection();
 
+// app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseExceptionHandler();
 
 app.UseRouting();
 

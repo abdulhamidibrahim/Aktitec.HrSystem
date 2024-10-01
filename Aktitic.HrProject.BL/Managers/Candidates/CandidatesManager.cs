@@ -1,19 +1,11 @@
-
-using System.Collections;
-using System.Net;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Utilities;
-using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
@@ -32,8 +24,8 @@ public class CandidatesManager(
             Email = candidatesAddDto.Email,
             EmployeeId = candidatesAddDto.EmployeeId,
             Phone = candidatesAddDto.Phone,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
+            // CreatedAt = DateTime.Now,
+            // CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Candidates.Add(candidates);
@@ -53,8 +45,8 @@ public class CandidatesManager(
         if (candidatesUpdateDto.EmployeeId != 0) candidates.EmployeeId = candidatesUpdateDto.EmployeeId;
        
         
-        candidates.UpdatedAt = DateTime.Now;
-        candidates.UpdatedBy = userUtility.GetUserId();
+        // candidates.UpdatedAt = DateTime.Now;
+        // candidates.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Candidates.Update(candidates);
         return unitOfWork.SaveChangesAsync();
@@ -65,8 +57,8 @@ public class CandidatesManager(
         var candidates = unitOfWork.Candidates.GetById(id);
         if (candidates==null) return Task.FromResult(0);
         candidates.IsDeleted = true;
-        candidates.DeletedAt = DateTime.Now;
-        candidates.DeletedBy = userUtility.GetUserId();
+        // candidates.DeletedAt = DateTime.Now;
+        // candidates.DeletedBy = userUtility.GetUserId();
         unitOfWork.Candidates.Update(candidates);
         return unitOfWork.SaveChangesAsync();
     }

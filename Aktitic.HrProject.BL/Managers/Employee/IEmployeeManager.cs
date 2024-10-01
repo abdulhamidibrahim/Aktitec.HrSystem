@@ -22,4 +22,5 @@ public interface IEmployeeManager
     public Task<List<EmployeeDto>> GlobalSearch(string searchKey,string? column);
     bool IsEmailUnique(string email);
     public Task<List<ManagerTree>> GetManagersTreeAsync();
+    Task<int> AddEmployeesAsync(EmployeesAddDto employeeAddDtos);
 }

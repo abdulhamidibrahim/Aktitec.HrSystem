@@ -9,6 +9,10 @@ public class JobApplicant : BaseEntity
     public required DateTime Date { get; set; }
     public string? Status { get; set; }
     public string? Resume { get; set; }
+
+    public required int JobId { get; set; }
+    public Job Job { get; set; }
+    
 }
 
 

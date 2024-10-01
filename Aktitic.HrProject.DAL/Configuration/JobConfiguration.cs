@@ -17,6 +17,7 @@ public class JobConfiguration : IEntityTypeConfiguration<Job>
         builder.Property(x => x.SalaryTo).HasPrecision(10,2);
         builder.Property(x => x.Status).HasMaxLength(50);
         builder.Property(x => x.Description).HasMaxLength(50);
+        builder.Property(x => x.Category).HasMaxLength(50);
         
         
         builder.HasOne(x => x.Department)

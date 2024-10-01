@@ -1,7 +1,6 @@
 ﻿using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 namespace Aktitic.HrProject.BL;
 
@@ -18,6 +17,7 @@ public class JobsReadDto
    public decimal SalaryTo { get; set; }
    public required string JobType { get; set; }
    public string? Status { get; set; }
+   public string? Category { get; set; }
    public string? Description { get; set; }
    public DateTime? StartDate { get; set; }
    public DateTime ExpiredDate { get; set; }

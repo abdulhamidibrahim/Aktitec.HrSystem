@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Aktitic.HrProject.DAL.Models;
 
-public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IAuditable 
+public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity 
 {
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";
@@ -41,7 +41,10 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IAuditable
     public ICollection<Permission>? Permissions { get; set; }
     public ICollection<FileUsers>? FileUsers { get; set; }
     public ICollection<ChatGroupUser>? ChatGroupUsers { get; set; }
-    
+    public IEnumerable<Email>? SentEmails { get; set; }
+    public IEnumerable<Email>? ReceivedEmails { get; set; }
+    public IEnumerable<FamilyInformation>? FamilyInformations { get; set; }
+
     #endregion
    
 }

@@ -231,7 +231,7 @@ public class SchedulingManager:ISchedulingManager
     //         BreakTime = x.BreakTime,
     //         RepeatEvery = x.RepeatEvery,
     //         Note = x.Note,
-    //         Status = x.Status,
+    //         Confidential = x.Confidential,
     //         ApprovedBy = x.ApprovedBy,
     //         Employee = x.Employee
     //     }).ToList());

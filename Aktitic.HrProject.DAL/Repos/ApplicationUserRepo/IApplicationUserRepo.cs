@@ -18,5 +18,6 @@ public interface IApplicationUserRepo :IGenericRepo<ApplicationUser>
     bool HasAccess( int companyId);
     Task AddConnection(string userId, string connectionId);
     Task RemoveConnection( string connectionId);
+    public Task<int> GetUserIdByEmail(string email);
     Task<ApplicationUser?> GetUser(Func<ApplicationUser?, bool> predicate);
 }

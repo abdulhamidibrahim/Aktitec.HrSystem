@@ -7,12 +7,12 @@ using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
-public class EventManager(IUnitOfWork unitOfWork, IMapper mapper) : IEventManager
+public class EventManager(IUnitOfWork unitOfWork) : IEventManager
 {
     public EventReadDto Add(EventAddDto eventAddDto)
     {
@@ -44,12 +44,11 @@ public class EventManager(IUnitOfWork unitOfWork, IMapper mapper) : IEventManage
         
         if (@event == null) return Task.FromResult(0);
         
-        if(eventUpdateDto.Title != null) @event.EventName = eventUpdateDto.Title;
-        if(eventUpdateDto.Start != null) @event.StarDate = eventUpdateDto.Start;
-        if(eventUpdateDto.End != null) @event.EndDate = eventUpdateDto.End;
-        if(eventUpdateDto.Color != null) @event.EventCategory = eventUpdateDto.Color;
+        if(!eventUpdateDto.Title.IsNullOrEmpty()) @event.EventName = eventUpdateDto.Title;
+        // if(eventUpdateDto.Start != null) @event.StarDate = eventUpdateDto.Start;
+        // if(eventUpdateDto.End != null) @event.EndDate = eventUpdateDto.End;
+        if(!eventUpdateDto.Color.IsNullOrEmpty()) @event.EventCategory = eventUpdateDto.Color;
 
-        @event.UpdatedAt = DateTime.Now;
         unitOfWork.Events.Update(@event);
         return unitOfWork.SaveChangesAsync();
     }

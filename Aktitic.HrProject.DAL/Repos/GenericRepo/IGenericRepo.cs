@@ -4,6 +4,7 @@ public interface IGenericRepo<T>
     where T : class
 {
     Task<List<T>> GetAll();
+    public Task<List<T>> GetAllDeletedRecords();
     T? GetById(int? id);
     void Add(T entity);
     void Update(T entity);

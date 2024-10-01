@@ -12,32 +12,19 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClientsController: ControllerBase
+public class ClientsController(IClientManager clientManager) : ControllerBase
 {
-    private readonly IClientManager _clientManager;
-    // private readonly IWebHostEnvironment _webHostEnvironment;
-    // private readonly UserManager<Client> _userManager;
 
-    public ClientsController(
-        IClientManager clientManager
-        // IWebHostEnvironment webHostEnvironment
-        )
-    {
-        _clientManager = clientManager;
-        // _webHostEnvironment = webHostEnvironment;
-        // _userManager = userManager;
-    }
-    
     [HttpGet]
     public async Task<List<ClientReadDto>> GetAll()
     {
-        return await _clientManager.GetAll();
+        return await clientManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public Task<ClientReadDto?> Get(int id)
     {
-        var result = _clientManager.Get(id);
+        var result = clientManager.Get(id);
         if (result == null) return Task.FromResult<ClientReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
         result.PhotoUrl = hostUrl + result.PhotoUrl; 
@@ -54,7 +41,7 @@ public class ClientsController: ControllerBase
     public Task<FilteredClientDto> GetFilteredClientsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _clientManager.GetFilteredClientsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return clientManager.GetFilteredClientsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     // [ValidateAntiForgeryToken]
@@ -64,7 +51,7 @@ public class ClientsController: ControllerBase
     [HttpPost("create")]
     public  ActionResult Create([FromForm] ClientAddDto clientAddDto)
     {
-           var result = _clientManager.Add(clientAddDto);
+           var result = clientManager.Add(clientAddDto);
 
            if (result.Result == 0) return BadRequest("Failed to create");
            return Ok("Created Successfully ");
@@ -76,7 +63,7 @@ public class ClientsController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] ClientUpdateDto clientUpdateDto, int id)
     {
-         var result = _clientManager.Update(clientUpdateDto,id);
+         var result = clientManager.Update(clientUpdateDto,id);
         if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
         return Ok("updated successfully !");
     }
@@ -84,7 +71,7 @@ public class ClientsController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-           var result =  _clientManager.Delete(id);
+           var result =  clientManager.Delete(id);
            if (result.Result > (0))
                 return Ok(" deleted successfully!");
            
@@ -94,7 +81,7 @@ public class ClientsController: ControllerBase
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<ClientDto>> GlobalSearch(string search,string? column)
     {
-        return await _clientManager.GlobalSearch(search,column);
+        return await clientManager.GlobalSearch(search,column);
     }
     
     

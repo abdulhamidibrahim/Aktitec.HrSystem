@@ -150,4 +150,14 @@ public class ApplicationUserRepo :GenericRepo<ApplicationUser>,IApplicationUserR
             return  (_context.ApplicationUsers.FirstOrDefault(predicate));
         return  (new ApplicationUser());
     }
+    
+    public Task<int> GetUserIdByEmail(string email)
+    {
+        return _context.Users!
+            .AsSplitQuery()
+            .Where(x => x.NormalizedEmail == email.ToUpper())
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+    }
+
 }

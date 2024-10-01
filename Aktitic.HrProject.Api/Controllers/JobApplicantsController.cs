@@ -25,15 +25,25 @@ public class JobApplicantsController(IJobApplicantsManager jobApplicantsManager)
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromBody] JobApplicantsAddDto jobApplicantsAddDto)
+    public ActionResult Add([FromForm] JobApplicantsAddDto jobApplicantsAddDto)
     {
-        var result =jobApplicantsManager.Add(jobApplicantsAddDto);
-        if (result.Result == 0) return BadRequest("Failed to add");
-        return Ok("JobApplicants added successfully");
+        try
+        {
+            var result =jobApplicantsManager.Add(jobApplicantsAddDto);
+            if (result.Result == 0) return BadRequest("Failed to add");    
+            return Ok("JobApplicants added successfully");
+        }
+        catch (Exception e)
+        {
+            // return BadRequest(e);
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromBody] JobApplicantsUpdateDto jobApplicantsUpdateDto,int id)
+    public ActionResult Update([FromForm] JobApplicantsUpdateDto jobApplicantsUpdateDto,int id)
     {
         var result =jobApplicantsManager.Update(jobApplicantsUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
@@ -60,6 +70,12 @@ public class JobApplicantsController(IJobApplicantsManager jobApplicantsManager)
     {
         
         return jobApplicantsManager.GetFilteredJobApplicantsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+    }
+    
+    [HttpGet("GetTotalCount")]
+    public async Task<object> GetTotalCount()
+    {
+        return await jobApplicantsManager.GetTotalCount();
     }
     
 }

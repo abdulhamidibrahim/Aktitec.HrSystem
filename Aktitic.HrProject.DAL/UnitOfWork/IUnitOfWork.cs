@@ -4,7 +4,6 @@ using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.UnitOfWork;
@@ -24,7 +23,8 @@ public interface IUnitOfWork : IDisposable
     ICompanyRepo Company { get; }
     IDesignationRepo Designation { get; }
     IEmployeeProjectsRepo EmployeeProjects { get; }
-    IFileRepo File { get; }
+    IDocumentRepo Documents { get; }
+    IFilesRepo Files { get; }
     IFileUsersRepo FileUsers { get; }
     IHolidayRepo Holiday { get; }
     ILeavesRepo Leaves { get; }
@@ -85,4 +85,8 @@ public interface IUnitOfWork : IDisposable
     IScheduleTimingsRepo ScheduleTimings { get; }
     IAptitudeResultsRepo AptitudeResults { get; }
     IJobApplicantsRepo JobApplicants { get; }
+    ILogsRepo Logs { get; }
+    IEmailsRepo Emails { get; }
+    IDocumentFilesRepo DocumentFiles { get; }
+    IRevisorsRepo Revisors { get; }
 }

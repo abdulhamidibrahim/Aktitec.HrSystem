@@ -17,7 +17,13 @@ public class JobApplicantsRepo :GenericRepo<JobApplicant>,IJobApplicantsRepo
         if (_context.JobApplicants != null)
         {
             var query = _context.JobApplicants
+                    .Include(x=>x.Job)
                 .AsQueryable();
+            
+            
+            if(query.Any(x => searchKey != null && x.Job.JobTitle.ToLower().Contains(searchKey)))
+                return query.Where(x=>searchKey != null && x.Job.JobTitle.ToLower().Contains(searchKey));
+
 
             if (!string.IsNullOrWhiteSpace(searchKey))
             {
@@ -44,5 +50,20 @@ public class JobApplicantsRepo :GenericRepo<JobApplicant>,IJobApplicantsRepo
 
         return _context.JobApplicants!.AsQueryable();
     }
-    
+
+    public async Task<List<JobApplicant>> GetJobApplicants()
+    {
+        return await _context.JobApplicants!
+            .Include(x=>x.Job)
+            .ToListAsync();
+    }
+
+    public async Task<object> GetTotalCount()
+    {
+        var jobApplicants = await  _context.JobApplicants!.CountAsync();
+        var jobs = await _context.Jobs!.CountAsync();
+        var shortlists = await _context.Shortlists!.CountAsync();
+        var employees = await _context.Employees!.CountAsync();
+        return new {jobApplicants = jobApplicants , jobs = jobs , shortlists = shortlists , employees = employees};
+    }
 }

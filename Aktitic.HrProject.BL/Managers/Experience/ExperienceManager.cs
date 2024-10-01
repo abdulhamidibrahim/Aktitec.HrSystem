@@ -12,13 +12,12 @@ using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
 public class ExperienceManager(
-    UserUtility userUtility,
+    // UserUtility userUtility,
     IUnitOfWork unitOfWork) : IExperienceManager
 {
     public Task<int> Add(ExperienceAddDto experienceAddDto)
@@ -27,8 +26,8 @@ public class ExperienceManager(
         {
             ExperienceLevel = experienceAddDto.ExperienceLevel,
             Status = experienceAddDto.Status,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
+            // CreatedAt = DateTime.Now,
+            // CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Experiences.Add(experience);
@@ -47,8 +46,8 @@ public class ExperienceManager(
             experience.Status = experienceUpdateDto.Status;
         
         
-        experience.UpdatedAt = DateTime.Now;
-        experience.UpdatedBy = userUtility.GetUserId();
+        // experience.UpdatedAt = DateTime.Now;
+        // experience.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Experiences.Update(experience);
         return unitOfWork.SaveChangesAsync();
@@ -59,8 +58,8 @@ public class ExperienceManager(
         var experience = unitOfWork.Experiences.GetById(id);
         if (experience==null) return Task.FromResult(0);
         experience.IsDeleted = true;
-        experience.DeletedAt = DateTime.Now;
-        experience.DeletedBy = userUtility.GetUserId();
+        // experience.DeletedAt = DateTime.Now;
+        // experience.DeletedBy = userUtility.GetUserId();
         unitOfWork.Experiences.Update(experience);
         return unitOfWork.SaveChangesAsync();
     }

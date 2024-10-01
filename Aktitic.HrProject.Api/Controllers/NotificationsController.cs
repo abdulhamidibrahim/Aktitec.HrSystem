@@ -1,6 +1,5 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrTaskList.BL;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -13,7 +12,7 @@ public class NotificationsController(INotificationManager notificationsManager) 
     public ActionResult<NotificationReadDto?> Get(int id)
     {
         var result = notificationsManager.GetReceivedNotifications(id);
-        if (result == null) return NotFound();
+        // if (result == null) return NotFound();
         return result;
     }
     

@@ -46,7 +46,7 @@ public class ProjectManager:IProjectManager
             Team = projectAddDto.Team,
             CreatedAt = DateTime.Now,
         };
-        var employees = new List<Employee>();
+        var employees = new List<Employee?>();
         for (int i = 0; i < projectAddDto.Team?.Length; i++)
         {
             employees.Add(_unitOfWork.Employee.GetById(projectAddDto.Team[i])!);
@@ -73,7 +73,7 @@ public async Task<int> Update(ProjectUpdateDto projectUpdateDto, int id)
 
     if (project == null) return 0;
 
-    // Update project details
+    // LogNote project details
     if (projectUpdateDto?.Name != null) project.Name = projectUpdateDto.Name;
     if (projectUpdateDto?.Description != null) project.Description = projectUpdateDto.Description;
     if (projectUpdateDto?.StartDate != null) project.StartDate = projectUpdateDto.StartDate;
@@ -94,7 +94,7 @@ public async Task<int> Update(ProjectUpdateDto projectUpdateDto, int id)
         project.Leader = leader;
     }
 
-    // Update team members
+    // LogNote team members
     if (projectUpdateDto?.Team != null)
     {
         // Initialize EmployeesProject if null

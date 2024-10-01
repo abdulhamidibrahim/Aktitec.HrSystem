@@ -2085,7 +2085,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "File",
+                name: "Documents",
                 schema: "employee",
                 columns: table => new
                 {
@@ -2173,7 +2173,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                         name: "FK_FileUsers_File_FileId",
                         column: x => x.FileId,
                         principalSchema: "employee",
-                        principalTable: "File",
+                        principalTable: "Documents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -2810,37 +2810,37 @@ namespace Aktitic.HrProject.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_File_ExpensesId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "ExpensesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_File_ProjectId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_File_TenantId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_File_TicketId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "TicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_File_UserId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileUsers_FileId",
                 table: "FileUsers",
-                column: "FileId");
+                column: "DocumentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FileUsers_FileUserId",
@@ -3467,7 +3467,7 @@ namespace Aktitic.HrProject.DAL.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_File_Project_ProjectId",
                 schema: "employee",
-                table: "File",
+                table: "Documents",
                 column: "ProjectId",
                 principalSchema: "project",
                 principalTable: "Project",
@@ -3700,7 +3700,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "File",
+                name: "Documents",
                 schema: "employee");
 
             migrationBuilder.DropTable(

@@ -56,10 +56,18 @@ public class JobsController(IJobsManager jobsManager) : ControllerBase
     }
     
     [HttpGet("getFilteredJobs")]
-    public Task<FilteredJobsDto> GetFilteredJobsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
+    public Task<FilteredJobsDto> GetFilteredJobsAsync
+        (string? column, string? value1,string? operator1,[Optional] string? value2,
+            string? operator2, int page, int pageSize, string? category)
     {
         
-        return jobsManager.GetFilteredJobsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return jobsManager.GetFilteredJobsAsync(column, value1, operator1, value2, operator2, page, pageSize, category);
     }
     
+    
+    [HttpGet("GetTotalJobs")]
+    public async Task<object> GetTotalJobs()
+    {
+        return await jobsManager.GetTotalJobs();
+    }
 }

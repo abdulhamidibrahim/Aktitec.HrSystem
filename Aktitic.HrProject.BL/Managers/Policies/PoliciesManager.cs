@@ -10,7 +10,6 @@ using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
@@ -38,12 +37,12 @@ public class PoliciesManager:IPoliciesManager
            Date = policiesAddDto.Date,
            FileName = policiesAddDto.File?.FileName,
            CreatedAt = DateTime.Now,
-           // File = _mapper.Map<IFormFile,File>(policiesAddDto.File),
+           // Documents = _mapper.Map<IFormFile,Documents>(policiesAddDto.Documents),
         };
         
         if (policiesAddDto.File != null)
         {
-            // policies.FileContent = new byte[policiesAddDto.File.Length];
+            // policies.FileContent = new byte[policiesAddDto.Documents.Length];
             using var ms = new MemoryStream();
             policiesAddDto.File.CopyTo(ms);
             policies.FileContent = ms.ToArray();
@@ -62,14 +61,14 @@ public class PoliciesManager:IPoliciesManager
         if (policiesUpdateDto.DepartmentId != null) policies.DepartmentId = policiesUpdateDto.DepartmentId;
         if (policiesUpdateDto.Date != null) policies.Date = policiesUpdateDto.Date;
         if (policiesUpdateDto.File != null) policies.FileName = policiesUpdateDto.File?.FileName;
-        // if (policiesUpdateDto.File != null) policies.File = _mapper.Map<FileDto, File>(policiesUpdateDto.File);
+        // if (policiesUpdateDto.Documents != null) policies.Documents = _mapper.Map<FileDto, Documents>(policiesUpdateDto.Documents);
         if (policies == null) return Task.FromResult(0);
 
         
         
         if (policiesUpdateDto.File != null)
         {
-            // policies.FileContent = new byte[policiesAddDto.File.Length];
+            // policies.FileContent = new byte[policiesAddDto.Documents.Length];
             using var ms = new MemoryStream();
             policiesUpdateDto.File.CopyTo(ms);
             policies.FileContent = ms.ToArray();

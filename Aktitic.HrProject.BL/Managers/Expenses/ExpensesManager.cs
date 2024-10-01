@@ -7,7 +7,6 @@ using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
@@ -34,7 +33,7 @@ public class ExpensesManager:IExpensesManager
             Amount = expensesAddDto.Amount,
             PaidBy = expensesAddDto.PaidBy,
             Status = expensesAddDto.Status,
-            Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesAddDto.Attachments),
+            Attachments = _mapper.Map<ICollection<FileDto>, ICollection<Document>>(expensesAddDto.Attachments),
             CreatedAt = DateTime.Now,
             
         }; 
@@ -56,7 +55,7 @@ public class ExpensesManager:IExpensesManager
         if(expensesUpdateDto.Amount!=null) expenses.Amount = expensesUpdateDto.Amount;
         if(expensesUpdateDto.PaidBy!=null) expenses.PaidBy = expensesUpdateDto.PaidBy;
         if(expensesUpdateDto.Status!=null) expenses.Status = expensesUpdateDto.Status;
-        if(expensesUpdateDto.Attachments !=null) expenses.Attachments = _mapper.Map<ICollection<FileDto>, ICollection<File>>(expensesUpdateDto.Attachments);
+        if(expensesUpdateDto.Attachments !=null) expenses.Attachments = _mapper.Map<ICollection<FileDto>, ICollection<Document>>(expensesUpdateDto.Attachments);
 
         expenses.UpdatedAt = DateTime.Now;
         _unitOfWork.Expenses.Update(expenses);
@@ -87,7 +86,7 @@ public class ExpensesManager:IExpensesManager
             Amount = expenses.Amount,
             PaidBy = expenses.PaidBy,
             Status = expenses.Status,
-            Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(expenses.Attachments)
+            Attachments = _mapper.Map<IEnumerable<Document>,IEnumerable<FileDto>>(expenses.Attachments)
         });
     }
 
@@ -104,7 +103,7 @@ public class ExpensesManager:IExpensesManager
             Amount = note.Amount,
             PaidBy = note.PaidBy,
             Status = note.Status,
-            Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(note.Attachments)
+            Attachments = _mapper.Map<IEnumerable<Document>,IEnumerable<FileDto>>(note.Attachments)
             
         }).ToList());
     }
@@ -138,7 +137,7 @@ public class ExpensesManager:IExpensesManager
                     Amount = expenses.Amount,
                     PaidBy = expenses.PaidBy,
                     Status = expenses.Status,
-                    Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(expenses.Attachments) ,
+                    Attachments = _mapper.Map<IEnumerable<Document>,IEnumerable<FileDto>>(expenses.Attachments) ,
                 });
             }
             FilteredExpensesDto filteredExpensesDto = new()
@@ -185,7 +184,7 @@ public class ExpensesManager:IExpensesManager
                     Amount = expenses.Amount,
                     PaidBy = expenses.PaidBy,
                     Status = expenses.Status,
-                    Attachments = _mapper.Map<IEnumerable<File>,IEnumerable<FileDto>>(expenses.Attachments)
+                    Attachments = _mapper.Map<IEnumerable<Document>,IEnumerable<FileDto>>(expenses.Attachments)
                     
                 });
             

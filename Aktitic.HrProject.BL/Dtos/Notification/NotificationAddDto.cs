@@ -7,9 +7,6 @@ namespace Aktitic.HrProject.BL;
 
 public class NotificationAddDto
 {
-    
-    public int Id { get; set; }
-    
     public string Title { get; set; }
     
     public string Content { get; set; }

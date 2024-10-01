@@ -1,19 +1,20 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection;
+using System.Text.Json;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = Aktitic.HrProject.DAL.Models.Task;
 using Aktitic.HrProject.BL.Utilities;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
 namespace Aktitic.HrProject.DAL.Context;
 
 public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
 {
-    public int? TenantId { get; private set; }
+    public static int TenantId { get; private set; }
     private readonly UserUtility? _userUtility;
     
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
@@ -43,7 +44,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     {
         if (_userUtility is not null)
         {
-            TenantId = int.TryParse(_userUtility.GetCurrentCompany(), out var id) ? id : (int?)null;
+            TenantId = int.TryParse(_userUtility.GetCurrentCompany(), out var id) ? id : 0;
         }
     }
 
@@ -58,7 +59,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 
     public virtual DbSet<Employee>? Employees { get; set; }
 
-    public virtual DbSet<File>? Files { get; set; }
+    public virtual DbSet<Document>? Documents { get; set; }
     public virtual DbSet<FileUsers>? FileUsers { get; set; }
 
     public virtual DbSet<Holiday>? Holidays { get; set; }
@@ -133,6 +134,14 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<ScheduleTiming>? ScheduleTimings { get; set; }   
     public virtual DbSet<AptitudeResult>? AptitudeResults { get; set; }   
     public virtual DbSet<JobApplicant>? JobApplicants { get; set; }   
+    public virtual DbSet<AuditLog>? AuditLogs { get; set; }   
+    public virtual DbSet<AppPages>? AppPages { get; set; }   
+    public virtual DbSet<LogAction>? LogActions { get; set; }   
+    public virtual DbSet<Email>? Emails { get; set; }   
+    public virtual DbSet<MailAttachment>? Attachments { get; set; }   
+    public virtual DbSet<DocumentFile>? DocumentFiles { get; set; }   
+    public virtual DbSet<Revisor>? Revisors { get; set; }   
+    
 
     #endregion
 
@@ -141,7 +150,6 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
      {
          
          SetTenantId();
-    
          // var tenantConnectionString = _tenantServices.GetConnectionString();
          //
          // if (!string.IsNullOrEmpty(tenantConnectionString))
@@ -155,698 +163,528 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
          //     
          // 
      }
-   
-    
-    
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+
+     
+
+     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+     {
+         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>()
+                      .Where(e => e.State == EntityState.Added && GetCurrentTenantId() != 0))
+         {
+             entry.Entity.TenantId ??= GetCurrentTenantId();
+         }
+         
+         var pageNames = new Dictionary<string, int>
+         {
+             { "/api/chat/create", 1 },
+             { "/api/events", 2 },
+             { "/api/contacts", 3 },
+             { "/api/files", 4 },
+             { "/api/employees", 5 },
+             { "/api/contracts", 6 },
+             { "/api/holiday", 7 },
+             { "/api/leaves", 8 },
+             { "/api/leavesettings", 9 },
+             { "/api/attendances", 10 },
+             { "/api/departments", 11 },
+             { "/api/designations", 12 },
+             { "/api/timesheets", 13 },
+             { "/api/scheduling", 14 },
+             { "/api/shifts", 15 },
+             { "/api/overtime", 16 },
+             { "/api/clients", 17 },
+             { "/api/projects", 18 },
+             { "/api/tasks", 19 },
+             { "/api/taskboard", 20 },
+             { "/api/ticket", 21 },
+             { "/api/estimate", 22 },
+             { "/api/invoice", 23 },
+             { "/api/payments", 24 },
+             { "/api/expenses", 25 },
+             { "/api/providentfunds", 26 },
+             { "/api/taxes", 27 },
+             { "/api/categories", 28 },
+             { "/api/budgets", 29 },
+             { "/api/budgetsexpenses", 30 },
+             { "/api/budgetsrevenues", 31 },
+             { "/api/salaries", 32 },
+             { "/api/payrollovertime", 33 },
+             { "/api/payrolldeduction", 34 },
+             { "/api/payrolladdition", 35 },
+             { "/api/policies", 36 },
+             { "/api/attendances/gettodayemployeeattendance", 37 },
+             { "/api/performanceindicators", 38 },
+             { "/api/performanceappraisals", 39 },
+             { "/api/goallists", 40 },
+             { "/api/goaltypes", 41 },
+             { "/api/traininglists", 42 },
+             { "/api/trainers", 43 },
+             { "/api/trainingtypes", 44 },
+             { "/api/promotions", 45 },
+             { "/api/resignations", 46 },
+             { "/api/terminations", 47 },
+             { "/api/assets", 48 },
+             { "/api/jobs", 49 },
+             { "/api/jobapplicants", 50 },
+             { "/api/shortlists", 51 },
+             { "/api/interviewquestions", 52 },
+             { "/api/offerapprovals", 53 },
+             { "/api/experiences", 54 },
+             { "/api/candidaties", 55 },
+             { "/api/secheduletimings", 56 },
+             { "/api/aptituderesults", 57 },
+             { "/api/users", 58 },
+             { "/api/companies", 59 },
+             { "/api/licenses", 60 },
+             { "/api/notifications", 61 }
+             // Add more mappings as needed
+         };
+
+         var modifiedEntities = ChangeTracker
+             .Entries<IAuditable>()
+             .Where(e => e.State == EntityState.Modified || e.State == EntityState.Added || e.Entity.IsDeleted);
+
+         foreach (var entry in modifiedEntities.ToList())
+         {
+             var pageName = pageNames.FirstOrDefault(x => _userUtility.GetCurrentPage()
+                 .Contains(x.Key,StringComparison.OrdinalIgnoreCase)).Value;
+             var actionName = entry.State.ToString();
+             var auditLog = new AuditLog()
+             {
+                 EntityName = entry.Entity.GetType().Name,
+                 UserId = _userUtility?.GetUserId(),
+                 Action = LogActions?.FirstOrDefault(x => x.Name == actionName),
+                 TimeStamp = DateTime.Now,
+                 Changes = GetChanges(entry),
+                 IpAddress = _userUtility.GetIpAddress(),
+                 TenantId = GetCurrentTenantId(), 
+                 AppPages = AppPages?.FirstOrDefault(x=>x.Id == pageName),
+                                                    
+                 // id of the added item
+                 ModifiedRecords = new List<ModifiedRecord>()
+                 {
+                     new()
+                     {
+                         RecordId = GetRecordId(entry),
+                         PermenantlyDeleted = false,
+                         PermenantlyDeletedBy = null
+                     }
+                 }
+             };
+
+
+
+             AuditLogs?.Add(auditLog);
+
+             if ((entry.State == EntityState.Added))
+             {
+                 entry.Entity.CreatedAt = DateTime.Now;
+                 entry.Entity.CreatedBy = _userUtility.GetUserName();
+             }
+
+             if ((entry.State == EntityState.Modified))
+             {
+                 entry.Entity.UpdatedAt = DateTime.Now;
+                 entry.Entity.UpdatedBy = _userUtility?.GetUserName();
+             }
+
+             if (entry.Entity.IsDeleted)
+             {
+                 entry.Entity.DeletedAt = DateTime.Now;
+                 entry.Entity.DeletedBy = _userUtility?.GetUserName();
+             }
+         }
+         
+         
+         var save = await base.SaveChangesAsync(cancellationToken);
+         UpdatePendingAuditLogs();
+         await base.SaveChangesAsync(cancellationToken);
+         return save;
+     }
+
+     
+    private string? GetChanges(EntityEntry<IAuditable> entry)
     {
-        foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>()
-                     .Where(e=>e.State == EntityState.Added && GetCurrentTenantId()!=0))
+        var changes = new List<string>();
+        foreach (var property in entry.Properties.ToList())
         {
-            entry.Entity.TenantId ??= GetCurrentTenantId();
+            var propertyName = property.Metadata.Name;
+            var currentValue = property.CurrentValue;
+            var originalValue = property.OriginalValue;
+            if (currentValue != null && originalValue != null)
+            {
+                if (!currentValue.Equals(originalValue))
+                {
+                    changes.Add($"{propertyName}: {originalValue} -> {currentValue}");
+                }
+            }
         }
 
-        foreach (var entry in ChangeTracker.Entries<BaseEntity>().Where(e=>e.State ==EntityState.Added))
+        return JsonSerializer.Serialize(changes);
+    }
+   
+
+    private string GetRecordId(EntityEntry<IAuditable> entry)
+    {
+        // Fallback to looking for a property named "Id" if no primary key is found
+        var idProperty = entry.Properties.FirstOrDefault(p => p.Metadata.IsPrimaryKey()) ?? entry.Properties.FirstOrDefault(p => p.Metadata.Name == "Id");
+
+        if (idProperty != null)
         {
-            entry.Entity.CreatedAt = DateTime.Now;
-            entry.Entity.CreatedBy = _userUtility?.GetUserId();
+            if (entry.State == EntityState.Added)
+            {
+                // For newly added entities, we need to handle the case where the ID hasn't been generated yet
+                if (idProperty.CurrentValue == null || 
+                    idProperty.CurrentValue is <= 0 )
+                {
+                    // The ID hasn't been generated yet
+                    return "Pending";
+                }
+            }
+
+            // For all other cases, return the current value of the ID property
+            return idProperty.CurrentValue?.ToString() ?? "Unknown";
+        }
+
+        // If we couldn't find an ID property at all
+        return "Unknown";
+    }
+
+    private void UpdatePendingAuditLogs()
+    {
+        if (AuditLogs != null)
+        {
+            var pendingAuditLogs = AuditLogs.Where(log => log.ModifiedRecords != null && log.ModifiedRecords.Any(r => r.RecordId == "Pending")).ToList();
+            foreach (var auditLog in pendingAuditLogs)
+            {
+                var entity = ChangeTracker.Entries<IAuditable>()
+                    .FirstOrDefault(e => e.Entity.GetType().Name == auditLog.EntityName);
+        
+                if (entity != null)
+                {
+                    var newRecordId = GetRecordId(entity);
+                    if (newRecordId != "Pending" && newRecordId != "Unknown")
+                    {
+                        if (auditLog.ModifiedRecords != null) auditLog.ModifiedRecords.First().RecordId = newRecordId;
+                    }
+                }
+            }
         }
         
-        return base.SaveChangesAsync(cancellationToken);
     }
-    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         // get non deleted records
-        // Apply global query filters for all entities that derive from BaseEntity
+        // Apply global query filters for all entities that implements IBaseEntity
+        // foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        // {
+        //    
+        // }
+        // var tenantId = GetCurrentTenantId(); // Call outside the filter expression
+        //
+        //  foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        //  {
+        //      // LambdaExpression tenantIdFilter = null;
+        //      // Apply IsDeleted filter for IAuditable entities
+        //      // if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
+        //      // {
+        //      //     var isDeletedFilter = CreateIsDeletedFilter(entityType.ClrType,tenantId);
+        //      //     modelBuilder.Entity(entityType.ClrType).HasQueryFilter(isDeletedFilter);
+        //      // }
+        //
+        //      // var tenantId = GetCurrentTenantId();  // هات الـ TenantId الحالي
+        //      if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
+        //      {
+        //          modelBuilder.Entity(entityType.ClrType).HasQueryFilter(CreateIsDeletedFilter(entityType.ClrType));
+        //          // modelBuilder.Entity(entityType.ClrType).HasQueryFilter(CreateTenantIdFilter(entityType.ClrType, tenantId));
+        //
+        //      }
+        //
+        //      if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
+        //      {
+        //      }
+        //      // foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        //      // {
+        //          // إضافة فلتر الـ IsDeleted إذا كانت الكلاس تطبق الـ IAuditable
+        //          // if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
+        //          // {
+        //          //     modelBuilder.Entity(entityType.ClrType)
+        //          //         .HasQueryFilter(e => EF.Property<bool>(e, "IsDeleted") == false);
+        //          // }
+        //          //
+        //          // // إضافة فلتر الـ TenantId إذا كانت الكلاس تطبق الـ ITenantEntity
+        //          // if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
+        //          // {
+        //          //     modelBuilder.Entity(entityType.ClrType)
+        //          //         .HasQueryFilter(e => EF.Property<int>(e, "TenantId") == tenantId);
+        //          // }
+        //          // }
+        //          // // Apply TenantId filter for IBaseEntity entities
+        //          // if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
+        //          // { 
+        //          //     tenantIdFilter = CreateTenantIdFilter(entityType.ClrType, tenantId);
+        //          //     // modelBuilder.Entity(entityType.ClrType).HasQueryFilter(tenantIdFilter);
+        //          // }
+        //          //
+        //          //
+        //          // if (isDeletedFilter != null && tenantIdFilter != null)
+        //          // {
+        //          //     var filter = CombineFilters(isDeletedFilter, tenantIdFilter);
+        //          //     if (filter != null)
+        //          //     {
+        //          //         modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
+        //          //     }
+        //          // }
+        //  }
+        //  
+        
+        var tenantId = GetCurrentTenantId(); // Call outside the filter expression
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
+            LambdaExpression? isDeletedFilter = null;
+            LambdaExpression? tenantIdFilter = null;
+
+            // Apply IsDeleted filter for IAuditable entities
+            if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
+            {
+                isDeletedFilter = CreateIsDeletedFilter(entityType.ClrType);
+            }
+
+            // Apply TenantId filter for IBaseEntity entities
             if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(CreateIsDeletedFilter(entityType.ClrType));
+                tenantIdFilter = CreateTenantIdFilter(entityType.ClrType, tenantId);
             }
+
+            // Combine both filters
+            // if (isDeletedFilter != null && tenantIdFilter != null)
+            // {
+            //     var combinedFilter = CombineFilters(isDeletedFilter, tenantIdFilter);
+            //     modelBuilder.Entity(entityType.ClrType).HasQueryFilter(combinedFilter);
+            // }
+            // else if (isDeletedFilter != null)
+            // {
+            //     modelBuilder.Entity(entityType.ClrType).HasQueryFilter(isDeletedFilter);
+            // }
+            // else if (tenantIdFilter != null)
+            // {
+            //     modelBuilder.Entity(entityType.ClrType).HasQueryFilter(tenantIdFilter);
+            // }
         }
         
         
-        // Apply tenant filter
-       foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                var method = _setTenantIdFilterMethod?.MakeGenericMethod(entityType.ClrType);
-                method?.Invoke(this, new object[] { modelBuilder });
-            }
-        }
+        // // Create parameter expression
+        // var parameter = Expression.Parameter(typeof(YourEntity), "x");
+        //
+        // // Create filter expressions
+        // var isDeletedFilter = Expression.Lambda(
+        //     Expression.NotEqual(
+        //         Expression.Property(parameter, nameof(YourEntity.IsDeleted)),
+        //         Expression.Constant(true)
+        //     ), parameter);
+        //
+        // var tenantIdFilter = Expression.Lambda(
+        //     Expression.Equal(
+        //         Expression.Property(parameter, nameof(YourEntity.TenantID)),
+        //         Expression.Constant(1)
+        //     ), parameter);
+        //
+        // // Combine filters
+        // var combinedFilter = CombineFilters(isDeletedFilter, tenantIdFilter);
+        //
+        // Console.WriteLine(combinedFilter);
+        //////////
+        //
+        //  Apply tenant filter
+        //  foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        //   {
+        //       LambdaExpression queryFilter = null;
+        //  
+        //       // Apply IsDeleted filter for IAuditable
+        //  
+        //       if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
+        //       {
+        //           var method = _setIsDeletedFilterMethod?.MakeGenericMethod(entityType.ClrType);
+        //           if (method?.Invoke(this, [modelBuilder]) is LambdaExpression isDeletedFilter)
+        //           {
+        //               queryFilter = isDeletedFilter;
+        //           }
+        //           else
+        //           {
+        //               Console.WriteLine($"IsDeleted filter is null for entity type {entityType.ClrType.Name}");
+        //           }
+        //  //      }
+        //  //
+         //      // Apply TenantId filter for IBaseEntity
+         //      if (typeof(IBaseEntity).IsAssignableFrom(entityType.ClrType))
+         //      {
+         //          var method = _setTenantIdFilterMethod?.MakeGenericMethod(entityType.ClrType);
+         //          if (method?.Invoke(this, [modelBuilder]) is LambdaExpression tenantFilter)
+         //          {
+         //              queryFilter =  CombineFilters(queryFilter, tenantFilter);
+         //          }
+         //          else
+         //          {
+         //              Console.WriteLine($"Tenant filter is null for entity type {entityType.ClrType.Name}");
+         //          }
+         //      }
+         //
+         //          // Apply the combined filter
+         //          if (queryFilter != null)
+         //          {
+         //              modelBuilder.Entity(entityType.ClrType).HasQueryFilter(queryFilter);
+         //          }
+         //  }
+         // //  
         
+         // add the configuration 
         
-        // add the configuration 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrSystemDbContext).Assembly);   
+         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrSystemDbContext).Assembly);   
       
         
         
-        // modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
+         // modelBuilder.Entity<Attendance>().HasQueryFilter(e => e.IsDeleted == false);
         
         
-        modelBuilder.Entity<ChatGroupUser>()
-            .HasKey(cgu => new { cgu.ChatGroupId, cgu.UserId });
+         modelBuilder.Entity<ChatGroupUser>()
+             .HasKey(cgu => new { cgu.ChatGroupId, cgu.UserId });
 
-        modelBuilder.Entity<ChatGroupUser>()
-            .HasOne(cgu => cgu.ChatGroup)
-            .WithMany(cg => cg.ChatGroupUsers)
-            .HasForeignKey(cgu => cgu.ChatGroupId);
+         modelBuilder.Entity<ChatGroupUser>()
+             .HasOne(cgu => cgu.ChatGroup)
+             .WithMany(cg => cg.ChatGroupUsers)
+             .HasForeignKey(cgu => cgu.ChatGroupId);
 
-        modelBuilder.Entity<ChatGroupUser>()
-            .HasOne(cgu => cgu.User)
-            .WithMany(u => u.ChatGroupUsers)
-            .HasForeignKey(cgu => cgu.UserId);
-
-
-
-        // modelBuilder.Entity<License>()
-        //     .HasQueryFilter(e => e.TenantId == TenantId);
+         modelBuilder.Entity<ChatGroupUser>()
+             .HasOne(cgu => cgu.User)
+             .WithMany(u => u.ChatGroupUsers)
+             .HasForeignKey(cgu => cgu.UserId);
         
-        // modelBuilder.Entity<ApplicationUser>()
-        //     .HasQueryFilter(e => e.TenantId == TenantId);
+      
         
         
-        
-        // application user 
-        // modelBuilder.Entity<ApplicationUser>(entity =>
-        // {
-        //     entity.HasOne(x => x.ManagedCompany)
-        //         .WithOne(x => x.Manager)
-        //         .HasForeignKey<Company>(x => x.ManagerId);
-        //     
-        //     entity.HasOne<Company>(x => x.Company)
-        //         .WithMany(x => x.Users)
-        //         .OnDelete(DeleteBehavior.Cascade);
-        // });
+         modelBuilder.Entity<Company>()
+             .HasOne(c => c.Manager)
+             .WithOne(u => u.ManagedCompany)
+             .HasForeignKey<Company>(c => c.ManagerId);
+
+         // One-to-Many relationship between Company and Users
+         modelBuilder.Entity<Company>()
+             .HasMany(c => c.Users)
+             .WithOne(u => u.Company)
+             .HasForeignKey(u => u.TenantId);
         
         
-        modelBuilder.Entity<Company>()
-            .HasOne(c => c.Manager)
-            .WithOne(u => u.ManagedCompany)
-            .HasForeignKey<Company>(c => c.ManagerId);
-
-        // One-to-Many relationship between Company and Users
-        modelBuilder.Entity<Company>()
-            .HasMany(c => c.Users)
-            .WithOne(u => u.Company)
-            .HasForeignKey(u => u.TenantId);
         
-        modelBuilder.Entity<Attendance>(entity =>
-        {
-            entity.ToTable("Attendance", "employee");
-
-            entity.Property(e => e.Break).HasColumnName("break");
-            entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            // entity.Property(e => e.OvertimeId).HasColumnName("overtime_id");
-            entity.Property(e => e.Production).HasColumnName("production");
-            entity.Property(e => e.PunchIn)
-                .HasColumnType("datetime")
-                .HasColumnName("punch_in");
-            entity.Property(e => e.PunchOut)
-                .HasColumnType("datetime")
-                .HasColumnName("punch_out");
-
-            entity.HasOne(d => d.Employee)
-                .WithMany(p => p.Attendances)
-                .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK_Attendance_Employee");
-
-            // entity.HasOne(d => d.Overtime).WithMany(p => p.Attendances)
-            //     .HasForeignKey(d => d.OvertimeId)
-            //     .HasConstraintName("FK_Attendance_Overtimes");
-        });
-
-        modelBuilder.Entity<Department>(entity =>
-        {
-            entity.ToTable("Department", "employee");
-
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .HasColumnName("name");
-        });
-
-        modelBuilder.Entity<Designation>(entity =>
-        {
-            entity.ToTable("Designation", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.DepartmentId).HasColumnName("department_id");
-            entity.Property(e => e.Name).HasColumnName("name");
-
-            entity.HasOne(d => d.Department)
-                .WithMany(p => p.Designations)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_Designation_Department");
-        });
-
-        modelBuilder.Entity<Employee>(entity =>
-        {
-            entity.ToTable("Employee", "employee");
-
-            // entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Age).HasColumnName("age");
-            entity.Property(e => e.DepartmentId).HasColumnName("department_id");
-            entity.Property(e => e.FullName).HasColumnName("full_name");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(50)
-                .HasColumnName("gender");
-            entity.Property(e => e.ImgId).HasColumnName("img_id");
-            entity.Property(e => e.JobPosition)
-                .HasMaxLength(50)
-                .HasColumnName("job_position");
-            entity.Property(e => e.JoiningDate).HasColumnName("joining_date");
-            entity.Property(e => e.ManagerId).HasColumnName("manager_id");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(50)
-                .HasColumnName("phone");
-            entity.Property(e => e.Salary)
-                .HasColumnType("decimal(18, 2)")
-                .HasColumnName("salary");
-            entity.Property(e => e.YearsOfExperience).HasColumnName("years_of_experience");
         
-            entity.HasOne(d => d.Department).WithMany(p => p.Employees)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_Employee_Department_1");
         
-            //project relationship
-            // entity.HasOne(d => d.Project).WithMany(p => p.Employees)
-            //     .HasForeignKey(d => d.ProjectId)
-            //     .HasConstraintName("FK_Employee_Project");
-            
-            // entity.HasOne(d => d.Manager).WithMany(p => p.Employees)    
-            //     .HasForeignKey(d => d.ManagerId)
-            //     .HasConstraintName("FK_Employee_Employee");
-            // entity.HasOne(d => d.Img).WithMany(p => p.Employees)
-            //     .HasForeignKey(d => d.ImgId)
-            //     .HasConstraintName("FK_Employee_File_1");
-        });
-
-        modelBuilder.Entity<File>(entity =>
-        {
-            entity.ToTable("File", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.FileSize)
-                .HasMaxLength(50)
-                .HasColumnName("file_size");
-            entity.Property(e => e.FileName)
-                .HasMaxLength(50)
-                .HasColumnName("file_name");
-        });
-
-        modelBuilder.Entity<Holiday>(entity =>
-        {
-            entity.ToTable("Holiday", "employee");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.Title)
-                .HasMaxLength(50)
-                .HasColumnName("title");
-        });
-
-        modelBuilder.Entity<Leaves>(entity =>
-        {
-            entity.ToTable("leaves", "employee");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Approved).HasColumnName("approved");
-            entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
-            entity.Property(e => e.Days).HasColumnName("days");
-            // entity.Property(e => e.Status).HasColumnName("Status")
-            //     .HasMaxLength(50);
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.FromDate).HasColumnName("from");
-            entity.Property(e => e.Reason)
-                .HasMaxLength(50)
-                .HasColumnName("reason");
-            entity.Property(e => e.ToDate).HasColumnName("to");
-            entity.Property(e => e.Type)
-                .HasMaxLength(50)
-                .HasColumnName("type");
-
-            entity.HasOne(d => d.ApprovedByNavigation)
-                .WithMany(p => p.LeafApprovedByNavigations)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK_leaves_Employee_approved");
-
-            entity.HasOne(d => d.Employee)
-                .WithMany(p => p.LeafEmployees)
-                .HasForeignKey(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_leaves_Employee");
-        });
-
-        modelBuilder.Entity<Overtime>(entity =>
-        {
-            entity.ToTable("Overtimes", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.OtDate).HasColumnName("ot_date");
-            entity.Property(e => e.OtHours).HasColumnName("ot_hours");
-            entity.Property(e => e.OtType)
-                .HasMaxLength(50)
-                .HasColumnName("ot_type");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.OvertimeApprovedByNavigations)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK_Overtimes_Employee_approve");
-
-            entity.HasOne(d => d.Employee).WithMany(p => p.OvertimeEmployees)
-                .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK_Overtimes_Employee");
-        });
-
-        modelBuilder.Entity<Scheduling>(entity =>
-        {
-            entity.ToTable("scheduling", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.BreakTime).HasColumnName("break_time");
-            entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.DepartmentId).HasColumnName("department_Id");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.EndTime).HasColumnName("end_time");
-            entity.Property(e => e.MaxEndTime).HasColumnName("max_end_time");
-            entity.Property(e => e.MaxStartTime).HasColumnName("max_start_time");
-            entity.Property(e => e.MinEndTime).HasColumnName("min_end_time");
-            entity.Property(e => e.MinStartTime).HasColumnName("min_start_time");
-           
-            entity.Property(e => e.RepeatEvery).HasColumnName("repeat_every");
-            entity.Property(e => e.ShiftId).HasColumnName("shift_id");
-            entity.Property(e => e.StartTime).HasColumnName("start_time");
-            entity.HasOne(d => d.Department).WithMany(p => p.Schedulings)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_scheduling_Department");
-
-            // entity.HasOne(d => d.Employee).WithMany(p => p.SchedulingEmployees)
-            //     .HasForeignKey(d => d.EmployeeId)
-            //     .HasConstraintName("FK_scheduling_Employee_1");
-        });
-
-        modelBuilder.Entity<Shift>(entity =>
-        {
-            entity.ToTable("Shift", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ApprovedBy).HasColumnName("approvedBy");
-            entity.Property(e => e.BreakeTime).HasColumnName("breake_time");
-            entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.EndTime).HasColumnName("end_time");
-            entity.Property(e => e.Indefinate).HasColumnName("indefinate");
-            entity.Property(e => e.MaxEndTime).HasColumnName("max_end_time");
-            entity.Property(e => e.MaxStartTime).HasColumnName("max_start_time");
-            entity.Property(e => e.MinEndTime).HasColumnName("min_end_time");
-            entity.Property(e => e.MinStartTime).HasColumnName("min_start_time");
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .HasColumnName("name");
-            entity.Property(e => e.Note)
-                .HasMaxLength(50)
-                .HasColumnName("note");
-            entity.Property(e => e.RecurringShift).HasColumnName("recurring_shift");
-            entity.Property(e => e.RepeatEvery).HasColumnName("repeat_every");
-            entity.Property(e => e.StartTime).HasColumnName("start_time");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            entity.Property(e => e.Tag)
-                .HasMaxLength(50)
-                .HasColumnName("tag");
-
-            entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.Shifts)
-                .HasForeignKey(d => d.ApprovedBy)
-                .HasConstraintName("FK_Shift_Employee");
-        });
-
-        modelBuilder.Entity<TimeSheet>(entity =>
-        {
-            entity.ToTable("Timesheet", "employee");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.AssignedHours).HasColumnName("assigned_hours");
-            entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.Deadline)
-                .HasColumnName("deadline");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.Hours).HasColumnName("hours");
-            entity.Property(e => e.ProjectId).HasColumnName("project_id");
-
-            entity.HasOne(d => d.Employee).WithOne(p => p.Timesheet)
-                .HasForeignKey<TimeSheet>(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Timesheet_Employee");
-        });
+         modelBuilder.Entity<IdentityUserLogin<int>>(entity =>
+         {
+             entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+         });
         
-        modelBuilder.Entity<IdentityUserLogin<int>>(entity =>
-        {
-            entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
-        });
+         modelBuilder.Entity<IdentityUserRole<int>>(entity =>
+         {
+             entity.HasKey(e => new { e.UserId, e.RoleId });
+         });
         
-        modelBuilder.Entity<IdentityUserRole<int>>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.RoleId });
-        });
+         modelBuilder.Entity<IdentityUserToken<int>>(entity =>
+         {
+             entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+         });
         
-        modelBuilder.Entity<IdentityUserToken<int>>(entity =>
-        {
-            entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
-        });
+         modelBuilder.Entity<IdentityUserClaim<int>>(entity =>
+         {
+             entity.HasKey(e => new { e.Id });
+         });
         
-        modelBuilder.Entity<IdentityUserClaim<int>>(entity =>
-        {
-            entity.HasKey(e => new { e.Id });
-        });
+         modelBuilder.Entity<ApplicationUser>(entity =>
+         {
+             entity.Property(e => e.Id).ValueGeneratedOnAdd();
+         });
         
-        modelBuilder.Entity<ApplicationUser>(entity =>
-        {
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-        });
         
-        modelBuilder.Entity<Client>(entity =>
-        {
-            entity.ToTable("Client", "project");
         
-           
-            entity.Property(e => e.Email)
-                .HasMaxLength(100)
-                .HasColumnName("email");
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(50)
-                .HasColumnName("first_name");
-            entity.Property(e => e.LastName)
-                .HasMaxLength(50)
-                .HasColumnName("last_name");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(50)
-                .HasColumnName("phone");
-            
-            // client permissions relationship
+     
+         modelBuilder.Entity<Permission>()
+             .HasOne(p => p.ApplicationUser)
+             .WithMany(u => u.Permissions)
+             .HasForeignKey(p => p.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasMany(d => d.Permissions)
-                .WithOne(p => p.Client)
-                .HasForeignKey(e=>e.ClientId);
-        });
-        
-        modelBuilder.Entity<Project>(entity=>
-            
-        {
-        entity.ToTable("Project", "project");
-        entity.Property(e => e.Id).ValueGeneratedOnAdd();
-        entity.Property(e => e.Name)
-            .HasMaxLength(100)
-            .HasColumnName("name");
-        entity.Property(e => e.Description)
-            .HasColumnName("description");
-        entity.Property(e => e.StartDate).HasColumnName("start_date");
-        entity.Property(e => e.EndDate).HasColumnName("end_date");
-        // entity.Property(e => e.ClientId).HasColumnName("client_id");
-        entity.Property(e => e.Priority)
-            .HasMaxLength(50)
-            .HasColumnName("priority");
-        entity.Property(e => e.RateSelect)
-            .HasMaxLength(100)
-            .HasColumnName("rate_select");
-        entity.Property(e => e.Rate).HasPrecision(5,2).HasColumnName("rate");
-        entity.Property(e => e.Status).HasColumnName("status");
-        entity.Property(e => e.Checked).HasColumnName("checked");
-        
-        entity.HasOne(d => d.Client).WithMany(p => p.Projects)
-            .HasForeignKey(d => d.ClientId)
-            .HasConstraintName("FK_Project_Client");
-        // leader id 
-        entity.HasOne(d => d.Leader).WithMany(p => p.Projects)
-            .HasForeignKey(d => d.LeaderId)
-            .HasConstraintName("FK_Project_Employee");
-        
-        // project and employeeporject relation 
-        entity.HasMany(d => d.EmployeesProject) 
-            .WithOne(p => p.Project)
-            .HasForeignKey(e=>e.ProjectId).OnDelete(DeleteBehavior.Cascade);        
-        });
-        
-        modelBuilder.Entity<Task>(entity =>
-        {
-            entity.ToTable("Task", "project");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Text)
-                .HasMaxLength(100)
-                .HasColumnName("title");
-            entity.Property(e => e.Description)
-                .HasColumnName("description");
-            entity.Property(e => e.Date).HasColumnName("date");
-            entity.Property(e => e.Priority)
-                .HasMaxLength(50)
-                .HasColumnName("priority");
-            entity.Property(e => e.Completed).HasColumnName("completed");
-            entity.Property(e => e.ProjectId).HasColumnName("project_id");
-        });
-        
-        modelBuilder.Entity<TaskList>(entity =>
-        {
-            entity.ToTable("TaskList", "project");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ListName)
-                .HasMaxLength(100)
-                .HasColumnName("name");
-        });
-        
-        modelBuilder.Entity<TaskBoard>(entity =>
-        {
-            entity.ToTable("Taskboard", "project");
-            
-        });
-        
-        modelBuilder.Entity<Ticket>(entity =>
-        {
-            entity.ToTable("Ticket", "project");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Subject)
-                .HasMaxLength(100)
-                .HasColumnName("subject");
-            entity.Property(e => e.Description)
-                .HasColumnName("description");
-            entity.Property(e => e.Priority)
-                .HasMaxLength(50)
-                .HasColumnName("priority");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            entity.Property(e => e.Cc)
-                .HasMaxLength(100)
-                .HasColumnName("cc");
-            entity.Property(e => e.AssignedToEmployeeId).HasColumnName("assigned_to");
-            entity.Property(e => e.CreatedByEmployeeId).HasColumnName("created_by");
-        entity.Property(e => e.ClientId).HasColumnName("client_id");
-        entity.HasOne(d => d.Client).WithMany(p => p.Tickets)
-            .HasForeignKey(d => d.ClientId)
-            .HasConstraintName("FK_Ticket_Clients");
-        entity.HasOne(t=> t.AssignedTo).WithMany()
-            .HasForeignKey(t=>t.AssignedToEmployeeId)
-            .HasConstraintName("FK_Ticket_Employee_AssignedTo");
-        entity.HasOne(t=>t.CreatedBy).WithMany()
-            .HasForeignKey(t=>t.CreatedByEmployeeId)
-            .HasConstraintName("FK_Ticket_Employee_CreatedBy");
-        });
-        modelBuilder.Entity<TicketFollowers>(entity =>
-        {
-            entity.ToTable("TicketFollowers", "project");
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.TicketId).HasColumnName("ticket_id");
-            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            // entity.HasOne(d => d.Employee).WithMany(p => p.TicketFollowers)
-                // .HasForeignKey(d => d.EmployeeId)
-                // .HasConstraintName("FK_TicketFollowers_Employee");
-            entity.HasOne(d => d.Ticket).WithMany(p => p.TicketFollowers)
-                .HasForeignKey(d => d.TicketId)
-                .HasConstraintName("FK_TicketFollowers_Ticket");
-        });
-        modelBuilder.Entity<Notes>(entity =>
-        {
-            entity.ToTable("Notes", "employee");
-            
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.SenderId).HasColumnName("sender_id");
-            entity.Property(e => e.ReceiverId).HasColumnName("receiver_id");
-            entity.Property(e => e.Content)
-                .HasColumnName("content");
-            entity.Property(e => e.Starred).HasColumnName("starred");
-            entity.Property(e => e.Date).HasColumnName("date");
-            // entity.HasOne(d => d.Sender).WithMany(p => p.NotesSender)
-            //     .HasForeignKey(d => d.SenderId)
-            //     .HasConstraintName("FK_Notes_Employee_Sender");
-            // entity.HasOne(d => d.Receiver).WithMany(p => p.NotesReceiver)
-            //     .HasForeignKey(d => d.ReceiverId)
-            //     .HasConstraintName("FK_Notes_Employee_Receiver");
-        });
-
-        modelBuilder.Entity<CustomPolicy>(entity =>
-        {
-            entity.ToTable("CustomPolicy", "employee");
-            
-            
-        });
-        
-        modelBuilder.Entity<Estimate>(entity => 
-        {
-            entity.ToTable("Estimate", "client");
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Email)
-                .HasMaxLength(100)
-                .HasColumnName("email");
-            entity.Property(e => e.ClientAddress)
-                
-                .HasColumnName("client_address");
-            entity.Property(e => e.BillingAddress)
-                
-                .HasColumnName("billing_address");
-            entity.Property(e => e.EstimateDate).HasColumnName("estimate_date");
-            entity.Property(e => e.ExpiryDate).HasColumnName("expiry_date");
-            entity.Property(e => e.OtherInformation)
-                .HasColumnName("other_information");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            entity.Property(e => e.EstimateNumber)
-                .HasMaxLength(50)
-                .HasColumnName("estimate_number");
-            entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
-            entity.Property(e => e.Discount).HasColumnName("discount");
-            entity.Property(e => e.Tax).HasColumnName("tax");
-            entity.Property(e => e.GrandTotal).HasColumnName("grand_total");
-            entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.ProjectId).HasColumnName("project_id");
-            // entity.HasOne(d => d.Client).WithMany(p => p.Estimates)
-            //     .HasForeignKey(d => d.ClientId)
-            //     .HasConstraintName("FK_Estimate_Client");
-            // entity.HasOne(d => d.Project).WithMany(p => p.Estimates)
-            //     .HasForeignKey(d => d.ProjectId)
-            //     .HasConstraintName("FK_Estimate_Project");
-            entity.HasMany(d => d.Items) 
-                .WithOne(p => p.Estimate)
-                .HasForeignKey(e=>e.EstimateId).OnDelete(DeleteBehavior.Cascade);
-        });
-        modelBuilder.Entity<Invoice>(builder =>
-        {
-            builder.ToTable("Invoice", "client");
-            builder.Property(e => e.Id).ValueGeneratedOnAdd();
-            builder.Property(e => e.Email)
-                .HasMaxLength(100)
-                .HasColumnName("email");
-            builder.Property(e => e.ClientAddress)
-                .HasColumnName("client_address");
-            builder.Property(e => e.BillingAddress)
-                .HasColumnName("billing_address");
-            builder.Property(e => e.InvoiceDate).HasColumnName("invoice_date");
-            builder.Property(e => e.DueDate).HasColumnName("due_date");
-            builder.Property(e => e.OtherInformation)
-                .HasColumnName("other_information");
-            builder.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            builder.Property(e => e.Notes)
-                .HasColumnName("notes");
-            builder.Property(e => e.InvoiceNumber)
-                .HasMaxLength(50)
-                .HasColumnName("invoice_number");
-            builder.Property(e => e.TotalAmount).HasColumnName("total_amount");
-            builder.Property(e => e.Discount).HasColumnName("discount");
-            builder.Property(e => e.GrandTotal).HasColumnName("grand_total");
-            builder.Property(e => e.ClientId).HasColumnName("client_id");
-            builder.Property(e => e.ProjectId).HasColumnName("project_id");
-            // builder.HasOne(d => d.Client).WithMany(p => p.Invoices)
-            //     .HasForeignKey(d => d.ClientId)
-            //     .HasConstraintName("FK_Invoice_Client");
-            // builder.HasOne(d => d.Project).WithMany(p => p.Invoices)
-            //     .HasForeignKey(d => d.ProjectId)
-            //     .HasConstraintName("FK_Invoice_Project");
-            builder.HasMany(d => d.Items)
-                .WithOne(p => p.Invoice)
-                .HasForeignKey(e => e.InvoiceId).OnDelete(DeleteBehavior.Cascade);
-        });
-        modelBuilder.Entity<Expenses>(entity =>
-        {
-            entity.ToTable("Expenses", "client");
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ItemName)
-                .HasMaxLength(100)
-                .HasColumnName("item_name");
-            entity.Property(e => e.PurchaseFrom)
-                .HasMaxLength(100)
-                .HasColumnName("purchase_from");
-            entity.Property(e => e.PurchaseDate).HasColumnName("purchase_date");
-            // entity.Property(e => e.PurchasedBy).HasColumnName("purchased_by");
-            entity.Property(e => e.Amount).HasColumnName("amount");
-            entity.Property(e => e.PaidBy)
-                .HasMaxLength(100)
-                .HasColumnName("paid_by");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            // entity.HasOne(d => d.Client).WithMany(p => p.Expenses)
-            //     .HasForeignKey(d => d.ClientId)
-            //     .HasConstraintName("FK_Expenses_Client");
-            entity.HasMany(d => d.Attachments)
-                .WithOne(p => p.Expenses)
-                .HasForeignKey(e => e.ExpensesId).OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<Permission>()
-            .HasOne(p => p.ApplicationUser)
-            .WithMany(u => u.Permissions)
-            .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        OnModelCreatingPartial(modelBuilder);
+         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     
     
-    private static LambdaExpression CreateIsDeletedFilter(Type entityType)
+    private static LambdaExpression? CreateIsDeletedFilter(Type entityType)
     {
         var parameter = Expression.Parameter(entityType, "e");
-        var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
-        var comparison = Expression.MakeBinary(ExpressionType.Equal, property, Expression.Constant(false));
-        var lambda = Expression.Lambda(comparison, parameter);
-        return lambda;
+        var isDeletedProperty = Expression.Property(parameter, "IsDeleted");
+        var comparison = Expression.Equal(isDeletedProperty, Expression.Constant(false));
+        return Expression.Lambda(comparison, parameter);
     }
-    
+
+    private static LambdaExpression CreateTenantIdFilter(Type entityType, int tenantId)
+    {
+        var parameter = Expression.Parameter(entityType, "e");
+
+        // Access the TenantId property (which is nullable)
+        var tenantIdProperty = Expression.Property(parameter, "TenantId");
+
+        // Cast the nullable TenantId to a non-nullable int
+        var tenantIdConverted = Expression.Convert(tenantIdProperty, typeof(int));
+
+        // Define the value to compare with (the passed non-nullable tenantId)
+        var tenantIdConstant = Expression.Constant(tenantId, typeof(int));
+
+        // Create the comparison (TenantId == tenantId)
+        var comparison = Expression.Equal(tenantIdConverted, tenantIdConstant);
+
+        // Return the lambda expression
+        return Expression.Lambda(comparison, parameter);
+    }
+
     private static void SetTenantIdFilter<T>(ModelBuilder builder,int tenantId) where T : BaseEntity
     {
         builder.Entity<T>().HasQueryFilter(e => e.TenantId == tenantId);
     }
 
-    private int? GetCurrentTenantId()
+    private static int GetCurrentTenantId()
     {
         return TenantId;
     }
 
-    private void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : class, IBaseEntity
+    // private void SetTenantIdFilter<T>(ModelBuilder modelBuilder) where T : class, IBaseEntity
+    // {
+    //     modelBuilder.Entity<T>().HasQueryFilter(e => e.TenantId == GetCurrentTenantId());
+    // }
+    //
+    // private readonly MethodInfo? _setTenantIdFilterMethod = typeof(HrSystemDbContext)
+    //     .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Instance);
+    //
+    //  private void SetIsDeletedFilter<T>(ModelBuilder modelBuilder) where T : class, IAuditable
+    // {
+    //     modelBuilder.Entity<T>().HasQueryFilter(e => e.IsDeleted == false);
+    // }
+    //
+    // private readonly MethodInfo? _setIsDeletedFilterMethod = typeof(HrSystemDbContext)
+    //     .GetMethod(nameof(SetIsDeletedFilter), BindingFlags.NonPublic | BindingFlags.Instance);
+
+    
+
+    private static LambdaExpression? CombineFilters(LambdaExpression firstFilter, LambdaExpression secondFilter)
     {
-        modelBuilder.Entity<T>().HasQueryFilter(e => e.TenantId == GetCurrentTenantId());
+        var parameter = firstFilter.Parameters[0]; // Assuming both filters use the same parameter
+
+        // Combine the bodies of the two expressions using AndAlso (logical AND)
+        var combinedBody = Expression.AndAlso(firstFilter.Body, secondFilter.Body);
+
+        // Return a new lambda expression with the combined body
+        return Expression.Lambda(combinedBody, parameter);
     }
-
-    private readonly MethodInfo? _setTenantIdFilterMethod = typeof(HrSystemDbContext)
-        .GetMethod(nameof(SetTenantIdFilter), BindingFlags.NonPublic | BindingFlags.Instance);
-
 }
 

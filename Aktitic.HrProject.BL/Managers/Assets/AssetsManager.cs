@@ -1,6 +1,7 @@
 
 using System.Collections;
 using System.Net;
+using System.Net.Mime;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Dtos;
@@ -12,13 +13,11 @@ using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;
 
 public class AssetsManager(
-    UserUtility userUtility,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IAssetsManager
 {
@@ -40,8 +39,6 @@ public class AssetsManager(
             Value = assetsAddDto.Value,
             Description = assetsAddDto.Description,
             Warranty = assetsAddDto.Warranty,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
         };
         
         unitOfWork.Assets.Add(assets);
@@ -71,8 +68,6 @@ public class AssetsManager(
         if (assetsUpdateDto.Warranty != assets.Warranty ) assets.SerialNumber = assetsUpdateDto.SerialNumber;
 
         
-        assets.UpdatedAt = DateTime.Now;
-        assets.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.Assets.Update(assets);
         return unitOfWork.SaveChangesAsync();
@@ -83,15 +78,13 @@ public class AssetsManager(
         var assets = unitOfWork.Assets.GetById(id);
         if (assets==null) return Task.FromResult(0);
         assets.IsDeleted = true;
-        assets.DeletedAt = DateTime.Now;
-        assets.DeletedBy = userUtility.GetUserId();
         unitOfWork.Assets.Update(assets);
         return unitOfWork.SaveChangesAsync();
     }
 
-    public AssetsReadDto? Get(int id)
+    public async Task<AssetsReadDto> Get(int id)
     {
-        var assets = unitOfWork.Assets.GetById(id);
+        var assets = await unitOfWork.Assets.GetAssetById(id);
         if (assets == null) return null;
         
         return new AssetsReadDto()
@@ -111,6 +104,7 @@ public class AssetsManager(
             Value = assets.Value,
             Description = assets.Description,
             Warranty = assets.Warranty,
+            User = mapper.Map<ApplicationUser,ApplicationUserDto>(assets.User),
             CreatedAt = assets.CreatedAt,
             CreatedBy = assets.CreatedBy,
             UpdatedAt = assets.UpdatedAt,
