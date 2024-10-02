@@ -1,5 +1,53 @@
 ﻿<Project>
   <ItemGroup>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f410277-1388-4e6f-853e-3ff0f0ef5712_WhatsApp Image 2024-02-15 at 10.38.11 PM-3.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/4f410277-1388-4e6f-853e-3ff0f0ef5712_WhatsApp Image 2024-02-15 at 10.38.11 PM-3.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4f410277-1388-4e6f-853e-3ff0f0ef5712_WhatsApp Image 2024-02-15 at 10.38.11 PM-3.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\8236606d-145c-4313-bfd9-eaa3275fe8b3_Lab_1.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/8236606d-145c-4313-bfd9-eaa3275fe8b3_Lab_1.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\8236606d-145c-4313-bfd9-eaa3275fe8b3_Lab_1.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c06ef349-21ef-451f-a07e-101912351493_WhatsApp Image 2024-02-15 at 10.37.21 PM-2.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/c06ef349-21ef-451f-a07e-101912351493_WhatsApp Image 2024-02-15 at 10.37.21 PM-2.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c06ef349-21ef-451f-a07e-101912351493_WhatsApp Image 2024-02-15 at 10.37.21 PM-2.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\abdou9aeabefb-d886-4c10-b448-e17d0a1d63b5\WhatsApp Image 2024-02-15 at 10.33.21 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -399,6 +447,38 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\sayed09335dc3-91ef-4aa0-9da2-7073cf7ebe71\WhatsApp Image 2024-03-17 at 9.45.25 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\cc3a2017-b322-49bb-86ed-92a4dd4dc869\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/contacts/cc3a2017-b322-49bb-86ed-92a4dd4dc869/WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\cc3a2017-b322-49bb-86ed-92a4dd4dc869\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\e8a60a97-2a28-48ba-b49e-8467ace1ec70\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/contacts/e8a60a97-2a28-48ba-b49e-8467ace1ec70/WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\e8a60a97-2a28-48ba-b49e-8467ace1ec70\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\abdulhamid\WhatsApp Image 2024-02-15 at 10.33.21 PM-2.jpeg.png))">
       <SourceType>Package</SourceType>
@@ -1088,6 +1168,86 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\employees\sayed078f20dc-e1f7-4664-9aa9-e8011fc7796d\Notations for Traditional ERD-Page-1.png\Notations for Traditional ERD-Page-1.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\name))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/general/name</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\name))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\PracticalExam.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/general/PracticalExam.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\PracticalExam.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\Technical Tracks Catalog.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/general/Technical Tracks Catalog.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\Technical Tracks Catalog.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\جداول الفرقة الثانية 2023ترم اول--.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/general/جداول الفرقة الثانية 2023ترم اول--.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\جداول الفرقة الثانية 2023ترم اول--.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\جدول محاضرات رابعة ترم اول2023.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/general/جدول محاضرات رابعة ترم اول2023.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\general\جدول محاضرات رابعة ترم اول2023.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\name))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>
@@ -1103,6 +1263,86 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\name))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\PracticalExam.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/PracticalExam.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\PracticalExam.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\جدول محاضرات رابعة ترم اول2023.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/جدول محاضرات رابعة ترم اول2023.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\جدول محاضرات رابعة ترم اول2023.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\مبادرة رواد مصر الرقمية.pdf))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/files/مبادرة رواد مصر الرقمية.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\files\مبادرة رواد مصر الرقمية.pdf))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\resume\470bf0df-c8d6-44b6-9b12-71c0c6b866b2\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/resume/470bf0df-c8d6-44b6-9b12-71c0c6b866b2/WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\resume\470bf0df-c8d6-44b6-9b12-71c0c6b866b2\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\resume\9c8ddfe9-9a22-4ce6-904b-30c8c10309f9\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/resume/9c8ddfe9-9a22-4ce6-904b-30c8c10309f9/WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\resume\9c8ddfe9-9a22-4ce6-904b-30c8c10309f9\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid11614d920-169e-45d2-93de-e4d9b65b8e6f\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
       <SourceType>Package</SourceType>
@@ -1263,6 +1503,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid223204583c-83d0-45d5-be2f-346d0dfacfd9\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid22eb5cd85d-a666-4719-ac41-2135cb1e2dac\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/users/abdulhamid22eb5cd85d-a666-4719-ac41-2135cb1e2dac/WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid22eb5cd85d-a666-4719-ac41-2135cb1e2dac\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\users\abdulhamid8f842921-2af6-4779-9c17-9c4514d34ceb\WhatsApp Image 2024-02-15 at 10.35.58 PM.jpeg))">
       <SourceType>Package</SourceType>

@@ -1,7 +1,6 @@
 ﻿using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 namespace Aktitic.HrProject.BL;
 
@@ -21,6 +20,7 @@ public class AssetsReadDto
     public string? Description { get; set; }
     public decimal? Warranty { get; set; }
     public required int UserId { get; set; }
+    public ApplicationUserDto? User { get; set; }
     public required string Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }

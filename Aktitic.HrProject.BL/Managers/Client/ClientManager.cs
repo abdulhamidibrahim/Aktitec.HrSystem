@@ -80,7 +80,7 @@ public class ClientManager(
         // Deserialize permissions
         var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientUpdateDto.Permissions!);
 
-        // Update client properties
+        // LogNote client properties
         client.FirstName = clientUpdateDto.FirstName;
         client.Phone = clientUpdateDto.Mobile;
         if (clientUpdateDto.Email != null)
@@ -99,7 +99,7 @@ public class ClientManager(
         if (clientUpdateDto.UserName != null)
             client.UserName = clientUpdateDto.UserName;
         
-        // Update permissions
+        // LogNote permissions
         if (permissions != null)
         {
             // Clear existing permissions
@@ -118,7 +118,7 @@ public class ClientManager(
                 unitOfWork.Permission.AddRange(permissionEntities);
         }
 
-         // Update image
+         // LogNote image
     if (clientUpdateDto?.Image != null)
     {
         client.FileExtension = clientUpdateDto.Image.ContentType;

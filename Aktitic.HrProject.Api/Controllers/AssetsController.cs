@@ -17,9 +17,9 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public ActionResult<AssetsReadDto?> Get(int id)
+    public async Task<ActionResult<AssetsReadDto?>> Get(int id)
     {
-        var assets = assetsManager.Get(id);
+        var assets =await assetsManager.Get(id);
         if (assets == null) return NotFound("Assets not found");
         return Ok(assets);
     }

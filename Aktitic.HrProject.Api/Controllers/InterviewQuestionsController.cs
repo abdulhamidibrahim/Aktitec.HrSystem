@@ -25,7 +25,7 @@ public class InterviewQuestionsController(IInterviewQuestionsManager assetsManag
     }
     
     [HttpPost("create")]
-    public ActionResult Add([FromBody] InterviewQuestionsAddDto assetsAddDto)
+    public ActionResult Add([FromForm] InterviewQuestionsAddDto assetsAddDto)
     {
         var result =assetsManager.Add(assetsAddDto);
         if (result.Result == 0) return BadRequest("Failed to add");
@@ -33,7 +33,7 @@ public class InterviewQuestionsController(IInterviewQuestionsManager assetsManag
     }
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromBody] InterviewQuestionsUpdateDto assetsUpdateDto,int id)
+    public ActionResult Update([FromForm] InterviewQuestionsUpdateDto assetsUpdateDto,int id)
     {
         var result =assetsManager.Update(assetsUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");

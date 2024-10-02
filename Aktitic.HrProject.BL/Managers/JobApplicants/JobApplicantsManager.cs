@@ -3,6 +3,7 @@ using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.UnitOfWork;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using File = System.IO.File;
@@ -13,6 +14,7 @@ namespace Aktitic.HrTaskList.BL;
 public class JobApplicantsManager(
     UserUtility userUtility,
     IWebHostEnvironment webHostEnvironment,
+    IMapper mapper,
     IUnitOfWork unitOfWork) : IJobApplicantsManager
 {
     public Task<int> Add(JobApplicantsAddDto jobApplicantsAddDto)
@@ -20,29 +22,35 @@ public class JobApplicantsManager(
         var jobApplicants = new JobApplicant
         {
             Name = jobApplicantsAddDto.Name,
+            JobId = jobApplicantsAddDto.JobId,
             Email = jobApplicantsAddDto.Email,
             Phone = jobApplicantsAddDto.Phone,
             Status = jobApplicantsAddDto.Status,
             Date = jobApplicantsAddDto.Date,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserId(),
+            // CreatedAt = DateTime.Now,
+            // CreatedBy = userUtility.GetUserId(),
         };
 
-        if (jobApplicantsAddDto.Resume is not null)
-        {
-            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads","resume", jobApplicantsAddDto.Resume.FileName);
-            if (!Directory.Exists(path))
+    
+            if (jobApplicantsAddDto.Resume is not null)
             {
-                Directory.CreateDirectory(path);
-            }
+                
+                var unique = Guid.NewGuid();
+                
+                var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads","resume", unique.ToString());
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
 
-            using var stream = new FileStream(path, FileMode.Create);
-            jobApplicantsAddDto.Resume.CopyTo(stream);
+                using var stream = new FileStream(Path.Combine(path,jobApplicantsAddDto.Resume.FileName), FileMode.Create);
+                jobApplicantsAddDto.Resume.CopyTo(stream);
             
-            jobApplicants.Resume = Path.Combine(webHostEnvironment.WebRootPath, "uploads","resume", jobApplicantsAddDto.Resume.FileName);
-        }
+                jobApplicants.Resume = Path.Combine("uploads","resume", jobApplicantsAddDto.Resume.FileName);
+            }
+            
+            unitOfWork.JobApplicants.Add(jobApplicants);
         
-        unitOfWork.JobApplicants.Add(jobApplicants);
         return unitOfWork.SaveChangesAsync();
     }
 
@@ -92,8 +100,8 @@ public class JobApplicantsManager(
         jobApplicants.Resume = Path.Combine(unique, jobApplicantsUpdateDto.Resume.FileName);
         
         
-        jobApplicants.UpdatedAt = DateTime.Now;
-        jobApplicants.UpdatedBy = userUtility.GetUserId();
+        // jobApplicants.UpdatedAt = DateTime.Now;
+        // jobApplicants.UpdatedBy = userUtility.GetUserId();
         
         unitOfWork.JobApplicants.Update(jobApplicants);
         return unitOfWork.SaveChangesAsync();
@@ -104,8 +112,8 @@ public class JobApplicantsManager(
         var jobApplicants = unitOfWork.JobApplicants.GetById(id);
         if (jobApplicants==null) return Task.FromResult(0);
         jobApplicants.IsDeleted = true;
-        jobApplicants.DeletedAt = DateTime.Now;
-        jobApplicants.DeletedBy = userUtility.GetUserId();
+        // jobApplicants.DeletedAt = DateTime.Now;
+        // jobApplicants.DeletedBy = userUtility.GetUserId();
         unitOfWork.JobApplicants.Update(jobApplicants);
         return unitOfWork.SaveChangesAsync();
     }
@@ -119,6 +127,7 @@ public class JobApplicantsManager(
         {
             Id = jobApplicants.Id,
             Name = jobApplicants.Name,
+            JobId = jobApplicants.JobId,
             Email = jobApplicants.Email,
             Phone = jobApplicants.Phone,
             Status = jobApplicants.Status,
@@ -134,19 +143,20 @@ public class JobApplicantsManager(
     public async Task<List<JobApplicantsReadDto>> GetAll()
     {
         var jobApplicants = await unitOfWork.JobApplicants.GetAll();
-        return jobApplicants.Select(jobApplicants => new JobApplicantsReadDto()
+        return jobApplicants.Select(applicant => new JobApplicantsReadDto()
         {
-            Id = jobApplicants.Id,
-            Name = jobApplicants.Name,
-            Email = jobApplicants.Email,
-            Phone = jobApplicants.Phone,
-            Status = jobApplicants.Status,
-            Date = jobApplicants.Date,
-            Resume = jobApplicants.Resume,
-            CreatedAt = jobApplicants.CreatedAt,
-            CreatedBy = jobApplicants.CreatedBy,
-            UpdatedAt = jobApplicants.UpdatedAt,
-            UpdatedBy = jobApplicants.UpdatedBy,    
+            Id = applicant.Id,
+            Name = applicant.Name,
+            JobId = applicant.JobId,
+            Email = applicant.Email,
+            Phone = applicant.Phone,
+            Status = applicant.Status,
+            Date = applicant.Date,
+            Resume = applicant.Resume,
+            CreatedAt = applicant.CreatedAt,
+            CreatedBy = applicant.CreatedBy,
+            UpdatedAt = applicant.UpdatedAt,
+            UpdatedBy = applicant.UpdatedBy,    
             
         }).ToList();
     }
@@ -155,7 +165,7 @@ public class JobApplicantsManager(
 
     public async Task<FilteredJobApplicantsDto> GetFilteredJobApplicantsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var jobApplicantsList = await unitOfWork.JobApplicants.GetAll();
+        var jobApplicantsList = await unitOfWork.JobApplicants.GetJobApplicants();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -176,6 +186,8 @@ public class JobApplicantsManager(
                 {
                     Id = jobApplicants.Id,
                     Name = jobApplicants.Name,
+                    JobId = jobApplicants.JobId,
+                    Job = mapper.Map<Job,JobsDto>(jobApplicants.Job),
                     Email = jobApplicants.Email,
                     Phone = jobApplicants.Phone,
                     Status = jobApplicants.Status,
@@ -227,6 +239,8 @@ public class JobApplicantsManager(
                     Id = jobApplicants.Id,
                     Name = jobApplicants.Name,
                     Email = jobApplicants.Email,
+                    JobId = jobApplicants.JobId,
+                    Job = mapper.Map<Job,JobsDto>(jobApplicants.Job),
                     Phone = jobApplicants.Phone,
                     Status = jobApplicants.Status,
                     Date = jobApplicants.Date,
@@ -283,7 +297,7 @@ public class JobApplicantsManager(
         
         if(column!=null)
         {
-            IEnumerable<JobApplicant> enumerable = unitOfWork.JobApplicants.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            IEnumerable<JobApplicant> enumerable = unitOfWork.JobApplicants.GetJobApplicants().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var jobApplicants = enumerable.Select(jobApplicants => new JobApplicantsDto()
             {
                 Id = jobApplicants.Id,
@@ -291,6 +305,8 @@ public class JobApplicantsManager(
                 Email = jobApplicants.Email,
                 Phone = jobApplicants.Phone,
                 Status = jobApplicants.Status,
+                JobId = jobApplicants.JobId,
+                Job = mapper.Map<Job,JobsDto>(jobApplicants.Job),
                 Date = jobApplicants.Date,
                 Resume = jobApplicants.Resume,
                 CreatedAt = jobApplicants.CreatedAt,
@@ -308,6 +324,8 @@ public class JobApplicantsManager(
             Name = jobApplicants.Name,
             Email = jobApplicants.Email,
             Phone = jobApplicants.Phone,
+            JobId = jobApplicants.JobId,
+            Job = mapper.Map<Job,JobsDto>(jobApplicants.Job),
             Status = jobApplicants.Status,
             Date = jobApplicants.Date,
             Resume = jobApplicants.Resume,
@@ -319,4 +337,8 @@ public class JobApplicantsManager(
         return Task.FromResult(jobApplicantss.ToList());
     }
 
+    public Task<object> GetTotalCount()
+    {
+        return unitOfWork.JobApplicants.GetTotalCount();
+    }
 }

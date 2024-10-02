@@ -33,7 +33,7 @@ public class ContactsManager:IContactsManager
             Role = contactAddDto.Role,
             Type = contactAddDto.Type,
             Status = contactAddDto.Status,
-            CreatedAt = DateTime.Now,
+            // CreatedAt = DateTime.Now,
         };
 
         var unique = Guid.NewGuid();
@@ -49,7 +49,7 @@ public class ContactsManager:IContactsManager
        
         contactAddDto.Image.CopyTo(fileStream);
         
-        contact.Image = "uploads/contacts"+ unique + "/" + contactAddDto.Image.FileName;
+        contact.Image = "uploads/contacts/"+ unique + "/" + contactAddDto.Image.FileName;
         
         _unitOfWork.Contacts.Add(contact);
         return _unitOfWork.SaveChangesAsync();
@@ -67,25 +67,28 @@ public class ContactsManager:IContactsManager
         if(contactUpdateDto.Number != null) contact.Number = contactUpdateDto.Number;
         if(contactUpdateDto.Role != null) contact.Role = contactUpdateDto.Role;
         if(contactUpdateDto.Type != null) contact.Type = contactUpdateDto.Type;
-        if(contactUpdateDto.Status != null) contact.Status = contactUpdateDto.Status;
+        if(contactUpdateDto.Status != contact.Status) contact.Status = contactUpdateDto.Status;
        
         //update image
         if (contactUpdateDto.Image != null)
         {
             // Construct the path for the current image
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, contact.Image);
-
-            // Delete the old image file if it exists
-            if (File.Exists(oldImagePath))
+            if (contact.Image != null)
             {
-                try
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, contact.Image);
+
+                // Delete the old image file if it exists
+                if (File.Exists(oldImagePath))
                 {
-                    File.Delete(oldImagePath);
-                }
-                catch (Exception ex)
-                {
-                    // Log the exception (you might want to use a logging framework)
-                    Console.WriteLine($"Failed to delete old image: {ex.Message}");
+                    try
+                    {
+                        File.Delete(oldImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception (you might want to use a logging framework)
+                        Console.WriteLine($"Failed to delete old image: {ex.Message}");
+                    }
                 }
             }
 
@@ -93,7 +96,7 @@ public class ContactsManager:IContactsManager
             var unique = Path.GetDirectoryName(contact.Image);
             var path = Path.Combine(_webHostEnvironment.WebRootPath, unique);
 
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(path))    
             {
                 Directory.CreateDirectory(path);
             }
@@ -106,7 +109,7 @@ public class ContactsManager:IContactsManager
             contact.Image = Path.Combine(unique, contactUpdateDto.Image.FileName);
         }
 
-        contact.UpdatedAt = DateTime.Now;
+        // contact.UpdatedAt = DateTime.Now;
         _unitOfWork.Contacts.Update(contact);
         return _unitOfWork.SaveChangesAsync();
     }
@@ -120,7 +123,7 @@ public class ContactsManager:IContactsManager
             if (contact == null) return Task.FromResult(0);
 
             contact.IsDeleted = true;
-            contact.DeletedAt = DateTime.Now;
+            // contact.DeletedAt = DateTime.Now;
 
             _unitOfWork.Contacts.Update(contact);
         

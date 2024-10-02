@@ -96,7 +96,6 @@ public class ApplicationUserManager(
             Date = applicationUserAddDto.Date,
             UserName = applicationUserAddDto.UserName,
             EmailConfirmed = true,
-            CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserName() ?? string.Empty,
             
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
@@ -141,7 +140,7 @@ public class ApplicationUserManager(
         var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserUpdateDto.Permissions!);
         
         
-        // Update applicationUser properties
+        // LogNote applicationUser properties
         applicationUser.FirstName = applicationUserUpdateDto.FirstName;
         
         applicationUser.PhoneNumber = applicationUserUpdateDto.Phone;
@@ -177,7 +176,7 @@ public class ApplicationUserManager(
             }
         }        
         
-        if (applicationUserUpdateDto.Date != null)
+        if (applicationUserUpdateDto.Date != applicationUser.Date)
             applicationUser.Date = applicationUserUpdateDto.Date;
         
         if (!applicationUserUpdateDto.UserName.IsNullOrEmpty())
@@ -186,7 +185,7 @@ public class ApplicationUserManager(
         applicationUser.UpdatedAt = DateTime.Now;
         applicationUser.UpdatedBy = userUtility.GetUserName();
         
-        // Update permissions
+        // LogNote permissions
         if (permissions != null)
         {
             // Clear existing permissions
@@ -204,7 +203,7 @@ public class ApplicationUserManager(
                 unitOfWork.Permission.AddRange(permissionEntities);
         }
 
-         // Update image
+         // LogNote image
     if (applicationUserUpdateDto?.Image != null)
     {
         
@@ -237,8 +236,6 @@ public class ApplicationUserManager(
         if (applicationUser == null) return Task.FromResult(0);
         
         applicationUser.IsDeleted = true;
-
-        applicationUser.DeletedAt = DateTime.Now;
         
         unitOfWork.ApplicationUser.Update(applicationUser);
         

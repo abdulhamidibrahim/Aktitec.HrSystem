@@ -9,6 +9,8 @@ public class JobApplicantsDto
     public required DateTime Date { get; set; }
     public string? Status { get; set; }
     public string? Resume { get; set; }
+    public required int JobId { get; set; }
+    public required JobsDto Job { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
     public DateTime? UpdatedAt { get; set; }

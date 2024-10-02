@@ -10,7 +10,7 @@ public class FileUsersRepo(HrSystemDbContext context) : GenericRepo<FileUsers>(c
     {
         if (context.FileUsers != null) 
             return await context.FileUsers
-                .Where(x => x.FileId == fileId)
+                .Where(x => x.DocumentId == fileId)
                 .ToListAsync();
         return new List<FileUsers>();
     }

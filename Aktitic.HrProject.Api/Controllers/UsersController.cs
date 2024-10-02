@@ -72,7 +72,7 @@ public class UsersController(
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(nameof(Company),user.TenantId.ToString() ?? string.Empty)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(30),
+            // Expires = DateTime.UtcNow.AddHours(1),
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"],
             SigningCredentials =

@@ -1,6 +1,5 @@
 using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.Models;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 namespace Aktitic.HrProject.DAL.Pagination.Client;
 

@@ -9,7 +9,6 @@ using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using File = Aktitic.HrProject.DAL.Models.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;

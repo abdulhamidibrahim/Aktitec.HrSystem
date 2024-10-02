@@ -14,7 +14,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Aktitic.HrTaskList.BL;
 
 public class InterviewQuestionsManager(
-    UserUtility userUtility,
+    // UserUtility userUtility,
     IMapper mapper,
     IWebHostEnvironment webHostEnvironment,
     IUnitOfWork unitOfWork) : IInterviewQuestionsManager
@@ -34,8 +34,8 @@ public class InterviewQuestionsManager(
             CodeSnippets = interviewQuestionsAddDto.CodeSnippets,
             AnswerExplanation = interviewQuestionsAddDto.AnswerExplanation,
             VideoLink = interviewQuestionsAddDto.VideoLink,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName(),
+            // CreatedAt = DateTime.Now,
+            // CreatedBy = userUtility.GetUserName(),
         };
 
         if (interviewQuestionsAddDto.Image is not null)
@@ -120,8 +120,8 @@ public class InterviewQuestionsManager(
             interviewQuestions.Image = Path.Combine(unique, interviewQuestionsUpdateDto.Image.FileName);
         }
         
-        interviewQuestions.UpdatedAt = DateTime.Now;
-        interviewQuestions.UpdatedBy = userUtility.GetUserName();
+        // interviewQuestions.UpdatedAt = DateTime.Now;
+        // interviewQuestions.UpdatedBy = userUtility.GetUserName();
         
         unitOfWork.InterviewQuestions.Update(interviewQuestions);
         return unitOfWork.SaveChangesAsync();
@@ -132,8 +132,8 @@ public class InterviewQuestionsManager(
         var interviewQuestions = unitOfWork.InterviewQuestions.GetById(id);
         if (interviewQuestions==null) return Task.FromResult(0);
         interviewQuestions.IsDeleted = true;
-        interviewQuestions.DeletedAt = DateTime.Now;
-        interviewQuestions.DeletedBy = userUtility.GetUserName();
+        // interviewQuestions.DeletedAt = DateTime.Now;
+        // interviewQuestions.DeletedBy = userUtility.GetUserName();
         unitOfWork.InterviewQuestions.Update(interviewQuestions);
         return unitOfWork.SaveChangesAsync();
     }

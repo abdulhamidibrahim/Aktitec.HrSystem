@@ -26,7 +26,7 @@ public class NotificationManager(
             Content = notificationAddDto.Content,
             IsAll = notificationAddDto.IsAll,
             Priority = notificationAddDto.Priority,
-            CreatedBy = userUtility.GetUserId(),
+            CreatedBy = userUtility.GetUserName(),
             CreatedAt = DateTime.Now,
         };
 

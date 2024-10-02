@@ -39,7 +39,6 @@ public class AttendanceManager:IAttendanceManager
            PunchOut = attendanceAddDto.PunchOut,
         };
         
-        attendance.CreatedAt = DateTime.Now;
          _unitOfWork.Attendance.Add(attendance);
          return _unitOfWork.SaveChangesAsync();
     }
@@ -57,7 +56,6 @@ public class AttendanceManager:IAttendanceManager
         if(attendanceUpdateDto.PunchIn!=null) attendance.PunchIn = attendanceUpdateDto.PunchIn;
         if(attendanceUpdateDto.PunchOut!=null) attendance.PunchOut = attendanceUpdateDto.PunchOut;
         
-        attendance.UpdatedAt = DateTime.Now;
         _unitOfWork.Attendance.Update(attendance);
         return _unitOfWork.SaveChangesAsync();
     }
@@ -71,8 +69,6 @@ public class AttendanceManager:IAttendanceManager
         if (attendance == null) return Task.FromResult(0);
         
         attendance.IsDeleted = true;
-        
-        attendance.DeletedAt=DateTime.Now;
         
         _unitOfWork.Attendance.Update(attendance);
         

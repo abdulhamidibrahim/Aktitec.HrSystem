@@ -99,12 +99,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x86",
-              "version": "[8.0.0, 8.0.0]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -114,11 +108,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/PortableRuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "win-x86": {
-          "#import": []
         }
       }
     },
@@ -171,6 +160,10 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.2, )"
+            },
+            "Microsoft.AspNetCore.JsonPatch": {
+              "target": "Package",
+              "version": "[8.0.6, )"
             },
             "Microsoft.AspNetCore.SignalR.Common": {
               "target": "Package",

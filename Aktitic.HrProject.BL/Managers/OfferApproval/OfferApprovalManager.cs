@@ -11,7 +11,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Aktitic.HrTaskList.BL;
 
 public class OfferApprovalsManager(
-    UserUtility userUtility,
+    // UserUtility userUtility,
     IMapper mapper,
     IUnitOfWork unitOfWork) : IOfferApprovalsManager
 {
@@ -25,8 +25,8 @@ public class OfferApprovalsManager(
             Pay = offerApprovalsAddDto.Pay,
             AnnualIp = offerApprovalsAddDto.AnnualIp,
             LongTermIp = offerApprovalsAddDto.LongTermIp,
-            CreatedAt = DateTime.Now,
-            CreatedBy = userUtility.GetUserName(),
+            // CreatedAt = DateTime.Now,
+            // CreatedBy = userUtility.GetUserName(),
         };
         
         unitOfWork.OfferApprovals.Add(offerApprovals);
@@ -51,8 +51,8 @@ public class OfferApprovalsManager(
             offerApprovals.Status = offerApprovalsUpdateDto.Status;
       
         
-        offerApprovals.UpdatedAt = DateTime.Now;
-        offerApprovals.UpdatedBy = userUtility.GetUserName();
+        // offerApprovals.UpdatedAt = DateTime.Now;
+        // offerApprovals.UpdatedBy = userUtility.GetUserName();
         
         unitOfWork.OfferApprovals.Update(offerApprovals);
         return unitOfWork.SaveChangesAsync();
@@ -63,8 +63,8 @@ public class OfferApprovalsManager(
         var offerApprovals = unitOfWork.OfferApprovals.GetById(id);
         if (offerApprovals==null) return Task.FromResult(0);
         offerApprovals.IsDeleted = true;
-        offerApprovals.DeletedAt = DateTime.Now;
-        offerApprovals.DeletedBy = userUtility.GetUserName();
+        // offerApprovals.DeletedAt = DateTime.Now;
+        // offerApprovals.DeletedBy = userUtility.GetUserName();
         unitOfWork.OfferApprovals.Update(offerApprovals);
         return unitOfWork.SaveChangesAsync();
     }

@@ -1,11 +1,7 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Dtos.Employee;
-using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using FileUploadingWebAPI.Filter;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Task = System.Threading.Tasks.Task;
 
@@ -13,31 +9,21 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class EmployeesController: ControllerBase
+public class EmployeesController(
+    IEmployeeManager employeeManager)
+    : ControllerBase
 {
-    private readonly IEmployeeManager _employeeManager;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    // private readonly UserManager<Employee> _userManager;
 
-    public EmployeesController(
-        IEmployeeManager employeeManager, 
-        IWebHostEnvironment webHostEnvironment)
-    {
-        _employeeManager = employeeManager;
-        _webHostEnvironment = webHostEnvironment;
-        // _userManager = userManager;
-    }
-    
     [HttpGet]
     public async Task<List<EmployeeReadDto>> GetAll()
     {
-        return await _employeeManager.GetAll();
+        return await employeeManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<Task<EmployeeReadDto?>> Get(int id)
     {
-        var result = _employeeManager.Get(id);
+        var result = employeeManager.Get(id);
         if (result == null) return Task.FromResult<EmployeeReadDto?>(null);
         var hostUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}";
         result.ImgUrl = hostUrl + result.ImgUrl; 
@@ -47,14 +33,22 @@ public class EmployeesController: ControllerBase
     [HttpGet("getEmployees")]
     public async Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit)
     {
-        return await _employeeManager.GetEmployeesAsync(term, sort, page, limit);
+        return await employeeManager.GetEmployeesAsync(term, sort, page, limit);
     }
+    
+    [HttpPost("AddEmployees")]
+    public async Task<ActionResult> AddEmployeesAsync(EmployeesAddDto employeeAddDtos)
+    {
+        var result = await employeeManager.AddEmployeesAsync(employeeAddDtos);
+        if (result == 0) return BadRequest("Failed to add employees");    
+        return Ok("Employees Added ");
+    }        
     
     [HttpGet("getFilteredEmployees")]
     public Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _employeeManager.GetFilteredEmployeesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return employeeManager.GetFilteredEmployeesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     // [ValidateAntiForgeryToken]
@@ -65,7 +59,7 @@ public class EmployeesController: ControllerBase
     public  ActionResult Create([FromForm] EmployeeAddDto employeeAddDto, IFormFile? image)
     {
         
-        var result =_employeeManager.Add(employeeAddDto,image);
+        var result =employeeManager.Add(employeeAddDto,image);
         if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Account Created Successfully ");
         // }
@@ -79,7 +73,7 @@ public class EmployeesController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image)
     {
-        var result= _employeeManager.Update(employeeUpdateDto,id,image);
+        var result= employeeManager.Update(employeeUpdateDto,id,image);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Account updated successfully !");
     }
@@ -87,7 +81,7 @@ public class EmployeesController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result =_employeeManager.Delete(id);
+        var result =employeeManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("deleted successfully");
     }
@@ -95,13 +89,13 @@ public class EmployeesController: ControllerBase
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<EmployeeDto>> GlobalSearch(string search,string? column)
     {
-        return await _employeeManager.GlobalSearch(search,column);
+        return await employeeManager.GlobalSearch(search,column);
     }
 
     [HttpGet("getManagerTree")]
     public async Task<List<ManagerTree>?> GetManagerTree()
     {
-        return await _employeeManager.GetManagersTreeAsync();
+        return await employeeManager.GetManagersTreeAsync();
     }
 
     #region commented
@@ -111,7 +105,7 @@ public class EmployeesController: ControllerBase
     // [ImageValidator]
     // public IActionResult UploadImage(IFormFile image)
     // {
-    //     var file = new File()
+    //     var file = new Documents()
     //     {
     //         FileName = image.FileName,
     //         Extension = image.ContentType,
@@ -145,7 +139,7 @@ public class EmployeesController: ControllerBase
     //     fileStream.CopyToAsync(fileStream);
     //
     //     
-    //     _fileRepo.Update(fileModel.Result);
+    //     _fileRepo.LogNote(fileModel.Result);
     //
     //     return Ok("Image Updated Successfully");
     // }
@@ -173,7 +167,7 @@ public class EmployeesController: ControllerBase
     //     memoryStream.Position = 0;
     //
     //     if (uploadedFile.Result.Extension != null)
-    //         return File(memoryStream, uploadedFile.Result.Extension, uploadedFile.Result.FileName);
+    //         return Documents(memoryStream, uploadedFile.Result.Extension, uploadedFile.Result.FileName);
     //     return BadRequest("Image Not Found");
     // }
     

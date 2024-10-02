@@ -1,6 +1,7 @@
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.DAL.Repos;
 
@@ -48,6 +49,7 @@ public class JobsRepo :GenericRepo<Job>,IJobsRepo
                         x.SalaryFrom!.ToString().Contains(searchKey) ||
                         x.SalaryTo!.ToString().Contains(searchKey) ||
                         x.Status!.ToLower().Contains(searchKey) ||
+                        x.Category!.ToLower().Contains(searchKey) ||
                         x.Description!.ToLower().Contains(searchKey));
                        
                         
@@ -59,8 +61,28 @@ public class JobsRepo :GenericRepo<Job>,IJobsRepo
         return _context.Jobs!.AsQueryable();
     }
 
-    public IEnumerable<Job> GetAllJobs()
+    public async Task<IEnumerable<Job>> GetAllJobs()
     {
-        return _context.Jobs!.Include(x => x.Department).ToList();
+        return await _context.Jobs!
+            .Include(x => x.Department)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Job>> GetByCategory(string? category)
+    {
+        return await _context.Jobs!
+            .Where(x => x.Category.Equals(category))
+            .Include(x => x.Department)
+            .ToListAsync();
+    }
+
+    public async Task<object> GetTotalCount()
+    {
+        var jobs = _context.Jobs!.AsQueryable();
+        var offered = jobs.Count(x => x.Category == "Offered"||x.Category == "offered");
+        var applied = jobs.Count(x => x.Category == "Applied"||x.Category == "applied");
+        var saved = jobs.Count(x => x.Category == "Saved"||x.Category == "saved");
+        var visited = jobs.Count(x => x.Category == "Visited"||x.Category == "visited");
+        return await Task.FromResult(new { offered, applied, saved, visited });
     }
 }

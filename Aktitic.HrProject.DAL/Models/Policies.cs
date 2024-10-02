@@ -12,8 +12,8 @@ public class Policies : BaseEntity
     public string? FileName { get; set; }
     public byte[]? FileContent { get; set; }
     
-    // public int? FileId { get; set; }
-    // public File? File { get; set; }
+    // public int? DocumentId { get; set; }
+    // public Documents? Documents { get; set; }
     
 }
 

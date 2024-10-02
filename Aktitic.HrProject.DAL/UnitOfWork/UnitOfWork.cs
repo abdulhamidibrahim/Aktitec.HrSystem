@@ -26,7 +26,8 @@ public class UnitOfWork : IUnitOfWork
     private CompanyRepo _companyRepo;
     private DesignationRepo _designationRepo;
     private EmployeeProjectsRepo _employeeProjectsRepo;
-    private FileRepo _fileRepo;
+    private DocumentRepo _documentRepo;
+    private FilesRepo _filesRepo;
     private FileUsersRepo _fileUsersRepo;
     private HolidayRepo _holidayRepo;
     private LeavesRepo _leavesRepo;
@@ -87,6 +88,10 @@ public class UnitOfWork : IUnitOfWork
     private ScheduleTimingsRepo _scheduleTimingsRepo;
     private AptitudeResultsRepo _aptitudeResultsRepo;
     private JobApplicantsRepo _jobApplicantsRepo;
+    private LogsRepo _logsRepo;
+    private EmailsRepo _emailsRepo;
+    private DocumentFilesRepo _documentFilesRepo;
+    private RevisorsRepo _revisorsRepo;
 
 
     // complete all other repos
@@ -118,7 +123,8 @@ public class UnitOfWork : IUnitOfWork
     
     public IEmployeeProjectsRepo EmployeeProjects => _employeeProjectsRepo ??= new EmployeeProjectsRepo(_context);
     
-    public IFileRepo File => _fileRepo ??= new FileRepo(_context);
+    public IDocumentRepo Documents => _documentRepo ??= new DocumentRepo(_context);
+    public IFilesRepo Files => _filesRepo ??= new FilesRepo(_context);
     public IFileUsersRepo FileUsers => _fileUsersRepo ??= new FileUsersRepo(_context);
     
     public IHolidayRepo Holiday => _holidayRepo ??= new HolidayRepo(_context);
@@ -199,13 +205,17 @@ public class UnitOfWork : IUnitOfWork
     public IScheduleTimingsRepo ScheduleTimings => _scheduleTimingsRepo ??= new ScheduleTimingsRepo(_context);
     public IAptitudeResultsRepo AptitudeResults => _aptitudeResultsRepo ??= new AptitudeResultsRepo(_context);
     public IJobApplicantsRepo JobApplicants => _jobApplicantsRepo ??= new JobApplicantsRepo(_context);
-                
-    
+    public ILogsRepo Logs => _logsRepo ??= new LogsRepo(_context);
+    public IEmailsRepo Emails => _emailsRepo ??= new EmailsRepo(_context);
+    public IDocumentFilesRepo DocumentFiles => _documentFilesRepo ??= new DocumentFilesRepo(_context);
+    public IRevisorsRepo Revisors => _revisorsRepo ??= new RevisorsRepo(_context);
+
 
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();
     }
+    
     
     public void Dispose()
     {

@@ -16,12 +16,13 @@ public class Job : BaseEntity
     public DateTime? StartDate { get; set; }
     public DateTime ExpiredDate { get; set; }
     public string? Description { get; set; }
-    
+    public string? Category { get; set; }
     public Department Department { get; set; }
     public ICollection<Shortlist>? Shortlists { get; set; }
     public ICollection<OfferApproval>? OfferApprovals { get; set; }
     public ICollection<ScheduleTiming>? ScheduleTimings { get; set; }
     public ICollection<AptitudeResult>? AptitudeResults { get; set; }
+    public ICollection<JobApplicant>? JobApplicants { get; set; }
 }
 
 

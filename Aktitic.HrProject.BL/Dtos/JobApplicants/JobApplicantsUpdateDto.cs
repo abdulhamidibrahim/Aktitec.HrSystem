@@ -2,12 +2,12 @@
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Http;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 namespace Aktitic.HrProject.BL;
 
 public class JobApplicantsUpdateDto
 {
+    public required int JobId { get; set; }
     public required string Name { get; set; }
     public required string Email { get; set; }
     public required string Phone { get; set; }

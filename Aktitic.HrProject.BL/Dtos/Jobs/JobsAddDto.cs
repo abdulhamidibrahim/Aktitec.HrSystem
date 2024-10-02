@@ -2,7 +2,6 @@
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Microsoft.AspNetCore.Http;
-using File = Aktitic.HrProject.DAL.Models.File;
 
 
 namespace Aktitic.HrProject.BL;
@@ -15,6 +14,7 @@ public class JobsAddDto
     public string? NoOfVacancies { get; set; }
     public int Age { get; set; }
     public string? Experience { get; set; }
+    public string? Category { get; set; }
     public decimal SalaryFrom { get; set; }
     public decimal SalaryTo { get; set; }
     public required string JobType { get; set; }

@@ -35,7 +35,7 @@ public class Project : BaseEntity
     // public List<Employee> Employees { get; set; } = new();
     public List<EmployeeProjects>? EmployeesProject { get; set; }
     public List<Department> Departments { get; set; } = new();
-    public ICollection<File> Files { get; set; }   = new List<File>();
+    public ICollection<Document> Files { get; set; }   = new List<Document>();
     
     [ForeignKey(nameof(TaskBoard))]
     public int? TaskBoardId { get; set; }

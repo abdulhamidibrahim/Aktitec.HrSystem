@@ -125,7 +125,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
     
         if (company == null) return 0;
         var companyDto = companyUpdateDto.Company;
-        // Update company properties
+        // LogNote company properties
         company.CompanyName = companyDto.CompanyName;
         company.Email = companyDto.Email;
         company.Phone = companyDto.Phone;
@@ -140,10 +140,10 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         company.UpdatedAt = DateTime.Now;
         company.UpdatedBy = userUtility.GetUserId();
 
-        // Update company in the repository
+        // LogNote company in the repository
         unitOfWork.Company.Update(company);
 
-        // Update the manager if needed
+        // LogNote the manager if needed
         var managerDto = companyUpdateDto.Manager;
         if (managerDto is not null)
         {

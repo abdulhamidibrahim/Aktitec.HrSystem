@@ -56,7 +56,7 @@ public Task<int> Update(LeaveSettingUpdateDto leaveSettingUpdateDto, int id)
 
         if (leaveSetting != null)
         {
-            // Update leave setting properties based on DTO
+            // LogNote leave setting properties based on DTO
             if (leaveSettingUpdateDto?.Annual != null)
             {
                 leaveSetting.AnnualDays = leaveSettingUpdateDto.Annual.Days;

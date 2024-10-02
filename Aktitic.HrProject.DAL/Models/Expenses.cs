@@ -13,5 +13,5 @@ public class Expenses : BaseEntity
     public float? Amount { get; set; }
     public string? PaidBy { get; set; }
     public string? Status { get; set; }
-    public ICollection<File>? Attachments { get; set; }
+    public ICollection<Document>? Attachments { get; set; }
 }

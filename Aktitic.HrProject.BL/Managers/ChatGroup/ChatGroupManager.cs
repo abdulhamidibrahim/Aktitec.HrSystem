@@ -143,7 +143,7 @@ public class ChatGroupManager(
             Id = x.Id,
             Text = x.Text,
             SenderId = x.SenderId,
-            // FilePath = x.FilePath,
+            // Documents = x.Documents,
             Date = x.Date,
             SenderName = x.Sender?.FullName,
             SenderPhotoUrl = x.Sender?.Image, 

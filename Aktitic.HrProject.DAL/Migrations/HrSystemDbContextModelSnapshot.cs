@@ -22,6 +22,29 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppPages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppPages", (string)null);
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
                 {
                     b.Property<int>("Id")
@@ -365,6 +388,50 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Attendance", "employee");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ActionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AppPagesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Changes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionId");
+
+                    b.HasIndex("AppPagesId");
+
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Budget", b =>
@@ -1227,6 +1294,278 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Designation", "employee");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Document", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Confidential")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ExpensesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FilesHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("First")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Last")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Next")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Previous")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PrintSize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Revision")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UniqueName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpensesId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.DocumentFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("FileHash")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("FileNumber")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Size")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("DocumentFiles");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Email", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Archive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Bcc")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Cc")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Draft")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceiverEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Selected")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Spam")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Starred")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Trash")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Emails");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -1304,8 +1643,14 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("phone");
 
+                    b.Property<string>("PrivateKey")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Salary")
                         .HasColumnType("decimal(18, 2)")
@@ -1714,7 +2059,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Experiences");
                 });
 
-            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FamilyInformation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1734,36 +2079,26 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ExpensesId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("file_name");
-
-                    b.Property<string>("FilePath")
+                    b.Property<string>("DoB")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileSize")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("file_size");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("status");
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Relationship")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TicketId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1772,26 +2107,16 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<string>("VersionNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExpensesId");
-
-                    b.HasIndex("ProjectId");
-
                     b.HasIndex("TenantId");
-
-                    b.HasIndex("TicketId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("File", "employee");
+                    b.ToTable("FamilyInformation");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FileUsers", b =>
@@ -1814,7 +2139,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FileId")
+                    b.Property<int>("DocumentId")
                         .HasColumnType("int");
 
                     b.Property<int>("FileUserId")
@@ -1823,8 +2148,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool?>("Read")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
@@ -1835,9 +2160,12 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("Write")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId");
+                    b.HasIndex("DocumentId");
 
                     b.HasIndex("FileUserId");
 
@@ -2280,6 +2608,10 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<string>("Category")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2391,6 +2723,9 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -2419,6 +2754,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JobId");
 
                     b.HasIndex("TenantId");
 
@@ -2654,6 +2991,85 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Licenses");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.LogAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LogActions", (string)null);
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.MailAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmailId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Size")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Attachments");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -2723,6 +3139,418 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ModifiedRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AptitudeResultId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AttendanceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AuditLogId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BudgetExpensesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BudgetRevenueId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ChatGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ChatGroupUserChatGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ChatGroupUserUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomPolicyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DesignationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DocumentFileId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmailId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeProjectsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EstimateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExpensesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExpensesOfBudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExperienceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FamilyInformationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FileUsersId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GoalListId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GoalTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HolidayId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InterviewQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobApplicantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JobId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LeaveSettingsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LeavesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LicenseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MailAttachmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NotesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OfferApprovalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OvertimeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PayrollAdditionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PayrollDeductionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PayrollOvertimeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PerformanceAppraisalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PerformanceIndicatorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("PermenantlyDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PermenantlyDeletedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PoliciesId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PromotionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProvidentFundsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReceivedNotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecordId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResignationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RevenueId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RevisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ScheduleTimingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SchedulingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShortlistId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskBoardId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskListId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaxId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TerminationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TicketFollowersId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TimeSheetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TrainerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TrainingListId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TrainingTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AptitudeResultId");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("AttendanceId");
+
+                    b.HasIndex("AuditLogId");
+
+                    b.HasIndex("BudgetExpensesId");
+
+                    b.HasIndex("BudgetId");
+
+                    b.HasIndex("BudgetRevenueId");
+
+                    b.HasIndex("CandidateId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ChatGroupId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("CustomPolicyId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DesignationId");
+
+                    b.HasIndex("DocumentFileId");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeProjectsId");
+
+                    b.HasIndex("EstimateId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ExpensesId");
+
+                    b.HasIndex("ExpensesOfBudgetId");
+
+                    b.HasIndex("ExperienceId");
+
+                    b.HasIndex("FamilyInformationId");
+
+                    b.HasIndex("FileUsersId");
+
+                    b.HasIndex("GoalListId");
+
+                    b.HasIndex("GoalTypeId");
+
+                    b.HasIndex("HolidayId");
+
+                    b.HasIndex("InterviewQuestionId");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("JobApplicantId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("LeaveSettingsId");
+
+                    b.HasIndex("LeavesId");
+
+                    b.HasIndex("LicenseId");
+
+                    b.HasIndex("MailAttachmentId");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("NotesId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("OfferApprovalId");
+
+                    b.HasIndex("OvertimeId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("PayrollAdditionId");
+
+                    b.HasIndex("PayrollDeductionId");
+
+                    b.HasIndex("PayrollOvertimeId");
+
+                    b.HasIndex("PerformanceAppraisalId");
+
+                    b.HasIndex("PerformanceIndicatorId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("PoliciesId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("PromotionId");
+
+                    b.HasIndex("ProvidentFundsId");
+
+                    b.HasIndex("ReceivedNotificationId");
+
+                    b.HasIndex("ResignationId");
+
+                    b.HasIndex("RevenueId");
+
+                    b.HasIndex("RevisorId");
+
+                    b.HasIndex("SalaryId");
+
+                    b.HasIndex("ScheduleTimingId");
+
+                    b.HasIndex("SchedulingId");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("ShortlistId");
+
+                    b.HasIndex("TaskBoardId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("TaskListId");
+
+                    b.HasIndex("TaxId");
+
+                    b.HasIndex("TerminationId");
+
+                    b.HasIndex("TicketFollowersId");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("TimeSheetId");
+
+                    b.HasIndex("TrainerId");
+
+                    b.HasIndex("TrainingListId");
+
+                    b.HasIndex("TrainingTypeId");
+
+                    b.HasIndex("ChatGroupUserChatGroupId", "ChatGroupUserUserId");
+
+                    b.ToTable("ModifiedRecord");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notes", b =>
@@ -2807,14 +3635,12 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAll")
@@ -2826,20 +3652,24 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Notifications");
                 });
@@ -3608,8 +4438,6 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("LeaderId");
 
-                    b.HasIndex("TaskBoardId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("Project", "project");
@@ -3886,6 +4714,67 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Revenues");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revisor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DigitalSignature")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RevisionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Revisors");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Salary", b =>
@@ -4402,7 +5291,8 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -4421,7 +5311,8 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Property<string>("ListName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("ProjectId")
                         .HasColumnType("int");
@@ -4437,7 +5328,9 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectId")
+                        .IsUnique()
+                        .HasFilter("[ProjectId] IS NOT NULL");
 
                     b.HasIndex("TenantId");
 
@@ -5203,6 +6096,21 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AuditLog", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.LogAction", "Action")
+                        .WithMany()
+                        .HasForeignKey("ActionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AppPages", "AppPages")
+                        .WithMany()
+                        .HasForeignKey("AppPagesId");
+
+                    b.Navigation("Action");
+
+                    b.Navigation("AppPages");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Budget", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
@@ -5400,6 +6308,77 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Document", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Expenses", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ExpensesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Project", "Project")
+                        .WithMany("Files")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Ticket", null)
+                        .WithMany("Files")
+                        .HasForeignKey("TicketId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.DocumentFile", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Document", "Document")
+                        .WithMany("DocumentFiles")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Document");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Email", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "Receiver")
+                        .WithMany("ReceivedEmails")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "Sender")
+                        .WithMany("SentEmails")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Employee", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Department", "Department")
@@ -5511,45 +6490,28 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FamilyInformation", b =>
                 {
-                    b.HasOne("Aktitic.HrProject.DAL.Models.Expenses", "Expenses")
-                        .WithMany("Attachments")
-                        .HasForeignKey("ExpensesId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Aktitic.HrProject.DAL.Models.Project", "Project")
-                        .WithMany("Files")
-                        .HasForeignKey("ProjectId");
-
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
 
-                    b.HasOne("Aktitic.HrProject.DAL.Models.Ticket", "Ticket")
-                        .WithMany("Files")
-                        .HasForeignKey("TicketId");
-
                     b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Expenses");
-
-                    b.Navigation("Project");
+                        .WithMany("FamilyInformations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Tenant");
-
-                    b.Navigation("Ticket");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FileUsers", b =>
                 {
-                    b.HasOne("Aktitic.HrProject.DAL.Models.File", "File")
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Document", "Document")
                         .WithMany("FileUsers")
-                        .HasForeignKey("FileId")
+                        .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -5563,7 +6525,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("TenantId");
 
-                    b.Navigation("File");
+                    b.Navigation("Document");
 
                     b.Navigation("FileUser");
 
@@ -5683,9 +6645,17 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.JobApplicant", b =>
                 {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", "Job")
+                        .WithMany("JobApplicants")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
+
+                    b.Navigation("Job");
 
                     b.Navigation("Tenant");
                 });
@@ -5740,6 +6710,23 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.MailAttachment", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Email", "Email")
+                        .WithMany("Attachments")
+                        .HasForeignKey("EmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Email");
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Message", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.ChatGroup", "Group")
@@ -5773,6 +6760,321 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ModifiedRecord", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AptitudeResult", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("AptitudeResultId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Asset", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("AssetId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Attendance", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("AttendanceId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AuditLog", "AuditLog")
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("AuditLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.BudgetExpenses", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("BudgetExpensesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Budget", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("BudgetId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.BudgetRevenue", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("BudgetRevenueId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Candidate", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("CandidateId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Category", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ChatGroup", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ChatGroupId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Client", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Contact", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ContactId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Contract", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ContractId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CustomPolicy", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("CustomPolicyId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Department", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("DepartmentId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Designation", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("DesignationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.DocumentFile", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("DocumentFileId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Document", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("DocumentId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Email", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("EmailId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.EmployeeProjects", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("EmployeeProjectsId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Estimate", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("EstimateId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Event", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("EventId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Expenses", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ExpensesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ExpensesOfBudget", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ExpensesOfBudgetId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Experience", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ExperienceId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.FamilyInformation", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("FamilyInformationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.FileUsers", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("FileUsersId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.GoalList", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("GoalListId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.GoalType", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("GoalTypeId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Holiday", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("HolidayId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.InterviewQuestion", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("InterviewQuestionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Invoice", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("InvoiceId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Item", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.JobApplicant", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("JobApplicantId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Job", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("JobId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.LeaveSettings", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("LeaveSettingsId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Leaves", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("LeavesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.License", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("LicenseId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.MailAttachment", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("MailAttachmentId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Message", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("MessageId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Notes", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("NotesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Notification", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("NotificationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.OfferApproval", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("OfferApprovalId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Overtime", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("OvertimeId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Payment", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PaymentId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.PayrollAddition", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PayrollAdditionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.PayrollDeduction", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PayrollDeductionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.PayrollOvertime", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PayrollOvertimeId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.PerformanceAppraisal", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PerformanceAppraisalId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.PerformanceIndicator", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PerformanceIndicatorId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Permission", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PermissionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Policies", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PoliciesId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Project", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ProjectId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Promotion", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("PromotionId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ProvidentFunds", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ProvidentFundsId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ReceivedNotification", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ReceivedNotificationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Resignation", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ResignationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Revenue", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("RevenueId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Revisor", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("RevisorId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Salary", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("SalaryId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ScheduleTiming", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ScheduleTimingId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Scheduling", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("SchedulingId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Shift", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ShiftId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Shortlist", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ShortlistId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TaskBoard", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TaskBoardId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Task", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TaskId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TaskList", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TaskListId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Tax", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TaxId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Termination", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TerminationId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TicketFollowers", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TicketFollowersId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Ticket", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TicketId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TimeSheet", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TimeSheetId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Trainer", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TrainerId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TrainingList", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TrainingListId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.TrainingType", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("TrainingTypeId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ChatGroupUser", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("ChatGroupUserChatGroupId", "ChatGroupUserUserId");
+
+                    b.Navigation("AuditLog");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notes", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Receiver")
@@ -5802,7 +7104,13 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
                     b.Navigation("Company");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.OfferApproval", b =>
@@ -6010,10 +7318,6 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasForeignKey("LeaderId")
                         .HasConstraintName("FK_Project_Employee");
 
-                    b.HasOne("Aktitic.HrProject.DAL.Models.TaskBoard", "TaskBoard")
-                        .WithMany()
-                        .HasForeignKey("TaskBoardId");
-
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
@@ -6021,8 +7325,6 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Client");
 
                     b.Navigation("Leader");
-
-                    b.Navigation("TaskBoard");
 
                     b.Navigation("Tenant");
                 });
@@ -6106,6 +7408,31 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revisor", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Document", "Document")
+                        .WithMany("Revisors")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("Document");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Tenant");
                 });
@@ -6237,8 +7564,10 @@ namespace Aktitic.HrProject.DAL.Migrations
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TaskBoard", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
+                        .WithOne("TaskBoard")
+                        .HasForeignKey("Aktitic.HrProject.DAL.Models.TaskBoard", "ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Project_TaskBoard");
 
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
@@ -6421,18 +7750,66 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Navigation("ChatGroupUsers");
 
+                    b.Navigation("FamilyInformations");
+
                     b.Navigation("FileUsers");
 
                     b.Navigation("ManagedCompany");
 
                     b.Navigation("Permissions");
+
+                    b.Navigation("ReceivedEmails");
+
+                    b.Navigation("SentEmails");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AptitudeResult", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Asset", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Attendance", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AuditLog", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Budget", b =>
                 {
                     b.Navigation("Expenses");
 
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("Revenues");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.BudgetExpenses", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.BudgetRevenue", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Candidate", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Category", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ChatGroup", b =>
@@ -6440,10 +7817,19 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("ChatGroupUsers");
 
                     b.Navigation("Messages");
+
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ChatGroupUser", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Client", b =>
                 {
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("Permissions");
 
                     b.Navigation("Projects");
@@ -6454,6 +7840,21 @@ namespace Aktitic.HrProject.DAL.Migrations
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Company", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contact", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contract", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CustomPolicy", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Department", b =>
@@ -6468,7 +7869,37 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Navigation("Jobs");
 
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("Schedulings");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Designation", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Document", b =>
+                {
+                    b.Navigation("DocumentFiles");
+
+                    b.Navigation("FileUsers");
+
+                    b.Navigation("ModifiedRecords");
+
+                    b.Navigation("Revisors");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.DocumentFile", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Email", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Employee", b =>
@@ -6484,6 +7915,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("LeafApprovedByNavigations");
 
                     b.Navigation("LeafEmployees");
+
+                    b.Navigation("ModifiedRecords");
 
                     b.Navigation("OfferApprovals");
 
@@ -6504,29 +7937,89 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Timesheet");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.EmployeeProjects", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Estimate", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Event", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Expenses", b =>
                 {
                     b.Navigation("Attachments");
+
+                    b.Navigation("ModifiedRecords");
                 });
 
-            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.File", b =>
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ExpensesOfBudget", b =>
                 {
-                    b.Navigation("FileUsers");
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Experience", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FamilyInformation", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.FileUsers", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.GoalList", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.GoalType", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Holiday", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.InterviewQuestion", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Invoice", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Item", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Job", b =>
                 {
                     b.Navigation("AptitudeResults");
+
+                    b.Navigation("JobApplicants");
+
+                    b.Navigation("ModifiedRecords");
 
                     b.Navigation("OfferApprovals");
 
@@ -6535,9 +8028,96 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Shortlists");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.JobApplicant", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.LeaveSettings", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Leaves", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.License", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.MailAttachment", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Message", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notes", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notification", b =>
                 {
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("Receivers");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.OfferApproval", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Overtime", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Payment", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollAddition", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollDeduction", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PayrollOvertime", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PerformanceAppraisal", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.PerformanceIndicator", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Permission", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Policies", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Project", b =>
@@ -6548,26 +8128,131 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Navigation("Files");
 
+                    b.Navigation("ModifiedRecords");
+
+                    b.Navigation("TaskBoard");
+
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Promotion", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ProvidentFunds", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ReceivedNotification", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Resignation", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revenue", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revisor", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Salary", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ScheduleTiming", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Scheduling", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Shift", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Shortlist", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Task", b =>
                 {
                     b.Navigation("Messages");
 
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("TaskList");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TaskBoard", b =>
                 {
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("TaskLists");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TaskList", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Tax", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Termination", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Ticket", b =>
                 {
                     b.Navigation("Files");
 
+                    b.Navigation("ModifiedRecords");
+
                     b.Navigation("TicketFollowers");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TicketFollowers", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TimeSheet", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Trainer", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TrainingList", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.TrainingType", b =>
+                {
+                    b.Navigation("ModifiedRecords");
                 });
 #pragma warning restore 612, 618
         }

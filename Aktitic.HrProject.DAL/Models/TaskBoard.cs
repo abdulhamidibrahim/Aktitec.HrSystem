@@ -13,7 +13,7 @@ public class TaskBoard : BaseEntity
     [ForeignKey(nameof(Project))]
     public int? ProjectId { get; set; }
 
-    public Project? Project { get; set; } = null!;
+    public Project? Project { get; set; } 
     
     public ICollection<TaskList> TaskLists { get; set; } = new List<TaskList>();
     

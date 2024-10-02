@@ -66,7 +66,7 @@ public class MessageManager(
         //     GroupName = groupId,
         //     Message = message,
         //     FileName = fileName,
-        //     FilePath = filePath
+        //     Documents = filePath
         // });
     }
     

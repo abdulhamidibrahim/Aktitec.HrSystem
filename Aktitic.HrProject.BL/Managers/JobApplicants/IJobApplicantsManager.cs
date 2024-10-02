@@ -15,5 +15,6 @@ public interface IJobApplicantsManager
     public Task<FilteredJobApplicantsDto> GetFilteredJobApplicantsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 
     public Task<List<JobApplicantsDto>> GlobalSearch(string searchKey,string? column);
+    public Task<object> GetTotalCount();
   
 }

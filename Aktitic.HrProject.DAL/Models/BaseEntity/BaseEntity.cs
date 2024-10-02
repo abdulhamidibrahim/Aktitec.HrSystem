@@ -17,4 +17,5 @@ public class BaseEntity : IBaseEntity , ISoftDelete , IAuditable ,IMustHaveTenan
     public int? TenantId { get; set; } 
     
     public virtual Company? Tenant { get; set; } 
+    public virtual ICollection<ModifiedRecord>? ModifiedRecords { get; set; } 
 }

@@ -25,5 +25,5 @@ public class Ticket : BaseEntity
     public int? ClientId { get; set; }
     public Client? Client { get; set; }
     public ICollection<TicketFollowers> TicketFollowers { get; set; }=new List<TicketFollowers>();
-    public ICollection<File> Files { get; set; }=new List<File>();
+    public ICollection<Document> Files { get; set; }=new List<Document>();
 }
