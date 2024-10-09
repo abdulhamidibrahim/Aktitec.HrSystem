@@ -1,6 +1,4 @@
 using Aktitic.HrProject.Api.Configuration;
-using Aktitic.HrProject.BL;
-using Microsoft.AspNetCore.Http;
 
 namespace Aktitic.HrProject.BL;
 

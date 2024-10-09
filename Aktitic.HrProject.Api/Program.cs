@@ -11,6 +11,7 @@ using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Helpers.Connection_Strings;
 using Aktitic.HrProject.DAL.Repos.DatabaseSizeRepo;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Aktitic.HrProject.DAL.Services.TenantServices;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
@@ -19,6 +20,7 @@ using Aktitic.HrTaskList.BL;
 using Aktitic.HrTicket.BL;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -104,7 +106,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidIssuer = jwtOptions?.Issuer,
-        ValidateAudience = true,
+        ValidateAudience = false,
         ValidAudience = jwtOptions?.Audience,
         ValidateIssuerSigningKey = true,
         ValidateLifetime = false, // false for testing
@@ -135,9 +137,8 @@ builder.Services.AddCors(options =>      // cross-origin resource sharing
     options.AddPolicy("AllowAngularOrigins",
         policyBuilder =>
         {
-            policyBuilder.WithOrigins(
-                    "http://localhost:4200"
-                )
+            
+            policyBuilder.WithOrigins("http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -237,6 +238,7 @@ builder.Services.AddScoped<IEmailsManager, EmailsManager>();
 builder.Services.AddScoped<IDocumentManager, DocumentManager>();
 builder.Services.AddScoped<IDocumentFileManager, DocumentFileManager>();
 builder.Services.AddScoped<IRevisorManager, RevisorManager>();
+builder.Services.AddScoped<IAppModulesManager, AppModulesManager>();
 
 
 #endregion
@@ -291,6 +293,17 @@ builder.Services.Configure<FormOptions>(options =>
     //         dbContext.Database.Migrate();
     //     }
     // }
+
+
+// policy-based authorization
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("PermissionPolicy", policy =>
+            policy.Requirements.Add(new PermissionRequirement("Read", "PageCode")));
+    });
+
+    builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+
 
 
 builder.Services.AddSignalR();

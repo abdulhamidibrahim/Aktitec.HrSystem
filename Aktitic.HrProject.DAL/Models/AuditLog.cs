@@ -1,3 +1,5 @@
+using System;
+
 namespace Aktitic.HrProject.DAL.Models;
 
 public class AuditLog : IMustHaveTenant

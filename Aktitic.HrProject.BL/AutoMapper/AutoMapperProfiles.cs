@@ -1,3 +1,4 @@
+using Aktitic.HrProject.BL.Dtos.AppModules;
 using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
@@ -18,6 +19,29 @@ public class AutoMapperProfiles : Profile
             opt.MapFrom(src => src.Department == null ? null : src.Department.Name));
         
         CreateMap<Holiday, HolidayDto>();
+        CreateMap<AppModule, AppModuleDto>();
+            // .ForMember(dest => dest.SubModuleDto, opt
+            //     => opt.MapFrom(src => src.AppSubModules == null
+            //         ? null
+            //         : src.AppSubModules
+            //             .Select(appPage => new AppSubModule()
+            //             {
+            //                 Id = appPage.Id,
+            //                 Name = appPage.Name,
+            //                 AppModuleId = appPage.AppModuleId
+            //             }).ToList()));
+            CreateMap<AppSubModule, AppSubModuleDto>().ForMember(dest => dest.PageDto, opt =>
+                opt.MapFrom(src => src.AppPages == null
+                    ? null
+                    : src.AppPages.Select(appPages => new AppPagesDto
+                    {
+                        // Id = appPages.Id,
+                        Name = appPages.Name,
+                        Code = appPages.Code,
+                        AppSubModuleId = appPages.AppSubModuleId
+                    }).ToList()));
+            
+        CreateMap<AppPages, AppPagesDto>();
         CreateMap<Client, ClientDto>()
             .ForMember(dest => dest.Permissions, opt => opt.MapFrom(src =>
                 src.Permissions == null ? null : src.Permissions.Select(permission => new PermissionsDto

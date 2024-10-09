@@ -4,10 +4,7 @@ using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using Aktitic.HrTicket.BL;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 

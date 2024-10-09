@@ -1,9 +1,7 @@
 
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using Aktitic.HrTaskBoard.BL;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
 

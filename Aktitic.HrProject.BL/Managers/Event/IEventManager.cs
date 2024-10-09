@@ -1,8 +1,4 @@
 using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Dtos;
-using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrTaskList.BL;
 
 namespace Aktitic.HrTaskList.BL;
 

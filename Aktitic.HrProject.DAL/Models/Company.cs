@@ -29,4 +29,7 @@ public class Company
     
     public int ManagerId { get; set; }
     
+    public ICollection<CompanyRole>? Roles { get; set; }
+    public ICollection<CompanyModule>? CompanyModules { get; set; }
+    
 }

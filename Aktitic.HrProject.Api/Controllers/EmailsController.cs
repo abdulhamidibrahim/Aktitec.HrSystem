@@ -94,11 +94,10 @@ public class EmailsController(IEmailsManager emailsManager,IWebHostEnvironment w
     {
         return await emailsManager.GetSentEmails(id);
     }
-    [HttpGet("api/attachments/download/{id}")]
+    [HttpGet("/api/attachments/download/{id}")]
     public async Task<ActionResult<IEnumerable<EmailsReadDto>>> GetAttachments(int id)
     {
         var file = await emailsManager.GetAttachments(id);
-        if (file == null) return NotFound("Documents Not Found!");
 
         // Construct the full file path
         var fullPath = Path.Combine(webHostEnvironment.WebRootPath, file.Path);

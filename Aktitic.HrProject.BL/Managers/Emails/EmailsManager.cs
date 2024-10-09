@@ -5,7 +5,6 @@ using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 
@@ -52,6 +51,7 @@ public class EmailsManager(
 
                 // Set the path to the wwwroot folder (e.g., "wwwroot/uploads")
                 var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
+                uploadsFolder = uploadsFolder.Replace("\\", "/");
 
                 // Ensure the directory exists
                 if (!Directory.Exists(uploadsFolder))
@@ -72,7 +72,7 @@ public class EmailsManager(
                 var attachment = new MailAttachment
                 {
                     Name = uniqueFileName,
-                    Path = filePath, // Optionally, you could store the file as bytes here
+                    Path = Path.Combine("uploads",uniqueFileName), // Optionally, you could store the file as bytes here
                     Email = emails // Link the attachment to the email
                 };
 
@@ -94,7 +94,7 @@ public class EmailsManager(
     if (email == null) return 0;
     
     // LogNote fields based on the properties in the Add function
-    email.ReceiverId = await unitOfWork.ApplicationUser.GetUserIdByEmail(emailsUpdateDto.ReceiverEmail);
+    // email.ReceiverId = await unitOfWork.ApplicationUser.GetUserIdByEmail(emailsUpdateDto.ReceiverEmail);
     if (emailsUpdateDto.SenderId != 0 && emailsUpdateDto.SenderId is not null) 
         email.SenderId = (int)emailsUpdateDto.SenderId;
     if (!emailsUpdateDto.ReceiverEmail.IsNullOrEmpty()) 
@@ -125,41 +125,6 @@ public class EmailsManager(
         email.Selected = (bool)emailsUpdateDto.Selected;
     if (!emailsUpdateDto.Description.IsNullOrEmpty()) 
         email.Description = emailsUpdateDto.Description;
-
-    // Handle attachments update if needed
-    // if (emailsUpdateDto.Attatchments is { Count: > 0 })
-    // {
-    //     email.Attachments?.Clear();
-    //
-    //     foreach (var attachmentDto in emailsUpdateDto.Attatchments)
-    //     {
-    //         var uniqueFileName = Guid.NewGuid().ToString() + "_" + attachmentDto.FileName;
-    //         var uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
-    //
-    //         if (!Directory.Exists(uploadsFolder))
-    //         {
-    //             Directory.CreateDirectory(uploadsFolder);
-    //         }
-    //
-    //         var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-    //
-    //         await using (var fileStream = new FileStream(filePath, FileMode.Create))
-    //         {
-    //             await attachmentDto.CopyToAsync(fileStream);
-    //         }
-    //
-    //         var attachment = new MailAttachment
-    //         {
-    //             Name = uniqueFileName,
-    //             Path = filePath, 
-    //             Email = email
-    //         };
-    //
-    //         email.Attachments?.Add(attachment);
-    //     }
-    // }
-
-    // LogNote the email entity
     
     unitOfWork.Emails.Update(email);
 

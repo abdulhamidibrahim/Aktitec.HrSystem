@@ -88,7 +88,7 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
         return await _context.Emails!
             .Include(x => x.Sender)
             .Include(x => x.Receiver)
-            .Where(x => x.Receiver.Email == email)
+            .Where(x => x.Receiver.Email == email && !x.Trash)
             .AsSplitQuery()
             .OrderByDescending(x=>x.Date)
             .ToListAsync();

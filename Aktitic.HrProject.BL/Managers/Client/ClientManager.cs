@@ -22,9 +22,9 @@ public class ClientManager(
 
     public Task<int> Add(ClientAddDto clientAddDto)
     {
-       var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientAddDto.Permissions!);
-       var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
-       mappedPermissions.Select(x => x.CreatedAt = DateTime.Now);
+       // var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientAddDto.Permissions!);
+       // var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
+       // mappedPermissions.Select(x => x.CreatedAt = DateTime.Now);
        
         var client = new Client()
         {
@@ -37,7 +37,7 @@ public class ClientManager(
             LastName = clientAddDto.LastName,
             Status = clientAddDto.Status,
             ClientId = clientAddDto.ClientId,
-            Permissions = mappedPermissions,
+            // Permissions = mappedPermissions,
             Password = clientAddDto.Password,
             ConfirmPassword = clientAddDto.ConfirmPassword,
             UserName = clientAddDto.UserName,
@@ -71,14 +71,14 @@ public class ClientManager(
     }
     
 
-    public async Task<Task<int>> Update(ClientUpdateDto clientUpdateDto, int id)
+    public async Task<int> Update(ClientUpdateDto clientUpdateDto, int id)
     {
-        var client = await unitOfWork.Client.GetClientWithPermissionsAsync(id);
+        var client = unitOfWork.Client.GetById(id);
         if (client == null)
-            return Task.FromResult(0);
+            return 0;
 
         // Deserialize permissions
-        var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientUpdateDto.Permissions!);
+        // var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(clientUpdateDto.Permissions!);
 
         // LogNote client properties
         client.FirstName = clientUpdateDto.FirstName;
@@ -99,25 +99,6 @@ public class ClientManager(
         if (clientUpdateDto.UserName != null)
             client.UserName = clientUpdateDto.UserName;
         
-        // LogNote permissions
-        if (permissions != null)
-        {
-            // Clear existing permissions
-            // client.Permissions?.Clear();
-            // clear permissions from database
-            // var existingPermissions = permissionsRepo.GetByClientId(id);
-            
-                unitOfWork.Permission.DeleteRange(client.Permissions?.ToList());
-
-                // Map and add new permissions
-                var permissionEntities = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
-                client.Permissions = permissionEntities;
-
-                client.Permissions.Select(x => x.UpdatedAt = DateTime.Now);
-            
-                unitOfWork.Permission.AddRange(permissionEntities);
-        }
-
          // LogNote image
     if (clientUpdateDto?.Image != null)
     {
@@ -143,8 +124,8 @@ public class ClientManager(
     
     client.UpdatedAt = DateTime.Now;
     
-    unitOfWork.Client.Update(client);
-    return unitOfWork.SaveChangesAsync();
+        unitOfWork.Client.Update(client);
+         return await unitOfWork.SaveChangesAsync();
     }
 
 
@@ -184,7 +165,7 @@ public class ClientManager(
 
     public Task<List<ClientReadDto>> GetAll()
     {
-        var clients = unitOfWork.Client.GetAllWithPermissionsAsync();
+        var clients = unitOfWork.Client.GetAll();
         
         return  Task.FromResult(clients.Result.Select(client => new ClientReadDto()
         {
@@ -198,7 +179,7 @@ public class ClientManager(
             Status = client.Status,
             UserName = client.UserName,
             ClientId = client.ClientId,
-            Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
+            // Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
         }).ToList());
     }
 
@@ -212,7 +193,7 @@ public class ClientManager(
 
     public async Task<FilteredClientDto> GetFilteredClientsAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var Clients = await unitOfWork.Client.GetAllWithPermissionsAsync();
+        var Clients = await unitOfWork.Client.GetAll();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -242,7 +223,7 @@ public class ClientManager(
                     Status = client.Status,
                     photoUrl = client.PhotoUrl,
                     ClientId = client.ClientId,
-                    Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
+                    // Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(client.Permissions.ToList())
                     
                 });
             }

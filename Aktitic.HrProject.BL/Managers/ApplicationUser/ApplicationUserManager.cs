@@ -30,18 +30,18 @@ public class ApplicationUserManager(
 
     public ApplicationUser Add(ApplicationUserAddDto applicationUserAddDto)
     {
-       var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserAddDto.Permissions!);
-       var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
+       // var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserAddDto.Permissions!);
+       // var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
         var applicationUser = new ApplicationUser()
         {
             PhoneNumber = applicationUserAddDto.Phone,
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
-            Role = applicationUserAddDto.Role,
+            RoleId = applicationUserAddDto.Role,
             TenantId = applicationUserAddDto.CompanyId,
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
-            Permissions = mappedPermissions,
+            // Permissions = mappedPermissions,
             Password = applicationUserAddDto.Password,
             Date = applicationUserAddDto.Date,
             UserName = applicationUserAddDto.UserName,
@@ -79,18 +79,18 @@ public class ApplicationUserManager(
     }
      public ApplicationUser Create(ApplicationUserAddDto applicationUserAddDto)
     {
-       var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserAddDto.Permissions!);
-       var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
+       // var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserAddDto.Permissions!);
+       // var mappedPermissions = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
         var applicationUser = new ApplicationUser()
         {
             PhoneNumber = applicationUserAddDto.Phone,
             Email = applicationUserAddDto.Email,
             FirstName = applicationUserAddDto.FirstName,
-            Role = applicationUserAddDto.Role,
+            RoleId = applicationUserAddDto.Role,
             TenantId = int.Parse(userUtility.GetCurrentCompany()),
             LastName = applicationUserAddDto.LastName,
             EmployeeId = applicationUserAddDto.EmployeeId,
-            Permissions = mappedPermissions,
+            // Permissions = mappedPermissions,
             HasAccess = true,
             Password = applicationUserAddDto.Password,
             Date = applicationUserAddDto.Date,
@@ -130,14 +130,14 @@ public class ApplicationUserManager(
     }
     
 
-    public async Task<Task<int>> Update(ApplicationUserUpdateDto applicationUserUpdateDto, int id)
+    public async Task<int> Update(ApplicationUserUpdateDto applicationUserUpdateDto, int id)
     {
-        var applicationUser = await unitOfWork.ApplicationUser.GetApplicationUserWithPermissionsAsync(id);
+        var applicationUser = unitOfWork.ApplicationUser.GetById(id);
         if (applicationUser == null)
-            return Task.FromResult(0);
+            return 0;
 
         // Deserialize permissions
-        var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserUpdateDto.Permissions!);
+        // var permissions = JsonConvert.DeserializeObject<List<PermissionsDto>>(applicationUserUpdateDto.Permissions!);
         
         
         // LogNote applicationUser properties
@@ -150,8 +150,8 @@ public class ApplicationUserManager(
         
         applicationUser.LastName = applicationUserUpdateDto.LastName;
         
-        if (!applicationUserUpdateDto.Role.IsNullOrEmpty())
-            applicationUser.Role = applicationUserUpdateDto.Role;
+        if (applicationUserUpdateDto.Role != 0)
+            applicationUser.RoleId = applicationUserUpdateDto.Role;
         
         if (applicationUserUpdateDto.CompanyId != 0)
             if (applicationUserUpdateDto.CompanyId != null)
@@ -186,22 +186,22 @@ public class ApplicationUserManager(
         applicationUser.UpdatedBy = userUtility.GetUserName();
         
         // LogNote permissions
-        if (permissions != null)
-        {
+        // if (permissions != null)
+        // {
             // Clear existing permissions
             // applicationUser.Permissions?.Clear();
             // clear permissions from database
             // var existingPermissions = permissionsRepo.GetByApplicationUserId(id);
             
-                unitOfWork.Permission.DeleteRange(applicationUser.Permissions?.ToList());
+                // unitOfWork.Permission.DeleteRange(applicationUser.Permissions?.ToList());
 
                 // Map and add new permissions
-                var permissionEntities = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
-                applicationUser.Permissions = permissionEntities;
-                applicationUser.Permissions.Select(x => x.UpdatedAt = DateTime.Now);
+                // var permissionEntities = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
+                // applicationUser.Permissions = permissionEntities;
+                // applicationUser.Permissions.Select(x => x.UpdatedAt = DateTime.Now);
             
-                unitOfWork.Permission.AddRange(permissionEntities);
-        }
+                // unitOfWork.Permission.AddRange(permissionEntities);
+        // }
 
          // LogNote image
     if (applicationUserUpdateDto?.Image != null)
@@ -224,7 +224,7 @@ public class ApplicationUserManager(
         applicationUser.Image = Path.Combine("uploads/users", applicationUser.UserName + unique, applicationUserUpdateDto.Image.FileName);
     }
     unitOfWork.ApplicationUser.Update(applicationUser);
-    return unitOfWork.SaveChangesAsync();
+    return await unitOfWork.SaveChangesAsync();
     }
 
 
@@ -253,7 +253,7 @@ public class ApplicationUserManager(
             Id = applicationUser.Id,
             FirstName = applicationUser.FirstName,
             LastName = applicationUser.LastName,
-            Role = applicationUser.Role,
+            Role= applicationUser.RoleId,
             Email = applicationUser.Email,
             CompanyId = applicationUser.TenantId,
             Image = applicationUser.Image,
@@ -261,7 +261,6 @@ public class ApplicationUserManager(
             Password = applicationUser.Password,
             UserName = applicationUser.UserName,
             Phone = applicationUser.PhoneNumber,
-            Permissions = mappedPermissions,
             Date = applicationUser.Date,
            
         };
@@ -269,7 +268,7 @@ public class ApplicationUserManager(
 
     public Task<List<ApplicationUserReadDto>> GetAll()
     {
-        var applicationUsers = unitOfWork.ApplicationUser.GetAllWithPermissionsAsync();
+        var applicationUsers = unitOfWork.ApplicationUser.GetAll();
         
         return  Task.FromResult(applicationUsers.Result.Select(applicationUser => new ApplicationUserReadDto()
         {
@@ -280,10 +279,9 @@ public class ApplicationUserManager(
             Email = applicationUser.Email,
             CompanyId = applicationUser.TenantId,
             Image = applicationUser.Image,
-            Role= applicationUser.Role,
+            Role= applicationUser.RoleId,
             UserName = applicationUser.UserName,
             EmployeeId = applicationUser.EmployeeId,
-            Permissions = mapper.Map<List<Permission>, List<PermissionsDto>>(applicationUser.Permissions.ToList())
         }).ToList());
     }
 
@@ -324,7 +322,7 @@ public class ApplicationUserManager(
                     Email = applicationUser.Email,
                     Phone = applicationUser.PhoneNumber,
                     CompanyId = applicationUser.TenantId,
-                    Role = applicationUser.Role,
+                    Role = applicationUser.RoleId,
                     Image = applicationUser.Image,
                     Date = applicationUser.Date,
                     EmployeeId = applicationUser.EmployeeId,
@@ -374,7 +372,7 @@ public class ApplicationUserManager(
                     Email = user.Email?? string.Empty,
                     Phone = user.PhoneNumber?? string.Empty,
                     CompanyId= user.TenantId,
-                    Role = user.Role,
+                    Role = user.RoleId,
                     Image = user.Image,
                     Date = user.Date,
                     EmployeeId = user.EmployeeId,
@@ -440,7 +438,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
                 Email = user.Email?? string.Empty,
                 Phone = user.PhoneNumber?? string.Empty,
                 CompanyId = user.TenantId,
-                Role = user.Role,
+                Role = user.RoleId,
                 Image = user.Image,
                 Date = user.Date,
                 EmployeeId = user.EmployeeId,
@@ -461,7 +459,7 @@ private IEnumerable<ApplicationUser> ApplyNumericFilter(IEnumerable<ApplicationU
             Email = user.Email?? string.Empty,
             Phone = user.PhoneNumber?? string.Empty,
             CompanyId = user.TenantId,
-            Role = user.Role,
+            Role = user.RoleId,
             Image = user.Image,
             Date = user.Date,
             EmployeeId = user.EmployeeId,
@@ -479,16 +477,14 @@ public static class HashingHelper
     
     public static string HashPassword(this string password)
     {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            } 
+        using SHA256 sha256 = SHA256.Create();
+        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+        var builder = new StringBuilder();
+        foreach (var t in bytes)
+        {
+            builder.Append(t.ToString("x2"));
+        }
+        return builder.ToString();
     }
 }
 

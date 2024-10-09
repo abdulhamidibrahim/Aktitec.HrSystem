@@ -8,6 +8,7 @@ using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.UnitOfWork;
+using Aktitic.HrTaskList.BL;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ public class UsersController(
     IConfiguration configuration,
     IEmailService emailService,
     IOptions<JwtOptions> jwtOptions,
+    IAppModulesManager appModulesManager,
     IUnitOfWork unitOfWork)
     : ControllerBase
 {
@@ -82,23 +84,26 @@ public class UsersController(
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var tokenString = tokenHandler.WriteToken(token);
 
-        var permissions = unitOfWork.Permission.GetByApplicationUserId(user.Id);
-        var mappedPermissions = mapper.Map<List<Permission>, List<PermissionsDto>>(permissions);
-        var userData = new ApplicationUserReadDto()
+        // var permissions = unitOfWork.Permission.GetByApplicationUserId(user.Id);
+        // var mappedPermissions = mapper.Map<List<Permission>, List<PermissionsDto>>(permissions);
+
+        // var result = unitOfWork.ApplicationUser.GetUser(user.Id);
+        
+        var userData = new UserReadDto()
         {
             Id = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Role = user.Role,
+            Role = appModulesManager.GetRole(user.RoleId),
             Email = user.Email,
             CompanyId = user.TenantId,
             Image = user.Image,
             EmployeeId = user.EmployeeId,
             UserName = user.UserName,
             Phone = user.PhoneNumber,
-            Permissions = mappedPermissions,
             Date = user.Date,
-           
+            IsAdmin = user.IsAdmin, 
+            IsManager = user.IsManager,
         };
         
         // return data in the header 
@@ -164,11 +169,11 @@ public class UsersController(
     
     
     [HttpPut("update/{id}")]
-    public ActionResult Update([FromForm] ApplicationUserUpdateDto userUpdateDto, int id)
+    public async Task<ActionResult> Update([FromForm] ApplicationUserUpdateDto userUpdateDto, int id)
     {
         
-        var result = applicationUserManager.Update(userUpdateDto,id);
-        if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
+        var result = await applicationUserManager.Update(userUpdateDto,id);
+        if (result == 0 ) return BadRequest("Failed to update");
         return Ok("updated successfully !");
     }
     

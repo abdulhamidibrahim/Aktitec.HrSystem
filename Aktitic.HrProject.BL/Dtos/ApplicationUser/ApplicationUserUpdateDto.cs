@@ -19,7 +19,7 @@ public class ApplicationUserUpdateDto
     [PasswordPropertyText,Compare(nameof(Password))]
     public string ConfirmPassword { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    public int Role { get; set; } 
     public int? CompanyId { get; set; } 
     public int? EmployeeId { get; set; }
     public IFormFile? Image { get; set; } 

@@ -37,6 +37,8 @@ public class EmployeeDto
     
     // public int? ProjectId { get; set; }
     public string? Department { get; set; }
+    public string? PublicKey { get; set; }
+    public string? PrivateKey { get; set; }
 
     public DepartmentDto? DepartmentDto { get; set; }
 }

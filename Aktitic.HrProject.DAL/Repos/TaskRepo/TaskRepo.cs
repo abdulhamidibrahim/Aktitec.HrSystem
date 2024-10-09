@@ -5,14 +5,9 @@ using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
-public class TaskRepo :GenericRepo<Task>,ITaskRepo
+public class TaskRepo(HrSystemDbContext context) : GenericRepo<Task>(context), ITaskRepo
 {
-    private readonly HrSystemDbContext _context;
-
-    public TaskRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HrSystemDbContext _context = context;
 
     public IQueryable<Task> GlobalSearch(string? searchKey)
     {
@@ -52,7 +47,11 @@ public class TaskRepo :GenericRepo<Task>,ITaskRepo
 
     public IEnumerable<Task>? GetTaskByCompleted(bool completed)
     {
-        return _context.Tasks?.Where(x => x.Completed == completed).ToList();
+        return _context.Tasks?.Where(x=> x.Completed == completed).ToList();
+    }
+    public IEnumerable<Task>? GetCompletedTasks(int projectId)
+    {
+        return _context.Tasks?.Where(x=> x.ProjectId == projectId && x.Completed == true).ToList();
     }
 
     public IEnumerable<Task>? GetAllTasksWithEmployeeAndProject()

@@ -4,7 +4,6 @@ using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTask.BL;
 using AutoMapper;
@@ -252,6 +251,13 @@ public class TaskManager:ITaskManager
     public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
     {
         var Tasks = _unitOfWork.Task.GetTaskByCompleted(completed);
+        var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
+        return System.Threading.Tasks.Task.FromResult(tasks.ToList());
+    }
+    
+    public Task<List<TaskDto>> GetCompletedTasks(int projectId)
+    {
+        var Tasks = _unitOfWork.Task.GetCompletedTasks(projectId);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }

@@ -29,13 +29,13 @@ public class NoteController: ControllerBase
     }
     
     [HttpPost("create")]
-    public ActionResult Add( NotesAddDto noteAddDto)
+    public async Task<ActionResult> Add( NotesAddDto noteAddDto)
     {
         if (noteAddDto.SenderId != noteAddDto.ReceiverId)
         {
             try
             {
-                var result = _noteManager.Add(noteAddDto);
+                var result =await _noteManager.Add(noteAddDto);
                 return Ok("Note added successfully.");
             }
             catch (Exception e)

@@ -7,7 +7,6 @@ using Aktitic.HrProject.DAL.Pagination.Employee;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;

@@ -1,5 +1,3 @@
-using Aktitic.HrProject.BL;
-
 namespace Aktitic.HrProject.BL;
 
 public interface ICustomPolicyManager

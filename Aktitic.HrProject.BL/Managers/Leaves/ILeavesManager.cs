@@ -1,6 +1,3 @@
-using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Pagination.Client;
-
 namespace Aktitic.HrProject.BL;
 
 public interface ILeavesManager

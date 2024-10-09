@@ -92,6 +92,12 @@ public class UnitOfWork : IUnitOfWork
     private EmailsRepo _emailsRepo;
     private DocumentFilesRepo _documentFilesRepo;
     private RevisorsRepo _revisorsRepo;
+    private AppModulesRepo _appModulesRepo;
+    private AppSubModulesRepo _appSubModulesRepo;
+    private AppPagesRepo _appPagesRepo;
+    private CompanyModulesRepo _companyModulesRepo;
+    private CompanyRolesRepo _companyRolesRepo;
+    private RolePermissionsRepo _rolePermissionsRepo;
 
 
     // complete all other repos
@@ -105,7 +111,7 @@ public class UnitOfWork : IUnitOfWork
     }
    public INotesRepo Notes => _notesRepo ??= new NotesRepo(_context);
     
-    public IApplicationUserRepo ApplicationUser => _applicationUser ??= new ApplicationUserRepo(_context,_userUtility);
+    public IApplicationUserRepo ApplicationUser => _applicationUser ??= new ApplicationUserRepo(_context);
     public IAttendanceRepo Attendance => _attendanceRepo ??= new AttendanceRepo(_context);
     
     public IDepartmentRepo Department => _departmentRepo ??= new DepartmentRepo(_context);
@@ -209,6 +215,12 @@ public class UnitOfWork : IUnitOfWork
     public IEmailsRepo Emails => _emailsRepo ??= new EmailsRepo(_context);
     public IDocumentFilesRepo DocumentFiles => _documentFilesRepo ??= new DocumentFilesRepo(_context);
     public IRevisorsRepo Revisors => _revisorsRepo ??= new RevisorsRepo(_context);
+    public IAppModulesRepo AppModules => _appModulesRepo ??= new AppModulesRepo(_context);
+    public IAppSubModulesRepo AppSubModules => _appSubModulesRepo ??= new AppSubModulesRepo(_context);
+    public IAppPagesRepo AppPages => _appPagesRepo ??= new AppPagesRepo(_context);
+    public ICompanyModulesRepo CompanyModules => _companyModulesRepo ??= new CompanyModulesRepo(_context);
+    public ICompanyRolesRepo CompanyRoles => _companyRolesRepo ??= new CompanyRolesRepo(_context);
+    public IRolePermissionsRepo RolePermissions => _rolePermissionsRepo ??= new RolePermissionsRepo(_context);
 
 
     public async Task<int> SaveChangesAsync()

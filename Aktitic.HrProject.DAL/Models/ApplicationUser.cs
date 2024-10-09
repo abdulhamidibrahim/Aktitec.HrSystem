@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,10 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity
     public string FullName => $"{FirstName} {LastName}";
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    
+    [ForeignKey(nameof(Role))]
+    public int RoleId { get; set; }
+    public CompanyRole Role { get; set; }
     public DateTime Date { get; set; }
     public string Image { get; set; } = string.Empty;
     public string Password { get; set; }
@@ -38,7 +42,7 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity
 
     public ICollection<Asset>? Assets { get; set; }
     
-    public ICollection<Permission>? Permissions { get; set; }
+    // public ICollection<Permission>? Permissions { get; set; }
     public ICollection<FileUsers>? FileUsers { get; set; }
     public ICollection<ChatGroupUser>? ChatGroupUsers { get; set; }
     public IEnumerable<Email>? SentEmails { get; set; }

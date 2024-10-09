@@ -8,7 +8,7 @@ public interface IApplicationUserManager
 {
     public ApplicationUser Add(ApplicationUserAddDto applicationUserAddDto);
     public ApplicationUser Create(ApplicationUserAddDto applicationUserAddDto);
-    public Task<Task<int>> Update(ApplicationUserUpdateDto applicationUserUpdateDto, int id);
+    public Task<int> Update(ApplicationUserUpdateDto applicationUserUpdateDto, int id);
     public Task<int> Delete(int id);
     public ApplicationUserReadDto? Get(int id);
     public Task<List<ApplicationUserReadDto>> GetAll();

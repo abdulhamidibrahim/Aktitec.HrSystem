@@ -10,6 +10,6 @@ public interface IClientRepo :IGenericRepo<Client>
     
     IQueryable<Client> GlobalSearch(string? column);
    
-    Task<Client?> GetClientWithPermissionsAsync(int id);
-    Task<IEnumerable<Client>> GetAllWithPermissionsAsync();
+    // Task<Client?> GetClientWithPermissionsAsync(int id);
+    // Task<IEnumerable<Client>> GetAllWithPermissionsAsync();
 }

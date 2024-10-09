@@ -1,12 +1,7 @@
-
-using Aktitic.HrProject.BL;
-using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
 using Task = System.Threading.Tasks.Task;
@@ -69,8 +64,8 @@ public class ProjectManager:IProjectManager
 
 public async Task<int> Update(ProjectUpdateDto projectUpdateDto, int id)
 {
-    var project = _unitOfWork.Project.GetById(id); // Use async version if available
-
+    var  project = _unitOfWork.Project.GetProjectWithEmployees(id).Result.FirstOrDefault(); // Use async version if available
+    
     if (project == null) return 0;
 
     // LogNote project details
@@ -94,7 +89,6 @@ public async Task<int> Update(ProjectUpdateDto projectUpdateDto, int id)
         project.Leader = leader;
     }
 
-    // LogNote team members
     if (projectUpdateDto?.Team != null)
     {
         // Initialize EmployeesProject if null

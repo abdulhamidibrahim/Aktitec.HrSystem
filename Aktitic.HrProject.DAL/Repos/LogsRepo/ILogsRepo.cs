@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Aktitic.HrProject.DAL.Models;
 
 namespace Aktitic.HrProject.DAL.Repos;

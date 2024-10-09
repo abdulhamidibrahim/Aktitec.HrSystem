@@ -8,7 +8,10 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-            
+            builder.HasOne(x=>x.Role)
+                .WithOne(x=>x.User)
+                .HasForeignKey<CompanyRole>(x=>x.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         
     }
 }

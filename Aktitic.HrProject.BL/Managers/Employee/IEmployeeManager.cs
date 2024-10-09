@@ -1,11 +1,6 @@
-using System.Runtime.InteropServices;
-using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Dtos.Employee;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Employee;
 using Microsoft.AspNetCore.Http;
-using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
 

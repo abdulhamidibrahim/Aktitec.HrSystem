@@ -22,13 +22,67 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppPages", b =>
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppModule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompanyModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyModuleId");
+
+                    b.ToTable("AppModules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Main"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Employees"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "HR"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Performance"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Administration"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Pages"
+                        });
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppPages", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AppSubModuleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ArabicName")
                         .IsRequired()
@@ -40,9 +94,812 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Code");
+
+                    b.HasIndex("AppSubModuleId");
 
                     b.ToTable("AppPages", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "AdminDashboard",
+                            AppSubModuleId = 1,
+                            ArabicName = "لوحة التحكم الإدارية",
+                            Name = "Admin Dashboard"
+                        },
+                        new
+                        {
+                            Code = "EmployeeDashboard",
+                            AppSubModuleId = 1,
+                            ArabicName = "لوحة تحكم الموظفين",
+                            Name = "Employee Dashboard"
+                        },
+                        new
+                        {
+                            Code = "Chat",
+                            AppSubModuleId = 2,
+                            ArabicName = "محادثة",
+                            Name = "Chat"
+                        },
+                        new
+                        {
+                            Code = "Calendar",
+                            AppSubModuleId = 2,
+                            ArabicName = "تقويم",
+                            Name = "Calendar"
+                        },
+                        new
+                        {
+                            Code = "Contacts",
+                            AppSubModuleId = 2,
+                            ArabicName = "جهات الاتصال",
+                            Name = "Contacts"
+                        },
+                        new
+                        {
+                            Code = "Email",
+                            AppSubModuleId = 2,
+                            ArabicName = "البريد الإلكتروني",
+                            Name = "Email"
+                        },
+                        new
+                        {
+                            Code = "DocumentsManager",
+                            AppSubModuleId = 2,
+                            ArabicName = "مدير الملفات",
+                            Name = "Documents Manager"
+                        },
+                        new
+                        {
+                            Code = "DocumentsWorkflows",
+                            AppSubModuleId = 2,
+                            ArabicName = "سير عمل الملفات",
+                            Name = "Documents Workflows"
+                        },
+                        new
+                        {
+                            Code = "DocumentsDetailsView",
+                            AppSubModuleId = 2,
+                            ArabicName = "عرض تفاصيل الملفات",
+                            Name = "Documents Details View"
+                        },
+                        new
+                        {
+                            Code = "AllEmployees",
+                            AppSubModuleId = 3,
+                            ArabicName = "كل الموظفين",
+                            Name = "All Employees"
+                        },
+                        new
+                        {
+                            Code = "Contracts",
+                            AppSubModuleId = 3,
+                            ArabicName = "عقود",
+                            Name = "Contracts"
+                        },
+                        new
+                        {
+                            Code = "Holidays",
+                            AppSubModuleId = 3,
+                            ArabicName = "العطل",
+                            Name = "Holidays"
+                        },
+                        new
+                        {
+                            Code = "LeavesAdmin",
+                            AppSubModuleId = 3,
+                            ArabicName = "الإجازات (أدمن)",
+                            Name = "Leaves (Admin)"
+                        },
+                        new
+                        {
+                            Code = "LeavesEmployee",
+                            AppSubModuleId = 3,
+                            ArabicName = "الإجازات (موظف)",
+                            Name = "Leaves (Employee)"
+                        },
+                        new
+                        {
+                            Code = "LeaveSettings",
+                            AppSubModuleId = 3,
+                            ArabicName = "إعدادات الإجازات",
+                            Name = "Leave Settings"
+                        },
+                        new
+                        {
+                            Code = "AttendanceAdmin",
+                            AppSubModuleId = 3,
+                            ArabicName = "الحضور (أدمن)",
+                            Name = "Attendance (Admin)"
+                        },
+                        new
+                        {
+                            Code = "AttendanceEmployee",
+                            AppSubModuleId = 3,
+                            ArabicName = "الحضور (موظف)",
+                            Name = "Attendance (Employee)"
+                        },
+                        new
+                        {
+                            Code = "Departments",
+                            AppSubModuleId = 3,
+                            ArabicName = "الأقسام",
+                            Name = "Departments"
+                        },
+                        new
+                        {
+                            Code = "Designations",
+                            AppSubModuleId = 3,
+                            ArabicName = "التسميات",
+                            Name = "Designations"
+                        },
+                        new
+                        {
+                            Code = "Shift&Schedule",
+                            AppSubModuleId = 3,
+                            ArabicName = "جدول المناوبة",
+                            Name = "Shift & Schedule"
+                        },
+                        new
+                        {
+                            Code = "Overtime",
+                            AppSubModuleId = 3,
+                            ArabicName = "الوقت الإضافي",
+                            Name = "Overtime"
+                        },
+                        new
+                        {
+                            Code = "Clients",
+                            AppSubModuleId = 4,
+                            ArabicName = "العملاء",
+                            Name = "Clients"
+                        },
+                        new
+                        {
+                            Code = "Projects",
+                            AppSubModuleId = 5,
+                            ArabicName = "المشاريع",
+                            Name = "Projects"
+                        },
+                        new
+                        {
+                            Code = "Tasks",
+                            AppSubModuleId = 5,
+                            ArabicName = "المهام",
+                            Name = "Tasks"
+                        },
+                        new
+                        {
+                            Code = "TaskBoard",
+                            AppSubModuleId = 5,
+                            ArabicName = "لوحة المهام",
+                            Name = "Task Board"
+                        },
+                        new
+                        {
+                            Code = "Leads",
+                            AppSubModuleId = 6,
+                            ArabicName = "العملاء المحتملين",
+                            Name = "Leads"
+                        },
+                        new
+                        {
+                            Code = "Tickets",
+                            AppSubModuleId = 7,
+                            ArabicName = "التذاكر",
+                            Name = "Tickets"
+                        },
+                        new
+                        {
+                            Code = "Estimate",
+                            AppSubModuleId = 8,
+                            ArabicName = "تقدير",
+                            Name = "Estimate"
+                        },
+                        new
+                        {
+                            Code = "Invoices",
+                            AppSubModuleId = 8,
+                            ArabicName = "الفواتير",
+                            Name = "Invoices"
+                        },
+                        new
+                        {
+                            Code = "Payments",
+                            AppSubModuleId = 8,
+                            ArabicName = "المدفوعات",
+                            Name = "Payments"
+                        },
+                        new
+                        {
+                            Code = "Expenses",
+                            AppSubModuleId = 8,
+                            ArabicName = "النفقات",
+                            Name = "Expenses"
+                        },
+                        new
+                        {
+                            Code = "ProvidentFund",
+                            AppSubModuleId = 8,
+                            ArabicName = "صندوق الادخار",
+                            Name = "Provident Fund"
+                        },
+                        new
+                        {
+                            Code = "Taxes",
+                            AppSubModuleId = 8,
+                            ArabicName = "الضرائب",
+                            Name = "Taxes"
+                        },
+                        new
+                        {
+                            Code = "Categories",
+                            AppSubModuleId = 9,
+                            ArabicName = "الفئات",
+                            Name = "Categories"
+                        },
+                        new
+                        {
+                            Code = "Budgets",
+                            AppSubModuleId = 9,
+                            ArabicName = "الميزانيات",
+                            Name = "Budgets"
+                        },
+                        new
+                        {
+                            Code = "BudgetsExpenses",
+                            AppSubModuleId = 9,
+                            ArabicName = "نفقات الميزانيات",
+                            Name = "Budgets Expenses"
+                        },
+                        new
+                        {
+                            Code = "BudgetsRevenues",
+                            AppSubModuleId = 9,
+                            ArabicName = "إيرادات الميزانيات",
+                            Name = "Budgets Revenues"
+                        },
+                        new
+                        {
+                            Code = "EmployeeSalary",
+                            AppSubModuleId = 10,
+                            ArabicName = "رواتب الموظفين",
+                            Name = "Employee Salary"
+                        },
+                        new
+                        {
+                            Code = "PayrollItems",
+                            AppSubModuleId = 10,
+                            ArabicName = "عناصر الرواتب",
+                            Name = "Payroll Items"
+                        },
+                        new
+                        {
+                            Code = "Policies",
+                            AppSubModuleId = 11,
+                            ArabicName = "السياسات",
+                            Name = "Policies"
+                        },
+                        new
+                        {
+                            Code = "ExpenseReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير النفقات",
+                            Name = "Expense Report"
+                        },
+                        new
+                        {
+                            Code = "InvoiceReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير الفواتير",
+                            Name = "Invoice Report"
+                        },
+                        new
+                        {
+                            Code = "PaymentsReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير المدفوعات",
+                            Name = "Payments Report"
+                        },
+                        new
+                        {
+                            Code = "ProjectReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير المشروع",
+                            Name = "Project Report"
+                        },
+                        new
+                        {
+                            Code = "TaskReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير المهام",
+                            Name = "Task Report"
+                        },
+                        new
+                        {
+                            Code = "UserReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير المستخدم",
+                            Name = "User Report"
+                        },
+                        new
+                        {
+                            Code = "EmployeeReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير الموظفين",
+                            Name = "Employee Report"
+                        },
+                        new
+                        {
+                            Code = "PayslipReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير قسيمة الراتب",
+                            Name = "Payslip Report"
+                        },
+                        new
+                        {
+                            Code = "AttendanceReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير الحضور",
+                            Name = "Attendance Report"
+                        },
+                        new
+                        {
+                            Code = "LeaveReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير الإجازات",
+                            Name = "Leave Report"
+                        },
+                        new
+                        {
+                            Code = "DailyReport",
+                            AppSubModuleId = 12,
+                            ArabicName = "تقرير يومي",
+                            Name = "Daily Report"
+                        },
+                        new
+                        {
+                            Code = "Performanceindicator",
+                            AppSubModuleId = 13,
+                            ArabicName = "مؤشر الأداء",
+                            Name = "Performance indicator"
+                        },
+                        new
+                        {
+                            Code = "PerformanceReview",
+                            AppSubModuleId = 13,
+                            ArabicName = "مراجعة الأداء",
+                            Name = "Performance Review"
+                        },
+                        new
+                        {
+                            Code = "PerformanceAppraisal",
+                            AppSubModuleId = 13,
+                            ArabicName = "تقييم الأداء",
+                            Name = "Performance Appraisal"
+                        },
+                        new
+                        {
+                            Code = "GoalList",
+                            AppSubModuleId = 14,
+                            ArabicName = "قائمة الأهداف",
+                            Name = "Goal List"
+                        },
+                        new
+                        {
+                            Code = "GoalType",
+                            AppSubModuleId = 14,
+                            ArabicName = "نوع الهدف",
+                            Name = "Goal Type"
+                        },
+                        new
+                        {
+                            Code = "TrainingList",
+                            AppSubModuleId = 15,
+                            ArabicName = "قائمة التدريب",
+                            Name = "Training List"
+                        },
+                        new
+                        {
+                            Code = "Trainers",
+                            AppSubModuleId = 15,
+                            ArabicName = "المدربون",
+                            Name = "Trainers"
+                        },
+                        new
+                        {
+                            Code = "TrainingType",
+                            AppSubModuleId = 15,
+                            ArabicName = "نوع التدريب",
+                            Name = "Training Type"
+                        },
+                        new
+                        {
+                            Code = "Promotion",
+                            AppSubModuleId = 16,
+                            ArabicName = "ترقية",
+                            Name = "Promotion"
+                        },
+                        new
+                        {
+                            Code = "Resignation",
+                            AppSubModuleId = 17,
+                            ArabicName = "استقالة",
+                            Name = "Resignation"
+                        },
+                        new
+                        {
+                            Code = "Termination",
+                            AppSubModuleId = 18,
+                            ArabicName = "فسخ العقد",
+                            Name = "Termination"
+                        },
+                        new
+                        {
+                            Code = "Assets",
+                            AppSubModuleId = 19,
+                            ArabicName = "الأصول",
+                            Name = "Assets"
+                        },
+                        new
+                        {
+                            Code = "UserDashboard",
+                            AppSubModuleId = 20,
+                            ArabicName = "لوحة تحكم المستخدم",
+                            Name = "User Dashboard"
+                        },
+                        new
+                        {
+                            Code = "JobsDashboard",
+                            AppSubModuleId = 20,
+                            ArabicName = "لوحة تحكم الوظائف",
+                            Name = "Jobs Dashboard"
+                        },
+                        new
+                        {
+                            Code = "ManageJobs",
+                            AppSubModuleId = 20,
+                            ArabicName = "إدارة الوظائف",
+                            Name = "Manage Jobs"
+                        },
+                        new
+                        {
+                            Code = "ManageResumes",
+                            AppSubModuleId = 20,
+                            ArabicName = "إدارة السير الذاتية",
+                            Name = "Manage Resumes"
+                        },
+                        new
+                        {
+                            Code = "ShortlistCandidates",
+                            AppSubModuleId = 20,
+                            ArabicName = "قائمة المرشحين المختصرة",
+                            Name = "Shortlist Candidates"
+                        },
+                        new
+                        {
+                            Code = "InterviewQuestions",
+                            AppSubModuleId = 20,
+                            ArabicName = "أسئلة المقابلة",
+                            Name = "Interview Questions"
+                        },
+                        new
+                        {
+                            Code = "OfferApprovals",
+                            AppSubModuleId = 20,
+                            ArabicName = "الموافقات على العروض",
+                            Name = "Offer Approvals"
+                        },
+                        new
+                        {
+                            Code = "ExperienceLevel",
+                            AppSubModuleId = 20,
+                            ArabicName = "مستوى الخبرة",
+                            Name = "Experience Level"
+                        },
+                        new
+                        {
+                            Code = "CandidatesList",
+                            AppSubModuleId = 20,
+                            ArabicName = "قائمة المرشحين",
+                            Name = "Candidates List"
+                        },
+                        new
+                        {
+                            Code = "ScheduleTiming",
+                            AppSubModuleId = 20,
+                            ArabicName = "توقيت الجدول الزمني",
+                            Name = "Schedule Timing"
+                        },
+                        new
+                        {
+                            Code = "AptitudeResults",
+                            AppSubModuleId = 20,
+                            ArabicName = "نتائج الكفاءة",
+                            Name = "Aptitude Results"
+                        },
+                        new
+                        {
+                            Code = "AppliedCandidates",
+                            AppSubModuleId = 20,
+                            ArabicName = "المرشحون المتقدمون",
+                            Name = "Applied Candidates"
+                        },
+                        new
+                        {
+                            Code = "Knowledgebase",
+                            AppSubModuleId = 21,
+                            ArabicName = "قاعدة المعرفة",
+                            Name = "Knowledgebase"
+                        },
+                        new
+                        {
+                            Code = "Activities",
+                            AppSubModuleId = 22,
+                            ArabicName = "الأنشطة",
+                            Name = "Activities"
+                        },
+                        new
+                        {
+                            Code = "Users",
+                            AppSubModuleId = 23,
+                            ArabicName = "المستخدمون",
+                            Name = "Users"
+                        },
+                        new
+                        {
+                            Code = "Companies",
+                            AppSubModuleId = 24,
+                            ArabicName = "الشركات",
+                            Name = "Companies"
+                        },
+                        new
+                        {
+                            Code = "Licenses",
+                            AppSubModuleId = 25,
+                            ArabicName = "التراخيص",
+                            Name = "Licenses"
+                        },
+                        new
+                        {
+                            Code = "Notifications",
+                            AppSubModuleId = 26,
+                            ArabicName = "الإشعارات",
+                            Name = "Notifications"
+                        },
+                        new
+                        {
+                            Code = "UserActivities",
+                            AppSubModuleId = 27,
+                            ArabicName = "أنشطة المستخدم",
+                            Name = "User Activities"
+                        },
+                        new
+                        {
+                            Code = "Trash",
+                            AppSubModuleId = 28,
+                            ArabicName = "المهملات",
+                            Name = "Trash"
+                        },
+                        new
+                        {
+                            Code = "Settings",
+                            AppSubModuleId = 29,
+                            ArabicName = "الإعدادات",
+                            Name = "Settings"
+                        },
+                        new
+                        {
+                            Code = "EmployeeProfile",
+                            AppSubModuleId = 30,
+                            ArabicName = "ملف الموظف",
+                            Name = "Employee Profile"
+                        });
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppSubModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AppModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppModuleId");
+
+                    b.ToTable("AppSubModules");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AppModuleId = 1,
+                            Name = "Dashboard"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AppModuleId = 1,
+                            Name = "App"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AppModuleId = 2,
+                            Name = "Employees"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AppModuleId = 2,
+                            Name = "Clients"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AppModuleId = 2,
+                            Name = "Projects"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AppModuleId = 2,
+                            Name = "Leads"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AppModuleId = 2,
+                            Name = "Tickets"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AppModuleId = 3,
+                            Name = "Sales"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AppModuleId = 3,
+                            Name = "Accounting"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AppModuleId = 3,
+                            Name = "Payroll"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AppModuleId = 3,
+                            Name = "Policies"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            AppModuleId = 3,
+                            Name = "Reports"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            AppModuleId = 4,
+                            Name = "Performance"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            AppModuleId = 4,
+                            Name = "Goals"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AppModuleId = 4,
+                            Name = "Training"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AppModuleId = 4,
+                            Name = "Promotion"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            AppModuleId = 4,
+                            Name = "Resignation"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            AppModuleId = 4,
+                            Name = "Termination"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            AppModuleId = 5,
+                            Name = "Assets"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            AppModuleId = 5,
+                            Name = "Jobs"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            AppModuleId = 5,
+                            Name = "Knowledgebase"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            AppModuleId = 5,
+                            Name = "Activities"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            AppModuleId = 5,
+                            Name = "Users"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            AppModuleId = 5,
+                            Name = "Companies"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            AppModuleId = 5,
+                            Name = "Licenses"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            AppModuleId = 5,
+                            Name = "Notifications"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            AppModuleId = 5,
+                            Name = "User Activities"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            AppModuleId = 5,
+                            Name = "Trash"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            AppModuleId = 5,
+                            Name = "Settings"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            AppModuleId = 6,
+                            Name = "Profile"
+                        });
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
@@ -136,9 +993,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -401,6 +1257,9 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<int?>("ActionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("AppPagesCode")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int?>("AppPagesId")
                         .HasColumnType("int");
 
@@ -429,7 +1288,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("ActionId");
 
-                    b.HasIndex("AppPagesId");
+                    b.HasIndex("AppPagesCode");
 
                     b.ToTable("AuditLogs");
                 });
@@ -992,6 +1851,109 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppModuleId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("CompanyModules");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("CompanyRoles");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contact", b =>
                 {
                     b.Property<int>("Id")
@@ -1346,7 +2308,6 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PrintSize")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ProjectId")
@@ -3188,6 +4149,12 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CompanyModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyRoleId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ContactId")
                         .HasColumnType("int");
 
@@ -3346,6 +4313,9 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Property<int?>("RevisorId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RolePermissionsId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SalaryId")
                         .HasColumnType("int");
 
@@ -3417,6 +4387,10 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("ChatGroupId");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("CompanyModuleId");
+
+                    b.HasIndex("CompanyRoleId");
 
                     b.HasIndex("ContactId");
 
@@ -3515,6 +4489,8 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("RevenueId");
 
                     b.HasIndex("RevisorId");
+
+                    b.HasIndex("RolePermissionsId");
 
                     b.HasIndex("SalaryId");
 
@@ -4278,8 +5254,6 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Permissions", "project");
                 });
 
@@ -4775,6 +5749,79 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Revisors");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.RolePermissions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Add")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CompanyModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Delete")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Edit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Export")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Import")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PageCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Read")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyModuleId");
+
+                    b.HasIndex("CompanyRoleId");
+
+                    b.HasIndex("PageCode");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Salary", b =>
@@ -6021,6 +7068,33 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.ToTable("UserTokens");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppModule", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CompanyModule", null)
+                        .WithMany("Modules")
+                        .HasForeignKey("CompanyModuleId");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppPages", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AppSubModule", "AppSubModule")
+                        .WithMany("AppPages")
+                        .HasForeignKey("AppSubModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppSubModule");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppSubModule", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AppModule", "AppModule")
+                        .WithMany("AppSubModules")
+                        .HasForeignKey("AppModuleId");
+
+                    b.Navigation("AppModule");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
                 {
                     b.HasOne("Aktitic.HrProject.DAL.Models.Employee", "Employee")
@@ -6104,7 +7178,7 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.HasOne("Aktitic.HrProject.DAL.Models.AppPages", "AppPages")
                         .WithMany()
-                        .HasForeignKey("AppPagesId");
+                        .HasForeignKey("AppPagesCode");
 
                     b.Navigation("Action");
 
@@ -6228,6 +7302,55 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyModule", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AppModule", "AppModule")
+                        .WithMany("CompanyModules")
+                        .HasForeignKey("AppModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Company")
+                        .WithMany("CompanyModules")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("AppModule");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyRole", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Company")
+                        .WithMany("Roles")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "User")
+                        .WithOne("Role")
+                        .HasForeignKey("Aktitic.HrProject.DAL.Models.CompanyRole", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contact", b =>
@@ -6808,6 +7931,14 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .WithMany("ModifiedRecords")
                         .HasForeignKey("ClientId");
 
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CompanyModule", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("CompanyModuleId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CompanyRole", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("CompanyRoleId");
+
                     b.HasOne("Aktitic.HrProject.DAL.Models.Contact", null)
                         .WithMany("ModifiedRecords")
                         .HasForeignKey("ContactId");
@@ -7003,6 +8134,10 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.HasOne("Aktitic.HrProject.DAL.Models.Revisor", null)
                         .WithMany("ModifiedRecords")
                         .HasForeignKey("RevisorId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.RolePermissions", null)
+                        .WithMany("ModifiedRecords")
+                        .HasForeignKey("RolePermissionsId");
 
                     b.HasOne("Aktitic.HrProject.DAL.Models.Salary", null)
                         .WithMany("ModifiedRecords")
@@ -7271,22 +8406,13 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Permission", b =>
                 {
-                    b.HasOne("Aktitic.HrProject.DAL.Models.Client", "Client")
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Client", null)
                         .WithMany("Permissions")
                         .HasForeignKey("ClientId");
 
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
-
-                    b.HasOne("Aktitic.HrProject.DAL.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Permissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Client");
 
                     b.Navigation("Tenant");
                 });
@@ -7433,6 +8559,35 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Document");
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.RolePermissions", b =>
+                {
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CompanyModule", null)
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("CompanyModuleId");
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.CompanyRole", "CompanyRole")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("CompanyRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.AppPages", "AppPages")
+                        .WithMany()
+                        .HasForeignKey("PageCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId");
+
+                    b.Navigation("AppPages");
+
+                    b.Navigation("CompanyRole");
 
                     b.Navigation("Tenant");
                 });
@@ -7744,6 +8899,18 @@ namespace Aktitic.HrProject.DAL.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppModule", b =>
+                {
+                    b.Navigation("AppSubModules");
+
+                    b.Navigation("CompanyModules");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.AppSubModule", b =>
+                {
+                    b.Navigation("AppPages");
+                });
+
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Assets");
@@ -7756,9 +8923,10 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Navigation("ManagedCompany");
 
-                    b.Navigation("Permissions");
-
                     b.Navigation("ReceivedEmails");
+
+                    b.Navigation("Role")
+                        .IsRequired();
 
                     b.Navigation("SentEmails");
                 });
@@ -7839,7 +9007,27 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Company", b =>
                 {
+                    b.Navigation("CompanyModules");
+
+                    b.Navigation("Roles");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyModule", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+
+                    b.Navigation("Modules");
+
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.CompanyRole", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Contact", b =>
@@ -8161,6 +9349,11 @@ namespace Aktitic.HrProject.DAL.Migrations
                 });
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Revisor", b =>
+                {
+                    b.Navigation("ModifiedRecords");
+                });
+
+            modelBuilder.Entity("Aktitic.HrProject.DAL.Models.RolePermissions", b =>
                 {
                     b.Navigation("ModifiedRecords");
                 });

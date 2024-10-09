@@ -1,7 +1,3 @@
-using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Dtos;
-using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrTaskList.BL;
 using Microsoft.AspNetCore.Http;
 
 namespace Aktitic.HrTaskList.BL;
