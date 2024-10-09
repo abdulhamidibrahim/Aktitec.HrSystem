@@ -10,14 +10,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 
-public class EmployeeRepo : GenericRepo<Employee>, IEmployeeRepo
+public class EmployeeRepo(HrSystemDbContext context) : GenericRepo<Employee>(context), IEmployeeRepo
 {
-    private readonly HrSystemDbContext _context;
-
-    public EmployeeRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HrSystemDbContext _context = context;
 
     public Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit)
     {

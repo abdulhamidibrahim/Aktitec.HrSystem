@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.TrainingListRepo;
 
-public class TrainingListRepo :GenericRepo<TrainingList>,ITrainingListRepo
+public class TrainingListRepo(HrSystemDbContext context) : GenericRepo<TrainingList>(context), ITrainingListRepo
 {
-    private readonly HrSystemDbContext _context;
-
-    public TrainingListRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HrSystemDbContext _context = context;
 
     public IQueryable<TrainingList> GlobalSearch(string? searchKey)
     {

@@ -1,17 +1,10 @@
-
-using System.Collections;
-using System.Net;
 using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Pagination.Employee;
-using Aktitic.HrProject.DAL.Repos;
-using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;

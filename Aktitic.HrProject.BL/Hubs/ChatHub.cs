@@ -6,16 +6,8 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL.SignalR;
 
-public class ChatHub : Hub
+public class ChatHub(IUnitOfWork unitOfWork, UserUtility userUtility) : Hub
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly UserUtility _userUtility;
-
-    public ChatHub(IUnitOfWork unitOfWork,UserUtility userUtility)
-    {
-        _unitOfWork = unitOfWork;
-        _userUtility = userUtility;
-    }
     // public async Task SendMessage(string user, string message) 
     //     => await Clients.All.SendAsync("ReceiveMessage", user, message);
     // public async Task SendPrivateMessage(string user, string message) 
@@ -27,14 +19,15 @@ public class ChatHub : Hub
 
     public override Task OnConnectedAsync()
     {
-        var userId = _userUtility.GetUserId(); // Assuming UserIdentifier is set up
-        _unitOfWork.ApplicationUser.AddConnection(userId, Context.ConnectionId);
+        Console.WriteLine("Connected");
+        // var userId = userUtility.GetUserId(); // Assuming UserIdentifier is set up
+        // unitOfWork.ApplicationUser.AddConnection(userId, Context.ConnectionId);
         return base.OnConnectedAsync();
     }
     
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        _unitOfWork.ApplicationUser.RemoveConnection(Context.ConnectionId);
+        unitOfWork.ApplicationUser.RemoveConnection(Context.ConnectionId);
         // return base.OnDisconnectedAsync(exception);
         return Task.CompletedTask;
     }
@@ -56,14 +49,14 @@ public class ChatHub : Hub
     }
     public async Task AddUsersToGroup(int adminId, List<int> userId, int companyId)
     {
-        if (!_unitOfWork.ApplicationUser.IsAdmin(adminId))
+        if (!unitOfWork.ApplicationUser.IsAdmin(adminId))
         {
             throw new HubException("Only admins can add users to groups.");
         }
 
         foreach (var id in userId)
         {
-            var user = _unitOfWork.ApplicationUser.GetById(id);
+            var user = unitOfWork.ApplicationUser.GetById(id);
             if (user == null)
             {
                 throw new HubException("User not found.");

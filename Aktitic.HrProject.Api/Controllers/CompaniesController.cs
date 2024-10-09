@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
-// [Authorize(Roles = "SystemOwner")] 
+// [Authorize(Role = "SystemOwner")] 
 [Route("api/[controller]")]
 public class CompaniesController(ICompanyManager companyManager) : ControllerBase
 {

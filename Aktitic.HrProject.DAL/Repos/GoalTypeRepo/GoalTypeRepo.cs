@@ -1,3 +1,4 @@
+using System.Linq;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;

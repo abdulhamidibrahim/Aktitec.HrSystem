@@ -24,6 +24,6 @@ public class ClientAddDto
     public string? CompanyName { get; set; } = string.Empty;
     public string? UserName { get; set; }
     public bool? Status { get; set; } = false;
-    public string? Permissions { get; set; }
+    // public string? Permissions { get; set; }
     
 }

@@ -64,7 +64,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     public ActionResult Update([FromForm] ClientUpdateDto clientUpdateDto, int id)
     {
          var result = clientManager.Update(clientUpdateDto,id);
-        if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
+        if (result.Result == (0)) return BadRequest("Failed to update");
         return Ok("updated successfully !");
     }
     

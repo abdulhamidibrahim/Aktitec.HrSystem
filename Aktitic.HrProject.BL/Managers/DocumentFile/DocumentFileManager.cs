@@ -1,6 +1,4 @@
-using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
-using System.Text;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Microsoft.AspNetCore.Hosting;

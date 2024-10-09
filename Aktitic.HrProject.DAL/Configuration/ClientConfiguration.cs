@@ -26,8 +26,8 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             
         // client permissions relationship
 
-        builder.HasMany(d => d.Permissions)
-            .WithOne(p => p.Client)
-            .HasForeignKey(e=>e.ClientId);
+        // builder.HasMany(d => d.Permissions)
+        //     .WithOne(p => p.Client)
+        //     .HasForeignKey(e=>e.ClientId);
     }
 }

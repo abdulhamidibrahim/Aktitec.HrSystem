@@ -1,22 +1,11 @@
-
-using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
 
-public class NoteManager:INoteManager
+public class NoteManager(IUnitOfWork unitOfWork) : INoteManager
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public NoteManager(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-    
     public Task<int> Add(NotesAddDto notesAddDto)
     {
         var notes = new Notes()
@@ -28,13 +17,13 @@ public class NoteManager:INoteManager
             Date = DateTime.Now,
             CreatedAt = DateTime.Now,
         }; 
-        _unitOfWork.Notes.Add(notes);
-        return _unitOfWork.SaveChangesAsync();
+        unitOfWork.Notes.Add(notes);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(NotesUpdateDto notesUpdateDto, int id)
     {
-        var notes = _unitOfWork.Notes.GetById(id);
+        var notes = unitOfWork.Notes.GetById(id);
 
         if (notes == null) return Task.FromResult(0);
         if(notesUpdateDto.ReceiverId != null) notes.ReceiverId = notesUpdateDto.ReceiverId;
@@ -44,23 +33,23 @@ public class NoteManager:INoteManager
         notes.Date = DateTime.Now;
 
         notes.UpdatedAt = DateTime.Now;
-         _unitOfWork.Notes.Update(notes);
-         return _unitOfWork.SaveChangesAsync();
+         unitOfWork.Notes.Update(notes);
+         return unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var notes = _unitOfWork.Notes.GetById(id);
+        var notes = unitOfWork.Notes.GetById(id);
         if (notes==null) return Task.FromResult(0);
         notes.IsDeleted = true;
         notes.DeletedAt = DateTime.Now;
-        _unitOfWork.Notes.Update(notes);
-        return _unitOfWork.SaveChangesAsync();
+        unitOfWork.Notes.Update(notes);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public Task<NotesReadDto>? Get(int id)
     {
-        var notes = _unitOfWork.Notes.GetById(id);
+        var notes = unitOfWork.Notes.GetById(id);
         if (notes == null) return null;
         return Task.FromResult(new NotesReadDto()
         {
@@ -75,7 +64,7 @@ public class NoteManager:INoteManager
 
     public Task<List<NotesReadDto>> GetAll()
     {
-        var notes = _unitOfWork.Notes.GetAll();
+        var notes = unitOfWork.Notes.GetAll();
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,
@@ -89,7 +78,7 @@ public class NoteManager:INoteManager
 
     public List<NotesReadDto> GetByReceiver(int receiverId)
     {
-        var notes = _unitOfWork.Notes.GetByReceiver(receiverId);
+        var notes = unitOfWork.Notes.GetByReceiver(receiverId);
         return (notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,
@@ -112,7 +101,7 @@ public class NoteManager:INoteManager
 
     public Task<List<NotesReadDto>> GetBySender(int senderId)
     {
-        var notes = _unitOfWork.Notes.GetBySender(senderId);
+        var notes = unitOfWork.Notes.GetBySender(senderId);
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,
@@ -134,7 +123,7 @@ public class NoteManager:INoteManager
 
     public Task<List<NotesReadDto>> GetStarred(int userId)
     {
-        var notes = _unitOfWork.Notes.GetStarred(userId);
+        var notes = unitOfWork.Notes.GetStarred(userId);
         return Task.FromResult(notes.Result.Select(note => new NotesReadDto()
         {
             Id = note.Id,

@@ -24,5 +24,5 @@ public class ClientUpdateDto
     public string Mobile { get; set; } = string.Empty;
     public string? CompanyName { get; set; } = string.Empty;
     public string? ImgUrl { get; set; }
-    public string? Permissions { get; set; } 
+    // public string? Permissions { get; set; } 
 }

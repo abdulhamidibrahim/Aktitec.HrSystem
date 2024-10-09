@@ -11,8 +11,7 @@ public class EmployeeUpdateDto
     
     [EmailAddress(ErrorMessage = "Invalid Email Address")]
     public string? Email { get; set; }
-    // public string? ImgUrl { get; set; }
-    // public IFormFile? Image { get; set; }
+    
 
     public string? Phone { get; set; }
 

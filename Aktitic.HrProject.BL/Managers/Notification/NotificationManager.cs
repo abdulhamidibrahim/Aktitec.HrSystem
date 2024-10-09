@@ -1,14 +1,9 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;
-using Aktitic.HrProject.DAL.Dtos;
-using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using AutoMapper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
-using File = System.IO.File;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTaskList.BL;

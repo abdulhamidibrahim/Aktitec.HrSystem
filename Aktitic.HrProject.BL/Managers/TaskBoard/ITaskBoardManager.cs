@@ -1,7 +1,3 @@
-using Aktitic.HrProject.BL;
-using Aktitic.HrProject.DAL.Dtos;
-using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
-
 namespace Aktitic.HrProject.BL;
 
 public interface ITaskBoardManager

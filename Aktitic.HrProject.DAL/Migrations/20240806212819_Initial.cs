@@ -36,7 +36,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "Role",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -3653,7 +3653,7 @@ namespace Aktitic.HrProject.DAL.Migrations
                 name: "RoleClaims");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Role");
 
             migrationBuilder.DropTable(
                 name: "Salaries");

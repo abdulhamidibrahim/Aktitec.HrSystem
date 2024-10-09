@@ -1,6 +1,4 @@
-using System.Net;
 using Aktitic.HrProject.BL;
-using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;

@@ -6,15 +6,10 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
-public class ProjectRepo :GenericRepo<Project>,IProjectRepo
+public class ProjectRepo(HrSystemDbContext context) : GenericRepo<Project>(context), IProjectRepo
 {
-    private readonly HrSystemDbContext _context;
+    private readonly HrSystemDbContext _context = context;
 
-    public ProjectRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
-    
     public IQueryable<Project> GlobalSearch(string? searchKey)
     {
         if (_context.Projects != null)

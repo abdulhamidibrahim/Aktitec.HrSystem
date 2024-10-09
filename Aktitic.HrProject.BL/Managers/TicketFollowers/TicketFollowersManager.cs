@@ -1,10 +1,7 @@
 
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
-using Aktitic.HrTicket.BL;
-
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrTicket.BL;

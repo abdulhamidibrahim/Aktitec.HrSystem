@@ -1,6 +1,3 @@
-using Aktitic.HrProject.BL;
-using Microsoft.AspNetCore.Http;
-
 namespace Aktitic.HrProject.BL;
 
 public interface IDocumentFileManager

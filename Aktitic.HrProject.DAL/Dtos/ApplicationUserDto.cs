@@ -11,7 +11,7 @@ public class ApplicationUserDto
     public string? UserName { get; set; } = string.Empty;
     public string? Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    public int Role { get; set; } 
     public int? CompanyId { get; set; } 
     public int? EmployeeId { get; set; }
     public EmployeeDto? Employee { get; set; }

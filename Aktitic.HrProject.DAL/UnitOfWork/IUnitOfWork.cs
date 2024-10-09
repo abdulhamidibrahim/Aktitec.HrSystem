@@ -1,10 +1,7 @@
-using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 using Aktitic.HrProject.DAL.Repos.EmployeeRepo;
 using Aktitic.HrProject.DAL.Repos.InvoiceRepo;
-using Task = Aktitic.HrProject.DAL.Models.Task;
 
 namespace Aktitic.HrProject.DAL.UnitOfWork;
 
@@ -89,4 +86,10 @@ public interface IUnitOfWork : IDisposable
     IEmailsRepo Emails { get; }
     IDocumentFilesRepo DocumentFiles { get; }
     IRevisorsRepo Revisors { get; }
+    IAppModulesRepo AppModules { get; }
+    IAppSubModulesRepo AppSubModules { get; }
+    IAppPagesRepo AppPages { get; }
+    ICompanyModulesRepo CompanyModules { get; }
+    ICompanyRolesRepo CompanyRoles { get; }
+    IRolePermissionsRepo RolePermissions { get; }
 }

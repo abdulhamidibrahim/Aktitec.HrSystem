@@ -10,10 +10,10 @@ public class AppPagesConfiguration : IEntityTypeConfiguration<AppPages>
     {
         builder.ToTable("AppPages");
 
-        builder.HasKey(e => e.Id);
+        builder.HasKey(e => e.Code);
 
-        builder.Property(e => e.Id)
-            .ValueGeneratedOnAdd();
+        // builder.Property(e => e.Id)
+            // .ValueGeneratedOnAdd();
 
         builder.Property(e => e.Name)
             .HasColumnType("nvarchar(50)")

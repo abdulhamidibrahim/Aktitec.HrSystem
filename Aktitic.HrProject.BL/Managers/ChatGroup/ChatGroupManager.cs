@@ -1,5 +1,3 @@
-
-using System.Text.Json.Serialization;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.SignalR;
 using Aktitic.HrProject.BL.Utilities;

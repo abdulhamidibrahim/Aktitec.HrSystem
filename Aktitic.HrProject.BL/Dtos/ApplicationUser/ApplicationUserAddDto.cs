@@ -24,10 +24,10 @@ public class ApplicationUserAddDto
         
     [Required, RegularExpression("^\\+?\\d{11}$")]
     public string Phone { get; set; } = string.Empty;
-    public string Role { get; set; } = string.Empty;
+    public int  Role { get; set; } 
     public int CompanyId { get; set; }
     public int? EmployeeId { get; set; }
     public DateTime Date { get; set; }
     public IFormFile? Image { get; set; }
-    public string Permissions { get; set; } = string.Empty;
+    // public string Permissions { get; set; } = string.Empty;
 }

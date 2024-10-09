@@ -1,12 +1,8 @@
-
-using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;

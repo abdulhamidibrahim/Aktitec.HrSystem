@@ -12,28 +12,22 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProjectsController: ControllerBase
+public class ProjectsController(IProjectManager projectManager) : ControllerBase
 {
-    private readonly IProjectManager _projectManager;
     // private readonly UserManager<Project> _userManager;
 
-    public ProjectsController(
-        IProjectManager projectManager)
-    {
-        _projectManager = projectManager;
-        // _userManager = userManager;
-    }
-    
+    // _userManager = userManager;
+
     [HttpGet]
     public async Task<List<ProjectReadDto>> GetAll()
     {
-        return await _projectManager.GetAll();
+        return await projectManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public Task<ProjectReadDto?> Get(int id)
     {
-        Task<ProjectReadDto?> result = _projectManager.Get(id);
+        Task<ProjectReadDto?> result = projectManager.Get(id);
 
         return result;
     }
@@ -45,7 +39,7 @@ public class ProjectsController: ControllerBase
     [HttpPost("create")]
     public  ActionResult Create(ProjectAddDto projectAddDto)
     {
-         var result =_projectManager.Add(projectAddDto);
+         var result =projectManager.Add(projectAddDto);
          if (result.Result == 0) return BadRequest("Failed to add");
          return Ok(" Created Successfully ");
     }
@@ -55,7 +49,7 @@ public class ProjectsController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update( ProjectUpdateDto projectUpdateDto,int id)
     {
-        var result = _projectManager.Update(projectUpdateDto,id);
+        var result = projectManager.Update(projectUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok(" updated successfully !");
     }
@@ -63,7 +57,7 @@ public class ProjectsController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result =_projectManager.Delete(id);
+        var result =projectManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully");
     }
@@ -71,7 +65,7 @@ public class ProjectsController: ControllerBase
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<ProjectDto>> GlobalSearch(string search,string? column)
     {
-        return await _projectManager.GlobalSearch(search,column);
+        return await projectManager.GlobalSearch(search,column);
     }
     
     [HttpGet("getFilteredProjects")]
@@ -79,7 +73,7 @@ public class ProjectsController: ControllerBase
     {
         try
         {
-            var project =  _projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+            var project =  projectManager.GetFilteredProjectsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
             return Ok(project);  
         }
         catch (Exception e)

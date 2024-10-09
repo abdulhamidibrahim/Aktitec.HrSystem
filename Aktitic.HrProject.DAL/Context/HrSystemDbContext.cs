@@ -1,5 +1,9 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,7 +20,8 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 {
     public static int TenantId { get; private set; }
     private readonly UserUtility? _userUtility;
-    
+
+    public HrSystemDbContext() { }
     public HrSystemDbContext(DbContextOptions<HrSystemDbContext> options, UserUtility? userUtility) : base(options)
     {
         _userUtility = userUtility;
@@ -141,6 +146,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<MailAttachment>? Attachments { get; set; }   
     public virtual DbSet<DocumentFile>? DocumentFiles { get; set; }   
     public virtual DbSet<Revisor>? Revisors { get; set; }   
+    public virtual DbSet<AppModule>? AppModules { get; set; }   
+    public virtual DbSet<AppSubModule>? AppSubModules { get; set; }   
+    public virtual DbSet<CompanyModule>? CompanyModules { get; set; }   
+    public virtual DbSet<CompanyRole>? CompanyRoles { get; set; }   
+    public virtual DbSet<RolePermissions>? RolePermissions { get; set; }   
     
 
     #endregion
@@ -258,7 +268,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
                  Changes = GetChanges(entry),
                  IpAddress = _userUtility.GetIpAddress(),
                  TenantId = GetCurrentTenantId(), 
-                 AppPages = AppPages?.FirstOrDefault(x=>x.Id == pageName),
+                 // AppPages = AppPages?.FirstOrDefault(x=>x.Id == pageName),
                                                     
                  // id of the added item
                  ModifiedRecords = new List<ModifiedRecord>()
@@ -375,7 +385,7 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
+        SeedData(modelBuilder);
         // get non deleted records
         // Apply global query filters for all entities that implements IBaseEntity
         // foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -608,11 +618,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
         
         
      
-         modelBuilder.Entity<Permission>()
-             .HasOne(p => p.ApplicationUser)
-             .WithMany(u => u.Permissions)
-             .HasForeignKey(p => p.UserId)
-             .OnDelete(DeleteBehavior.Cascade);
+         // modelBuilder.Entity<Permission>()
+             // .HasOne(p => p.ApplicationUser)
+             // .WithMany(u => u.Permissions)
+             // .HasForeignKey(p => p.UserId)
+             // .OnDelete(DeleteBehavior.Cascade);
 
          OnModelCreatingPartial(modelBuilder);
     }
@@ -685,6 +695,401 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
 
         // Return a new lambda expression with the combined body
         return Expression.Lambda(combinedBody, parameter);
+    }
+
+    private void SeedData(ModelBuilder modelBuilder)
+    {
+        var modules = new List<AppModule>();
+        var subModules = new List<AppSubModule>();
+        var pages = new List<AppPages>();
+
+        int moduleId = 1, subModuleId = 1, pageId = 1;
+
+        // Data from JSON and Arabic values
+        var data = new[]
+        {
+            new
+            {
+                Module = "Main",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Dashboard",
+                        Pages = new[]
+                        {
+                            new { Name = "Admin Dashboard", ArabicName = "لوحة التحكم الإدارية" },
+                            new { Name = "Employee Dashboard", ArabicName = "لوحة تحكم الموظفين" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "App",
+                        Pages = new[]
+                        {
+                            new { Name = "Chat", ArabicName = "محادثة" },
+                            new { Name = "Calendar", ArabicName = "تقويم" },
+                            new { Name = "Contacts", ArabicName = "جهات الاتصال" },
+                            new { Name = "Email", ArabicName = "البريد الإلكتروني" },
+                            new { Name = "Documents Manager", ArabicName = "مدير الملفات" },
+                            new { Name = "Documents Workflows", ArabicName = "سير عمل الملفات" },
+                            new { Name = "Documents Details View", ArabicName = "عرض تفاصيل الملفات" }
+                        }
+                    }
+                }
+            },
+            new
+            {
+                Module = "Employees",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Employees",
+                        Pages = new[]
+                        {
+                            new { Name = "All Employees", ArabicName = "كل الموظفين" },
+                            new { Name = "Contracts", ArabicName = "عقود" },
+                            new { Name = "Holidays", ArabicName = "العطل" },
+                            new { Name = "Leaves (Admin)", ArabicName = "الإجازات (أدمن)" },
+                            new { Name = "Leaves (Employee)", ArabicName = "الإجازات (موظف)" },
+                            new { Name = "Leave Settings", ArabicName = "إعدادات الإجازات" },
+                            new { Name = "Attendance (Admin)", ArabicName = "الحضور (أدمن)" },
+                            new { Name = "Attendance (Employee)", ArabicName = "الحضور (موظف)" },
+                            new { Name = "Departments", ArabicName = "الأقسام" },
+                            new { Name = "Designations", ArabicName = "التسميات" },
+                            new { Name = "Shift & Schedule", ArabicName = "جدول المناوبة" },
+                            new { Name = "Overtime", ArabicName = "الوقت الإضافي" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Clients",
+                        Pages = new[]
+                        {
+                            new { Name = "Clients", ArabicName = "العملاء" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Projects",
+                        Pages = new[]
+                        {
+                            new { Name = "Projects", ArabicName = "المشاريع" },
+                            new { Name = "Tasks", ArabicName = "المهام" },
+                            new { Name = "Task Board", ArabicName = "لوحة المهام" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Leads",
+                        Pages = new[]
+                        {
+                            new { Name = "Leads", ArabicName = "العملاء المحتملين" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Tickets",
+                        Pages = new[]
+                        {
+                            new { Name = "Tickets", ArabicName = "التذاكر" }
+                        }
+                    }
+                }
+            },
+            new
+            {
+                Module = "HR",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Sales",
+                        Pages = new[]
+                        {
+                            new { Name = "Estimate", ArabicName = "تقدير" },
+                            new { Name = "Invoices", ArabicName = "الفواتير" },
+                            new { Name = "Payments", ArabicName = "المدفوعات" },
+                            new { Name = "Expenses", ArabicName = "النفقات" },
+                            new { Name = "Provident Fund", ArabicName = "صندوق الادخار" },
+                            new { Name = "Taxes", ArabicName = "الضرائب" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Accounting",
+                        Pages = new[]
+                        {
+                            new { Name = "Categories", ArabicName = "الفئات" },
+                            new { Name = "Budgets", ArabicName = "الميزانيات" },
+                            new { Name = "Budgets Expenses", ArabicName = "نفقات الميزانيات" },
+                            new { Name = "Budgets Revenues", ArabicName = "إيرادات الميزانيات" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Payroll",
+                        Pages = new[]
+                        {
+                            new { Name = "Employee Salary", ArabicName = "رواتب الموظفين" },
+                            new { Name = "Payroll Items", ArabicName = "عناصر الرواتب" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Policies",
+                        Pages = new[]
+                        {
+                            new { Name = "Policies", ArabicName = "السياسات" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Reports",
+                        Pages = new[]
+                        {
+                            new { Name = "Expense Report", ArabicName = "تقرير النفقات" },
+                            new { Name = "Invoice Report", ArabicName = "تقرير الفواتير" },
+                            new { Name = "Payments Report", ArabicName = "تقرير المدفوعات" },
+                            new { Name = "Project Report", ArabicName = "تقرير المشروع" },
+                            new { Name = "Task Report", ArabicName = "تقرير المهام" },
+                            new { Name = "User Report", ArabicName = "تقرير المستخدم" },
+                            new { Name = "Employee Report", ArabicName = "تقرير الموظفين" },
+                            new { Name = "Payslip Report", ArabicName = "تقرير قسيمة الراتب" },
+                            new { Name = "Attendance Report", ArabicName = "تقرير الحضور" },
+                            new { Name = "Leave Report", ArabicName = "تقرير الإجازات" },
+                            new { Name = "Daily Report", ArabicName = "تقرير يومي" }
+                        }
+                    }
+                }
+            },
+            new
+            {
+                Module = "Performance",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Performance",
+                        Pages = new[]
+                        {
+                            new { Name = "Performance indicator", ArabicName = "مؤشر الأداء" },
+                            new { Name = "Performance Review", ArabicName = "مراجعة الأداء" },
+                            new { Name = "Performance Appraisal", ArabicName = "تقييم الأداء" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Goals",
+                        Pages = new[]
+                        {
+                            new { Name = "Goal List", ArabicName = "قائمة الأهداف" },
+                            new { Name = "Goal Type", ArabicName = "نوع الهدف" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Training",
+                        Pages = new[]
+                        {
+                            new { Name = "Training List", ArabicName = "قائمة التدريب" },
+                            new { Name = "Trainers", ArabicName = "المدربون" },
+                            new { Name = "Training Type", ArabicName = "نوع التدريب" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Promotion",
+                        Pages = new[]
+                        {
+                            new { Name = "Promotion", ArabicName = "ترقية" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Resignation",
+                        Pages = new[]
+                        {
+                            new { Name = "Resignation", ArabicName = "استقالة" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Termination",
+                        Pages = new[]
+                        {
+                            new { Name = "Termination", ArabicName = "فسخ العقد" }
+                        }
+                    }
+                }
+            },
+            new
+            {
+                Module = "Administration",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Assets",
+                        Pages = new[]
+                        {
+                            new { Name = "Assets", ArabicName = "الأصول" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Jobs",
+                        Pages = new[]
+                        {
+                            new { Name = "User Dashboard", ArabicName = "لوحة تحكم المستخدم" },
+                            new { Name = "Jobs Dashboard", ArabicName = "لوحة تحكم الوظائف" },
+                            new { Name = "Manage Jobs", ArabicName = "إدارة الوظائف" },
+                            new { Name = "Manage Resumes", ArabicName = "إدارة السير الذاتية" },
+                            new { Name = "Shortlist Candidates", ArabicName = "قائمة المرشحين المختصرة" },
+                            new { Name = "Interview Questions", ArabicName = "أسئلة المقابلة" },
+                            new { Name = "Offer Approvals", ArabicName = "الموافقات على العروض" },
+                            new { Name = "Experience Level", ArabicName = "مستوى الخبرة" },
+                            new { Name = "Candidates List", ArabicName = "قائمة المرشحين" },
+                            new { Name = "Schedule Timing", ArabicName = "توقيت الجدول الزمني" },
+                            new { Name = "Aptitude Results", ArabicName = "نتائج الكفاءة" },
+                            new { Name = "Applied Candidates", ArabicName = "المرشحون المتقدمون" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Knowledgebase",
+                        Pages = new[]
+                        {
+                            new { Name = "Knowledgebase", ArabicName = "قاعدة المعرفة" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Activities",
+                        Pages = new[]
+                        {
+                            new { Name = "Activities", ArabicName = "الأنشطة" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Users",
+                        Pages = new[]
+                        {
+                            new { Name = "Users", ArabicName = "المستخدمون" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Companies",
+                        Pages = new[]
+                        {
+                            new { Name = "Companies", ArabicName = "الشركات" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Licenses",
+                        Pages = new[]
+                        {
+                            new { Name = "Licenses", ArabicName = "التراخيص" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Notifications",
+                        Pages = new[]
+                        {
+                            new { Name = "Notifications", ArabicName = "الإشعارات" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "User Activities",
+                        Pages = new[]
+                        {
+                            new { Name = "User Activities", ArabicName = "أنشطة المستخدم" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Trash",
+                        Pages = new[]
+                        {
+                            new { Name = "Trash", ArabicName = "المهملات" }
+                        }
+                    },
+                    new
+                    {
+                        Name = "Settings",
+                        Pages = new[]
+                        {
+                            new { Name = "Settings", ArabicName = "الإعدادات" }
+                        }
+                    }
+                }
+            },
+            new
+            {
+                Module = "Pages",
+                SubModules = new[]
+                {
+                    new
+                    {
+                        Name = "Profile",
+                        Pages = new[]
+                        {
+                            new { Name = "Employee Profile", ArabicName = "ملف الموظف" }
+                        }
+                    }
+                }
+            }
+        };
+
+        foreach (var moduleData in data)
+        {
+            var module = new AppModule
+            {
+                Id = moduleId,
+                Name = moduleData.Module,
+            };
+            modules.Add(module);
+
+            foreach (var subModuleData in moduleData.SubModules)
+            {
+                var subModule = new AppSubModule
+                {
+                    Id = subModuleId,
+                    Name = subModuleData.Name,
+                    AppModuleId = moduleId
+                };
+                subModules.Add(subModule);
+
+                foreach (var pageData in subModuleData.Pages)
+                {
+                    var page = new AppPages
+                    {
+                        // Id = pageId,
+                        Name = pageData.Name,
+                        Code = pageData.Name.Replace(" ", "").Replace("(", "").Replace(")", ""),
+                        ArabicName = pageData.ArabicName,
+                        AppSubModuleId = subModuleId
+                    };
+                    pages.Add(page);
+                    pageId++;
+                }
+
+                subModuleId++;
+            }
+
+            moduleId++;
+        }
+
+        // Seed Data
+        modelBuilder.Entity<AppModule>().HasData(modules);
+        modelBuilder.Entity<AppSubModule>().HasData(subModules);
+        modelBuilder.Entity<AppPages>().HasData(pages);
     }
 }
 

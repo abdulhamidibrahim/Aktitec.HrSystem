@@ -14,10 +14,10 @@ public class Permission : BaseEntity
     public bool? Import { get; set; }
     public bool? Export { get; set; }
     public int? ClientId { get; set; }
-    public Client? Client { get; set; }
+    // public Client? Client { get; set; }
     
     [ForeignKey(nameof(ApplicationUser))]
     public int? UserId { get; set; }
     
-    public ApplicationUser? ApplicationUser { get; set; }
+    // public ApplicationUser? ApplicationUser { get; set; }
 }

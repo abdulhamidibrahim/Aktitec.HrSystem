@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.InvoiceRepo;
 
-public class InvoiceRepo :GenericRepo<Invoice>,IInvoiceRepo
+public class InvoiceRepo(HrSystemDbContext context) : GenericRepo<Invoice>(context), IInvoiceRepo
 {
-    private readonly HrSystemDbContext _context;
-
-    public InvoiceRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HrSystemDbContext _context = context;
 
     public IQueryable<Invoice> GlobalSearch(string? searchKey)
     {

@@ -11,7 +11,7 @@ public class TaskUpdateDto
     
     public DateOnly? Date { get; set; }
     
-    public string? Priority { get; set; }=string.Empty;
+    public string? Priority { get; set; }
 
     public bool? Completed { get; set; }
     

@@ -1,6 +1,5 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrTask.BL;
 
 namespace Aktitic.HrTask.BL;
 
@@ -18,4 +17,5 @@ public interface ITaskManager
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId);
         
     public Task<List<TaskDto>> GetTaskByCompleted(bool completed);
+    public Task<List<TaskDto>> GetCompletedTasks(int projectId);
 }

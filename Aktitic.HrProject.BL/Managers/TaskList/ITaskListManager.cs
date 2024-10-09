@@ -1,5 +1,4 @@
 using Aktitic.HrProject.BL;
-using Aktitic.HrTaskList.BL;
 
 namespace Aktitic.HrTaskList.BL;
 

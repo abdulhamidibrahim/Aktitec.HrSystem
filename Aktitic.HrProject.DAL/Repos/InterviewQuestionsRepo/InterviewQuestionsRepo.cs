@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Aktitic.HrProject.DAL.Context;
 using Aktitic.HrProject.DAL.Models;
 using Microsoft.EntityFrameworkCore;
