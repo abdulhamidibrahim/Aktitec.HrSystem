@@ -30,6 +30,10 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CompanyModuleId")
                         .HasColumnType("int");
 
@@ -47,32 +51,32 @@ namespace Aktitic.HrProject.DAL.Migrations
                         new
                         {
                             Id = 1,
+                            ArabicName = "الرئيسية",
                             Name = "Main"
                         },
                         new
                         {
                             Id = 2,
+                            ArabicName = "الموظفون",
                             Name = "Employees"
                         },
                         new
                         {
                             Id = 3,
+                            ArabicName = "الموارد البشرية",
                             Name = "HR"
                         },
                         new
                         {
                             Id = 4,
+                            ArabicName = "الأداء",
                             Name = "Performance"
                         },
                         new
                         {
                             Id = 5,
+                            ArabicName = "الإدارة",
                             Name = "Administration"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Pages"
                         });
                 });
 
@@ -117,584 +121,514 @@ namespace Aktitic.HrProject.DAL.Migrations
                         },
                         new
                         {
-                            Code = "Chat",
+                            Code = "DocumentsDetailsView",
                             AppSubModuleId = 2,
-                            ArabicName = "محادثة",
-                            Name = "Chat"
-                        },
-                        new
-                        {
-                            Code = "Calendar",
-                            AppSubModuleId = 2,
-                            ArabicName = "تقويم",
-                            Name = "Calendar"
-                        },
-                        new
-                        {
-                            Code = "Contacts",
-                            AppSubModuleId = 2,
-                            ArabicName = "جهات الاتصال",
-                            Name = "Contacts"
-                        },
-                        new
-                        {
-                            Code = "Email",
-                            AppSubModuleId = 2,
-                            ArabicName = "البريد الإلكتروني",
-                            Name = "Email"
+                            ArabicName = "عرض تفاصيل المستندات",
+                            Name = "Documents Details View"
                         },
                         new
                         {
                             Code = "DocumentsManager",
                             AppSubModuleId = 2,
-                            ArabicName = "مدير الملفات",
+                            ArabicName = "مدير المستندات",
                             Name = "Documents Manager"
                         },
                         new
                         {
                             Code = "DocumentsWorkflows",
                             AppSubModuleId = 2,
-                            ArabicName = "سير عمل الملفات",
+                            ArabicName = "سير عمل المستندات",
                             Name = "Documents Workflows"
                         },
                         new
                         {
-                            Code = "DocumentsDetailsView",
-                            AppSubModuleId = 2,
-                            ArabicName = "عرض تفاصيل الملفات",
-                            Name = "Documents Details View"
+                            Code = "Chat",
+                            AppSubModuleId = 3,
+                            ArabicName = "محادثة",
+                            Name = "Chat"
+                        },
+                        new
+                        {
+                            Code = "Calendar",
+                            AppSubModuleId = 3,
+                            ArabicName = "تقويم",
+                            Name = "Calendar"
+                        },
+                        new
+                        {
+                            Code = "Contacts",
+                            AppSubModuleId = 3,
+                            ArabicName = "جهات الاتصال",
+                            Name = "Contacts"
+                        },
+                        new
+                        {
+                            Code = "Email",
+                            AppSubModuleId = 3,
+                            ArabicName = "البريد الإلكتروني",
+                            Name = "Email"
                         },
                         new
                         {
                             Code = "AllEmployees",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "كل الموظفين",
                             Name = "All Employees"
                         },
                         new
                         {
                             Code = "Contracts",
-                            AppSubModuleId = 3,
-                            ArabicName = "عقود",
+                            AppSubModuleId = 4,
+                            ArabicName = "العقود",
                             Name = "Contracts"
                         },
                         new
                         {
                             Code = "Holidays",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "العطل",
                             Name = "Holidays"
                         },
                         new
                         {
                             Code = "LeavesAdmin",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الإجازات (أدمن)",
                             Name = "Leaves (Admin)"
                         },
                         new
                         {
                             Code = "LeavesEmployee",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الإجازات (موظف)",
                             Name = "Leaves (Employee)"
                         },
                         new
                         {
                             Code = "LeaveSettings",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "إعدادات الإجازات",
                             Name = "Leave Settings"
                         },
                         new
                         {
                             Code = "AttendanceAdmin",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الحضور (أدمن)",
                             Name = "Attendance (Admin)"
                         },
                         new
                         {
                             Code = "AttendanceEmployee",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الحضور (موظف)",
                             Name = "Attendance (Employee)"
                         },
                         new
                         {
                             Code = "Departments",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الأقسام",
                             Name = "Departments"
                         },
                         new
                         {
                             Code = "Designations",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "التسميات",
                             Name = "Designations"
                         },
                         new
                         {
                             Code = "Shift&Schedule",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "جدول المناوبة",
                             Name = "Shift & Schedule"
                         },
                         new
                         {
                             Code = "Overtime",
-                            AppSubModuleId = 3,
+                            AppSubModuleId = 4,
                             ArabicName = "الوقت الإضافي",
                             Name = "Overtime"
                         },
                         new
                         {
                             Code = "Clients",
-                            AppSubModuleId = 4,
+                            AppSubModuleId = 5,
                             ArabicName = "العملاء",
                             Name = "Clients"
                         },
                         new
                         {
                             Code = "Projects",
-                            AppSubModuleId = 5,
+                            AppSubModuleId = 6,
                             ArabicName = "المشاريع",
                             Name = "Projects"
                         },
                         new
                         {
                             Code = "Tasks",
-                            AppSubModuleId = 5,
+                            AppSubModuleId = 6,
                             ArabicName = "المهام",
                             Name = "Tasks"
                         },
                         new
                         {
                             Code = "TaskBoard",
-                            AppSubModuleId = 5,
+                            AppSubModuleId = 6,
                             ArabicName = "لوحة المهام",
                             Name = "Task Board"
                         },
                         new
                         {
                             Code = "Leads",
-                            AppSubModuleId = 6,
+                            AppSubModuleId = 7,
                             ArabicName = "العملاء المحتملين",
                             Name = "Leads"
                         },
                         new
                         {
                             Code = "Tickets",
-                            AppSubModuleId = 7,
+                            AppSubModuleId = 8,
                             ArabicName = "التذاكر",
                             Name = "Tickets"
                         },
                         new
                         {
                             Code = "Estimate",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "تقدير",
                             Name = "Estimate"
                         },
                         new
                         {
                             Code = "Invoices",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "الفواتير",
                             Name = "Invoices"
                         },
                         new
                         {
                             Code = "Payments",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "المدفوعات",
                             Name = "Payments"
                         },
                         new
                         {
                             Code = "Expenses",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "النفقات",
                             Name = "Expenses"
                         },
                         new
                         {
                             Code = "ProvidentFund",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "صندوق الادخار",
                             Name = "Provident Fund"
                         },
                         new
                         {
                             Code = "Taxes",
-                            AppSubModuleId = 8,
+                            AppSubModuleId = 9,
                             ArabicName = "الضرائب",
                             Name = "Taxes"
                         },
                         new
                         {
                             Code = "Categories",
-                            AppSubModuleId = 9,
+                            AppSubModuleId = 10,
                             ArabicName = "الفئات",
                             Name = "Categories"
                         },
                         new
                         {
                             Code = "Budgets",
-                            AppSubModuleId = 9,
+                            AppSubModuleId = 10,
                             ArabicName = "الميزانيات",
                             Name = "Budgets"
                         },
                         new
                         {
                             Code = "BudgetsExpenses",
-                            AppSubModuleId = 9,
+                            AppSubModuleId = 10,
                             ArabicName = "نفقات الميزانيات",
                             Name = "Budgets Expenses"
                         },
                         new
                         {
                             Code = "BudgetsRevenues",
-                            AppSubModuleId = 9,
+                            AppSubModuleId = 10,
                             ArabicName = "إيرادات الميزانيات",
                             Name = "Budgets Revenues"
                         },
                         new
                         {
                             Code = "EmployeeSalary",
-                            AppSubModuleId = 10,
+                            AppSubModuleId = 11,
                             ArabicName = "رواتب الموظفين",
                             Name = "Employee Salary"
                         },
                         new
                         {
                             Code = "PayrollItems",
-                            AppSubModuleId = 10,
+                            AppSubModuleId = 11,
                             ArabicName = "عناصر الرواتب",
                             Name = "Payroll Items"
                         },
                         new
                         {
                             Code = "Policies",
-                            AppSubModuleId = 11,
+                            AppSubModuleId = 12,
                             ArabicName = "السياسات",
                             Name = "Policies"
                         },
                         new
                         {
                             Code = "ExpenseReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير النفقات",
                             Name = "Expense Report"
                         },
                         new
                         {
                             Code = "InvoiceReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير الفواتير",
                             Name = "Invoice Report"
                         },
                         new
                         {
                             Code = "PaymentsReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير المدفوعات",
                             Name = "Payments Report"
                         },
                         new
                         {
                             Code = "ProjectReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير المشروع",
                             Name = "Project Report"
                         },
                         new
                         {
                             Code = "TaskReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير المهام",
                             Name = "Task Report"
                         },
                         new
                         {
                             Code = "UserReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير المستخدم",
                             Name = "User Report"
                         },
                         new
                         {
                             Code = "EmployeeReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير الموظفين",
                             Name = "Employee Report"
                         },
                         new
                         {
                             Code = "PayslipReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير قسيمة الراتب",
                             Name = "Payslip Report"
                         },
                         new
                         {
                             Code = "AttendanceReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير الحضور",
                             Name = "Attendance Report"
                         },
                         new
                         {
                             Code = "LeaveReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير الإجازات",
                             Name = "Leave Report"
                         },
                         new
                         {
                             Code = "DailyReport",
-                            AppSubModuleId = 12,
+                            AppSubModuleId = 13,
                             ArabicName = "تقرير يومي",
                             Name = "Daily Report"
                         },
                         new
                         {
-                            Code = "Performanceindicator",
-                            AppSubModuleId = 13,
+                            Code = "PerformanceIndicator",
+                            AppSubModuleId = 14,
                             ArabicName = "مؤشر الأداء",
-                            Name = "Performance indicator"
+                            Name = "Performance Indicator"
                         },
                         new
                         {
                             Code = "PerformanceReview",
-                            AppSubModuleId = 13,
+                            AppSubModuleId = 14,
                             ArabicName = "مراجعة الأداء",
                             Name = "Performance Review"
                         },
                         new
                         {
                             Code = "PerformanceAppraisal",
-                            AppSubModuleId = 13,
+                            AppSubModuleId = 14,
                             ArabicName = "تقييم الأداء",
                             Name = "Performance Appraisal"
                         },
                         new
                         {
                             Code = "GoalList",
-                            AppSubModuleId = 14,
+                            AppSubModuleId = 15,
                             ArabicName = "قائمة الأهداف",
                             Name = "Goal List"
                         },
                         new
                         {
                             Code = "GoalType",
-                            AppSubModuleId = 14,
+                            AppSubModuleId = 15,
                             ArabicName = "نوع الهدف",
                             Name = "Goal Type"
                         },
                         new
                         {
                             Code = "TrainingList",
-                            AppSubModuleId = 15,
+                            AppSubModuleId = 16,
                             ArabicName = "قائمة التدريب",
                             Name = "Training List"
                         },
                         new
                         {
                             Code = "Trainers",
-                            AppSubModuleId = 15,
+                            AppSubModuleId = 16,
                             ArabicName = "المدربون",
                             Name = "Trainers"
                         },
                         new
                         {
                             Code = "TrainingType",
-                            AppSubModuleId = 15,
+                            AppSubModuleId = 16,
                             ArabicName = "نوع التدريب",
                             Name = "Training Type"
                         },
                         new
                         {
                             Code = "Promotion",
-                            AppSubModuleId = 16,
+                            AppSubModuleId = 17,
                             ArabicName = "ترقية",
                             Name = "Promotion"
                         },
                         new
                         {
                             Code = "Resignation",
-                            AppSubModuleId = 17,
+                            AppSubModuleId = 18,
                             ArabicName = "استقالة",
                             Name = "Resignation"
                         },
                         new
                         {
                             Code = "Termination",
-                            AppSubModuleId = 18,
+                            AppSubModuleId = 19,
                             ArabicName = "فسخ العقد",
                             Name = "Termination"
                         },
                         new
                         {
                             Code = "Assets",
-                            AppSubModuleId = 19,
+                            AppSubModuleId = 20,
                             ArabicName = "الأصول",
                             Name = "Assets"
                         },
                         new
                         {
-                            Code = "UserDashboard",
+                            Code = "AssetsCategories",
                             AppSubModuleId = 20,
-                            ArabicName = "لوحة تحكم المستخدم",
-                            Name = "User Dashboard"
+                            ArabicName = "فئات الأصول",
+                            Name = "Assets Categories"
                         },
                         new
                         {
-                            Code = "JobsDashboard",
+                            Code = "AssetsManagement",
                             AppSubModuleId = 20,
-                            ArabicName = "لوحة تحكم الوظائف",
-                            Name = "Jobs Dashboard"
+                            ArabicName = "إدارة الأصول",
+                            Name = "Assets Management"
                         },
                         new
                         {
-                            Code = "ManageJobs",
-                            AppSubModuleId = 20,
-                            ArabicName = "إدارة الوظائف",
-                            Name = "Manage Jobs"
-                        },
-                        new
-                        {
-                            Code = "ManageResumes",
-                            AppSubModuleId = 20,
-                            ArabicName = "إدارة السير الذاتية",
-                            Name = "Manage Resumes"
-                        },
-                        new
-                        {
-                            Code = "ShortlistCandidates",
-                            AppSubModuleId = 20,
-                            ArabicName = "قائمة المرشحين المختصرة",
-                            Name = "Shortlist Candidates"
-                        },
-                        new
-                        {
-                            Code = "InterviewQuestions",
-                            AppSubModuleId = 20,
-                            ArabicName = "أسئلة المقابلة",
-                            Name = "Interview Questions"
-                        },
-                        new
-                        {
-                            Code = "OfferApprovals",
-                            AppSubModuleId = 20,
-                            ArabicName = "الموافقات على العروض",
-                            Name = "Offer Approvals"
-                        },
-                        new
-                        {
-                            Code = "ExperienceLevel",
-                            AppSubModuleId = 20,
-                            ArabicName = "مستوى الخبرة",
-                            Name = "Experience Level"
-                        },
-                        new
-                        {
-                            Code = "CandidatesList",
-                            AppSubModuleId = 20,
-                            ArabicName = "قائمة المرشحين",
-                            Name = "Candidates List"
-                        },
-                        new
-                        {
-                            Code = "ScheduleTiming",
-                            AppSubModuleId = 20,
-                            ArabicName = "توقيت الجدول الزمني",
-                            Name = "Schedule Timing"
-                        },
-                        new
-                        {
-                            Code = "AptitudeResults",
-                            AppSubModuleId = 20,
-                            ArabicName = "نتائج الكفاءة",
-                            Name = "Aptitude Results"
-                        },
-                        new
-                        {
-                            Code = "AppliedCandidates",
-                            AppSubModuleId = 20,
-                            ArabicName = "المرشحون المتقدمون",
-                            Name = "Applied Candidates"
-                        },
-                        new
-                        {
-                            Code = "Knowledgebase",
+                            Code = "CompanySettings",
                             AppSubModuleId = 21,
-                            ArabicName = "قاعدة المعرفة",
-                            Name = "Knowledgebase"
+                            ArabicName = "إعدادات الشركة",
+                            Name = "Company Settings"
                         },
                         new
                         {
-                            Code = "Activities",
+                            Code = "Role&Permissions",
+                            AppSubModuleId = 21,
+                            ArabicName = "الأدوار والصلاحيات",
+                            Name = "Role & Permissions"
+                        },
+                        new
+                        {
+                            Code = "NotificationSettings",
+                            AppSubModuleId = 21,
+                            ArabicName = "إعدادات الإشعارات",
+                            Name = "Notification Settings"
+                        },
+                        new
+                        {
+                            Code = "EmailSettings",
+                            AppSubModuleId = 21,
+                            ArabicName = "إعدادات البريد الإلكتروني",
+                            Name = "Email Settings"
+                        },
+                        new
+                        {
+                            Code = "HRSettings",
+                            AppSubModuleId = 21,
+                            ArabicName = "إعدادات الموارد البشرية",
+                            Name = "HR Settings"
+                        },
+                        new
+                        {
+                            Code = "LanguageSettings",
                             AppSubModuleId = 22,
-                            ArabicName = "الأنشطة",
-                            Name = "Activities"
+                            ArabicName = "إعدادات اللغة",
+                            Name = "Language Settings"
                         },
                         new
                         {
-                            Code = "Users",
+                            Code = "CurrencySettings",
+                            AppSubModuleId = 22,
+                            ArabicName = "إعدادات العملة",
+                            Name = "Currency Settings"
+                        },
+                        new
+                        {
+                            Code = "AllUsers",
                             AppSubModuleId = 23,
-                            ArabicName = "المستخدمون",
-                            Name = "Users"
+                            ArabicName = "كل المستخدمين",
+                            Name = "All Users"
                         },
                         new
                         {
-                            Code = "Companies",
-                            AppSubModuleId = 24,
-                            ArabicName = "الشركات",
-                            Name = "Companies"
+                            Code = "UserRoles",
+                            AppSubModuleId = 23,
+                            ArabicName = "أدوار المستخدمين",
+                            Name = "User Roles"
                         },
                         new
                         {
-                            Code = "Licenses",
-                            AppSubModuleId = 25,
-                            ArabicName = "التراخيص",
-                            Name = "Licenses"
-                        },
-                        new
-                        {
-                            Code = "Notifications",
-                            AppSubModuleId = 26,
-                            ArabicName = "الإشعارات",
-                            Name = "Notifications"
-                        },
-                        new
-                        {
-                            Code = "UserActivities",
-                            AppSubModuleId = 27,
-                            ArabicName = "أنشطة المستخدم",
-                            Name = "User Activities"
-                        },
-                        new
-                        {
-                            Code = "Trash",
-                            AppSubModuleId = 28,
-                            ArabicName = "المهملات",
-                            Name = "Trash"
-                        },
-                        new
-                        {
-                            Code = "Settings",
-                            AppSubModuleId = 29,
-                            ArabicName = "الإعدادات",
-                            Name = "Settings"
-                        },
-                        new
-                        {
-                            Code = "EmployeeProfile",
-                            AppSubModuleId = 30,
-                            ArabicName = "ملف الموظف",
-                            Name = "Employee Profile"
+                            Code = "UserActivityLog",
+                            AppSubModuleId = 23,
+                            ArabicName = "سجل نشاط المستخدمين",
+                            Name = "User Activity Log"
                         });
                 });
 
@@ -708,6 +642,10 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Property<int?>("AppModuleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -724,181 +662,162 @@ namespace Aktitic.HrProject.DAL.Migrations
                         {
                             Id = 1,
                             AppModuleId = 1,
+                            ArabicName = "لوحة التحكم",
                             Name = "Dashboard"
                         },
                         new
                         {
                             Id = 2,
                             AppModuleId = 1,
-                            Name = "App"
+                            ArabicName = "المستندات",
+                            Name = "Documents"
                         },
                         new
                         {
                             Id = 3,
-                            AppModuleId = 2,
-                            Name = "Employees"
+                            AppModuleId = 1,
+                            ArabicName = "التطبيقات",
+                            Name = "App"
                         },
                         new
                         {
                             Id = 4,
                             AppModuleId = 2,
-                            Name = "Clients"
+                            ArabicName = "الموظفون",
+                            Name = "Employees"
                         },
                         new
                         {
                             Id = 5,
                             AppModuleId = 2,
-                            Name = "Projects"
+                            ArabicName = "العملاء",
+                            Name = "Clients"
                         },
                         new
                         {
                             Id = 6,
                             AppModuleId = 2,
-                            Name = "Leads"
+                            ArabicName = "المشاريع",
+                            Name = "Projects"
                         },
                         new
                         {
                             Id = 7,
                             AppModuleId = 2,
-                            Name = "Tickets"
+                            ArabicName = "العملاء المحتملين",
+                            Name = "Leads"
                         },
                         new
                         {
                             Id = 8,
-                            AppModuleId = 3,
-                            Name = "Sales"
+                            AppModuleId = 2,
+                            ArabicName = "التذاكر",
+                            Name = "Tickets"
                         },
                         new
                         {
                             Id = 9,
                             AppModuleId = 3,
-                            Name = "Accounting"
+                            ArabicName = "المبيعات",
+                            Name = "Sales"
                         },
                         new
                         {
                             Id = 10,
                             AppModuleId = 3,
-                            Name = "Payroll"
+                            ArabicName = "المحاسبة",
+                            Name = "Accounting"
                         },
                         new
                         {
                             Id = 11,
                             AppModuleId = 3,
-                            Name = "Policies"
+                            ArabicName = "الرواتب",
+                            Name = "Payroll"
                         },
                         new
                         {
                             Id = 12,
                             AppModuleId = 3,
-                            Name = "Reports"
+                            ArabicName = "السياسات",
+                            Name = "Policies"
                         },
                         new
                         {
                             Id = 13,
-                            AppModuleId = 4,
-                            Name = "Performance"
+                            AppModuleId = 3,
+                            ArabicName = "التقارير",
+                            Name = "Reports"
                         },
                         new
                         {
                             Id = 14,
                             AppModuleId = 4,
-                            Name = "Goals"
+                            ArabicName = "الأداء",
+                            Name = "Performance"
                         },
                         new
                         {
                             Id = 15,
                             AppModuleId = 4,
-                            Name = "Training"
+                            ArabicName = "الأهداف",
+                            Name = "Goals"
                         },
                         new
                         {
                             Id = 16,
                             AppModuleId = 4,
-                            Name = "Promotion"
+                            ArabicName = "التدريب",
+                            Name = "Training"
                         },
                         new
                         {
                             Id = 17,
                             AppModuleId = 4,
-                            Name = "Resignation"
+                            ArabicName = "الترقية",
+                            Name = "Promotion"
                         },
                         new
                         {
                             Id = 18,
                             AppModuleId = 4,
-                            Name = "Termination"
+                            ArabicName = "الاستقالة",
+                            Name = "Resignation"
                         },
                         new
                         {
                             Id = 19,
-                            AppModuleId = 5,
-                            Name = "Assets"
+                            AppModuleId = 4,
+                            ArabicName = "فسخ العقد",
+                            Name = "Termination"
                         },
                         new
                         {
                             Id = 20,
                             AppModuleId = 5,
-                            Name = "Jobs"
+                            ArabicName = "الأصول",
+                            Name = "Assets"
                         },
                         new
                         {
                             Id = 21,
                             AppModuleId = 5,
-                            Name = "Knowledgebase"
+                            ArabicName = "الإعدادات",
+                            Name = "Settings"
                         },
                         new
                         {
                             Id = 22,
                             AppModuleId = 5,
-                            Name = "Activities"
+                            ArabicName = "التعريب",
+                            Name = "Localization"
                         },
                         new
                         {
                             Id = 23,
                             AppModuleId = 5,
+                            ArabicName = "المستخدمون",
                             Name = "Users"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            AppModuleId = 5,
-                            Name = "Companies"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            AppModuleId = 5,
-                            Name = "Licenses"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            AppModuleId = 5,
-                            Name = "Notifications"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            AppModuleId = 5,
-                            Name = "User Activities"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            AppModuleId = 5,
-                            Name = "Trash"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            AppModuleId = 5,
-                            Name = "Settings"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            AppModuleId = 6,
-                            Name = "Profile"
                         });
                 });
 
@@ -4600,9 +4519,6 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -4618,6 +4534,9 @@ namespace Aktitic.HrProject.DAL.Migrations
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsAll")
                         .HasColumnType("bit");
@@ -4642,8 +4561,6 @@ namespace Aktitic.HrProject.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("TenantId");
 
@@ -8233,17 +8150,9 @@ namespace Aktitic.HrProject.DAL.Migrations
 
             modelBuilder.Entity("Aktitic.HrProject.DAL.Models.Notification", b =>
                 {
-                    b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Aktitic.HrProject.DAL.Models.Company", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
-
-                    b.Navigation("Company");
 
                     b.Navigation("Tenant");
                 });

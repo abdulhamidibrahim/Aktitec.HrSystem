@@ -49,10 +49,12 @@ public class AppModulesManager(
                     {
                         Id = appModule.Id,
                         Name = appModule.Name,
+                        ArabicName = appModule.ArabicName,
                         SubModuleDto = appModule.AppSubModules?.Select(x => new AppSubModuleDto
                         {
                             Id = x.Id,
                             Name = x.Name,
+                            ArabicName = x.ArabicName,
                             PageDto = x.AppPages?.Select(y => new AppPageDto
                             {
                                 // Id = y.Id,

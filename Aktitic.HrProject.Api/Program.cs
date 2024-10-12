@@ -308,7 +308,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddSignalR();
 
-// builder.Services.AddSingleton<SeedDataService>();
+// builder.Services.AddScoped<SeedDataService>();
 
 var app = builder.Build();
 

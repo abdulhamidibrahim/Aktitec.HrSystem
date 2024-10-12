@@ -12,6 +12,7 @@ public class NotificationAddDto
     public string Content { get; set; }
 
     public bool IsAll { get; set; }
+    public bool IsAdmin { get; set; }
     
     public Priority Priority { get; set; }
     

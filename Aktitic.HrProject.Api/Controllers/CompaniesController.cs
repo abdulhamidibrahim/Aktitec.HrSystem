@@ -33,15 +33,15 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
          if (result.Result == 0) return BadRequest("Failed to add");
          return Ok(new {message ="Created Successfully",CompanyId = result.Result});
     }
-    
+
     [HttpPost("createAdmin")]
-    public ActionResult AddAdmin( CompanyAddDto companyAddDto)
+    public async Task<ActionResult> AddAdmin(CompanyAddDto companyAddDto)
     {
-         var result = companyManager.AddAdmin(companyAddDto);
-         if (result.Result == 0) return BadRequest("Failed to add");
-         return Ok(new {message ="Created Successfully",CompanyId = result.Result});
+        var result = await companyManager.AddAdmin(companyAddDto);
+        if (result == 0) return BadRequest("Failed to add");
+        return Ok(new { message = "Created Successfully", CompanyId = result });
     }
-    
+
     [HttpPut("update/{id}")]
     public ActionResult Update( CompanyUpdateDto companyUpdateDto,int id)
     {
