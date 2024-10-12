@@ -143,7 +143,7 @@ public class DocumentManager(
 
     public async Task<int> Update(DocumentUpdateDto documentUpdateDto, int id)
     {
-        var document = unitOfWork.Documents.GetById(id);
+        var document = await unitOfWork.Documents.GetFileById(id);
 
         if (document == null) return 0;
         var user =int.TryParse(userUtility.GetUserId(), out var userId) ? userId : (int?)null;
@@ -228,6 +228,22 @@ public class DocumentManager(
                 foreach (var doc in document.DocumentFiles)
                 {
                     newDocument.DocumentFiles?.Add(doc);
+                }
+            }
+
+            if (document.FileUsers is not null)
+            {
+                foreach (var fileUser in document.FileUsers)
+                {
+                    newDocument.FileUsers?.Add(fileUser);
+                }
+            }
+
+            if (document.Revisors is not null)
+            {
+                foreach (var revisor in document.Revisors)
+                {
+                    newDocument.Revisors?.Add(revisor);
                 }
             }
 

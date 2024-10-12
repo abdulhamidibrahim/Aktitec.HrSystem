@@ -109,7 +109,13 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         
     }
-   public INotesRepo Notes => _notesRepo ??= new NotesRepo(_context);
+
+    public Task CommitAsync()
+    {
+        return _context.SaveChangesAsync();
+    }
+
+    public INotesRepo Notes => _notesRepo ??= new NotesRepo(_context);
     
     public IApplicationUserRepo ApplicationUser => _applicationUser ??= new ApplicationUserRepo(_context);
     public IAttendanceRepo Attendance => _attendanceRepo ??= new AttendanceRepo(_context);
@@ -141,7 +147,7 @@ public class UnitOfWork : IUnitOfWork
     
     public IProjectRepo Project => _projectRepo ??= new ProjectRepo(_context);
     
-    public ITaskRepo Task => _taskRepo ??= new TaskRepo(_context);
+    public ITaskRepo Tasks => _taskRepo ??= new TaskRepo(_context);
     
     public IOvertimeRepo Overtime => _overtimeRepo ??= new OvertimeRepo(_context);
     
@@ -227,8 +233,20 @@ public class UnitOfWork : IUnitOfWork
     {
         return await _context.SaveChangesAsync();
     }
-    
-    
+
+    public Task BeginTransactionAsync()
+    {
+        _context.Database.BeginTransaction();
+        return Task.CompletedTask;
+    }
+
+    public Task RollbackAsync()
+    {
+        _context.Database.RollbackTransaction();
+        return Task.CompletedTask;
+    }
+
+
     public void Dispose()
     {
         _context.Dispose();

@@ -20,6 +20,7 @@ public class NotificationManager(
             Title = notificationAddDto.Title,
             Content = notificationAddDto.Content,
             IsAll = notificationAddDto.IsAll,
+            IsAdmin = notificationAddDto.IsAdmin,
             Priority = notificationAddDto.Priority,
             CreatedBy = userUtility.GetUserName(),
             CreatedAt = DateTime.Now,
@@ -47,10 +48,10 @@ public class NotificationManager(
             Title = notificationAddDto.Title,
             Content = notificationAddDto.Content,
             IsAll = notificationAddDto.IsAll,
+            IsAdmin = notificationAddDto.IsAdmin,
             Priority = notificationAddDto.Priority,
             CreatedBy = userUtility.GetUserId(),
             CreatedAt = DateTime.Now,
-            CompanyId = int.Parse(userUtility.GetCurrentCompany()),
         };
 
         if (!notification.IsAll)
@@ -96,6 +97,7 @@ public class NotificationManager(
             Title = notification.Title,
             Content = notification.Content,
             IsAll = notification.IsAll,
+            IsAdmin = notification.IsAdmin,
             Priority = notification.Priority,
             CreatedBy = notification.CreatedBy,
             CreatedAt = notification.CreatedAt,

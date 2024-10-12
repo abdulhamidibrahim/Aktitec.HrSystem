@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Aktitic.HrProject.DAL.Repos.AttendanceRepo;
 
-public class NotificationRepo :GenericRepo<Notification>,INotificationRepo
+public class NotificationRepo(HrSystemDbContext context) : GenericRepo<Notification>(context), INotificationRepo
 {
-    private readonly HrSystemDbContext _context;
-
-    public NotificationRepo(HrSystemDbContext context) : base(context)
-    {
-        _context = context;
-    }
+    private readonly HrSystemDbContext _context = context;
 
 
     public async Task<IEnumerable<Notification>> GetAllReceivedNotifications(int userId)

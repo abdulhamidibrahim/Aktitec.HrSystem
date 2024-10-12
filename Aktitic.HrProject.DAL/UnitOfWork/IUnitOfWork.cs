@@ -8,6 +8,11 @@ namespace Aktitic.HrProject.DAL.UnitOfWork;
 public interface IUnitOfWork : IDisposable
 {
     Task<int> SaveChangesAsync();
+    Task BeginTransactionAsync();
+    Task RollbackAsync();
+    
+    Task CommitAsync();
+
     INotesRepo Notes { get; }
     IApplicationUserRepo ApplicationUser { get; }
     IAttendanceRepo Attendance { get; }
@@ -32,7 +37,7 @@ public interface IUnitOfWork : IDisposable
     ITimesheetRepo TimeSheet { get; }
     IPermissionsRepo Permission { get; }
     ISchedulingRepo Scheduling { get; }
-    ITaskRepo Task { get; }
+    ITaskRepo Tasks { get; }
     
     ITaskBoardRepo TaskBoard { get; }
     ITaskListRepo TaskList { get; }

@@ -137,6 +137,7 @@ public class DocumentRepo(HrSystemDbContext context) : GenericRepo<Document>(con
             return await _context.Documents
                 .Include(x => x.Revisors)
                 .Include(x=>x.FileUsers)
+                .OrderByDescending(x=>x.CreatedAt)
                 .ToListAsync();
         return new List<Document>();
     }

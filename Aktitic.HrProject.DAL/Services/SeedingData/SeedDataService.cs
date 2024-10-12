@@ -1,42 +1,29 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.UnitOfWork;
 using Task = System.Threading.Tasks.Task;
 
-public class SeedDataService
+public class SeedDataService(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<IdentityRole<int>> roleManager,
+    ILogger<SeedDataService> logger,
+    IUnitOfWork unitOfWork)
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole<int>> _roleManager;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<SeedDataService> _logger;
-
-    public SeedDataService(
-        UserManager<ApplicationUser> userManager, 
-        RoleManager<IdentityRole<int>> roleManager,
-        ILogger<SeedDataService> logger,
-        IUnitOfWork unitOfWork)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task SeedDataAsync()
     {
         try
         {
+            // create database transaction 
+            // await unitOfWork.BeginTransactionAsync();            
             // Check if the admin role exists, if not, create it
-            if (!await _roleManager.RoleExistsAsync("SystemOwner"))
+            if (!await roleManager.RoleExistsAsync("SystemOwner"))
             {
-                await _roleManager.CreateAsync(new IdentityRole<int>("SystemOwner"));
+                await roleManager.CreateAsync(new IdentityRole<int>("SystemOwner"));
             }
 
             // Check if the admin user exists, if not, create it
-            var adminUser = await _userManager.FindByNameAsync("admin");
+            var adminUser = await userManager.FindByNameAsync("admin");
             if (adminUser == null)
             {
                 // Create the admin user
@@ -54,14 +41,14 @@ public class SeedDataService
                     CreatedAt = DateTime.Now
                 };
 
-                var result = await _userManager.CreateAsync(adminUser, "aktitech_admin@123"); // Set a strong password
+                var result = await userManager.CreateAsync(adminUser, "aktitech_admin@123"); // Set a strong password
                 if (result.Succeeded)
                 {
                     // Assign the SystemOwner role to the admin user
-                    await _userManager.AddToRoleAsync(adminUser, "SystemOwner");
+                    await userManager.AddToRoleAsync(adminUser, "SystemOwner");
 
                     // Save changes to get the adminUser.Id
-                    await _unitOfWork.SaveChangesAsync();
+                    await unitOfWork.SaveChangesAsync();
 
                     // Create the company
                     var company = new Company
@@ -82,23 +69,23 @@ public class SeedDataService
                         ManagerId = adminUser.Id // Associate the company with the admin user
                     };
 
-                    var companyId  =await _unitOfWork.Company.Create(company);
+                    var companyId  =await unitOfWork.Company.Create(company);
 
                     adminUser.TenantId = companyId;
                     
-                    await _unitOfWork.SaveChangesAsync();
+                    await unitOfWork.SaveChangesAsync();
                 }
                 else
                 {
                     // Handle errors (log or throw)
-                    _logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                    logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
                     throw new Exception("Failed to create admin user");
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while seeding the database.");
+            logger.LogError(ex, "An error occurred while seeding the database.");
             throw;
         }
     }

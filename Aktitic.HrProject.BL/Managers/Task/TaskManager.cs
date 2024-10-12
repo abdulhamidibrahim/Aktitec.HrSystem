@@ -36,13 +36,13 @@ public class TaskManager:ITaskManager
             CreatedAt = DateTime.Now,
         };
         
-        _unitOfWork.Task.Add(task);
+        _unitOfWork.Tasks.Add(task);
         return await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<int> Update(TaskUpdateDto taskUpdateDto, int id)
     {
-        var task = _unitOfWork.Task.GetById(id);
+        var task = _unitOfWork.Tasks.GetById(id);
         
         // await _unitOfWork.SaveChangesAsync();
         if (task == null) return await System.Threading.Tasks.Task.FromResult(0);
@@ -56,23 +56,23 @@ public class TaskManager:ITaskManager
         if(taskUpdateDto.ProjectId != null) task.ProjectId = taskUpdateDto.ProjectId;
 
         task.UpdatedAt = DateTime.Now;
-        _unitOfWork.Task.Update(task);
+        _unitOfWork.Tasks.Update(task);
         return await _unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var task = _unitOfWork.Task.GetById(id);
+        var task = _unitOfWork.Tasks.GetById(id);
         if (task==null) return System.Threading.Tasks.Task.FromResult(0);
         task.IsDeleted = true;
         task.DeletedAt = DateTime.Now;
-        _unitOfWork.Task.Update(task);
+        _unitOfWork.Tasks.Update(task);
         return _unitOfWork.SaveChangesAsync();
     }
 
     public TaskReadSingleDto Get(int id)
     {
-        var task = _unitOfWork.Task.GetTaskWithEmployee(id);
+        var task = _unitOfWork.Tasks.GetTaskWithEmployee(id);
         if (task == null) return new TaskReadSingleDto();
         return new TaskReadSingleDto()
         {
@@ -90,7 +90,7 @@ public class TaskManager:ITaskManager
 
     public Task<List<TaskReadDto>> GetAll()
     {
-        var task = _unitOfWork.Task.GetAll();
+        var task = _unitOfWork.Tasks.GetAll();
         return System.Threading.Tasks.Task.FromResult(task.Result.Select(t => new TaskReadDto()
         {
             Id = t.Id,
@@ -108,7 +108,7 @@ public class TaskManager:ITaskManager
      
      public Task<FilteredTaskDto> GetFilteredTasksAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var Tasks =  _unitOfWork.Task.GetAllTasksWithEmployeeAndProject();
+        var Tasks =  _unitOfWork.Tasks.GetAllTasksWithEmployeeAndProject();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -231,33 +231,33 @@ public class TaskManager:ITaskManager
         if(column!=null)
         {
             IEnumerable<Task> Task;
-            Task = _unitOfWork.Task.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            Task = _unitOfWork.Tasks.GetAll().Result.Where(e => e.GetPropertyValue(column).ToLower().Contains(searchKey,StringComparison.OrdinalIgnoreCase));
             var task = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Task);
             return System.Threading.Tasks.Task.FromResult(task.ToList());
         }
 
-        var  Tasks = _unitOfWork.Task.GlobalSearch(searchKey);
+        var  Tasks = _unitOfWork.Tasks.GlobalSearch(searchKey);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
     {
-        var Tasks = _unitOfWork.Task.GetTaskByProjectId(projectId);
+        var Tasks = _unitOfWork.Tasks.GetTaskByProjectId(projectId);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
 
     public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
     {
-        var Tasks = _unitOfWork.Task.GetTaskByCompleted(completed);
+        var Tasks = _unitOfWork.Tasks.GetTaskByCompleted(completed);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
     
     public Task<List<TaskDto>> GetCompletedTasks(int projectId)
     {
-        var Tasks = _unitOfWork.Task.GetCompletedTasks(projectId);
+        var Tasks = _unitOfWork.Tasks.GetCompletedTasks(projectId);
         var tasks = _mapper.Map<IEnumerable<Task>, IEnumerable<TaskDto>>(Tasks);
         return System.Threading.Tasks.Task.FromResult(tasks.ToList());
     }
