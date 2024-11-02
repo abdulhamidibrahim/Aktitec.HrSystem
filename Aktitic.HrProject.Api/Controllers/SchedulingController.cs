@@ -7,25 +7,18 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SchedulingController: ControllerBase
+public class SchedulingController(ISchedulingManager schedulingManager) : ControllerBase
 {
-    private readonly ISchedulingManager _schedulingManager;
-
-    public SchedulingController(ISchedulingManager schedulingManager)
-    {
-        _schedulingManager = schedulingManager;
-    }
-    
     [HttpGet]
     public async Task<List<SchedulingReadDto>> GetAll()
     {
-        return await _schedulingManager.GetAll();
+        return await schedulingManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<SchedulingReadDto?> Get(int id)
     {
-        var schedule = _schedulingManager.Get(id);
+        var schedule = schedulingManager.Get(id);
         if (schedule == null) return NotFound("Schedule not found");
         return Ok(schedule);
     }
@@ -33,7 +26,7 @@ public class SchedulingController: ControllerBase
     [HttpPost("create")]
     public  ActionResult Add([FromBody] SchedulingAddDto schedulingAddDto)
     {
-        var result= _schedulingManager.Add(schedulingAddDto);
+        var result= schedulingManager.Add(schedulingAddDto);
         if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Created Successfully");
     }
@@ -41,7 +34,7 @@ public class SchedulingController: ControllerBase
     [HttpPut("update/{id}")]
     public  ActionResult Update([FromBody] SchedulingUpdateDto schedulingUpdateDto,int id)
     { 
-        var result=_schedulingManager.Update(schedulingUpdateDto,id);
+        var result=schedulingManager.Update(schedulingUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated Successfully");
     }
@@ -49,7 +42,7 @@ public class SchedulingController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result =_schedulingManager.Delete(id);
+        var result =schedulingManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted Successfully");
     }
@@ -67,12 +60,12 @@ public class SchedulingController: ControllerBase
             return BadRequest("Invalid Date");
         if (startDate == null)
         {
-            var result = _schedulingManager.GetAllEmployeesScheduling(page, pageSize);
+            var result = schedulingManager.GetAllEmployeesScheduling(page, pageSize);
             return Ok(result);
         }
         else
         {
-            var result = _schedulingManager.GetAllEmployeesScheduling(page, pageSize, startDate);
+            var result = schedulingManager.GetAllEmployeesScheduling(page, pageSize, startDate);
             return Ok(result);
         }
         
@@ -81,6 +74,6 @@ public class SchedulingController: ControllerBase
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<ScheduleDto>> GlobalSearch(string search,string? column)
     {
-        return await _schedulingManager.GlobalSearch(search,column);
+        return await schedulingManager.GlobalSearch(search,column);
     }
 }

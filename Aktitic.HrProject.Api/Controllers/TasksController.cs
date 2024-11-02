@@ -1,8 +1,11 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Aktitic.HrTask.BL;
 using Microsoft.AspNetCore.Mvc;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.API.Controllers;
 
@@ -11,12 +14,14 @@ namespace Aktitic.HrProject.API.Controllers;
 public class TasksController(ITaskManager taskManager) : ControllerBase
 {
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Read))]
     public Task<List<TaskReadDto>> GetAll()
     {
         return taskManager.GetAll();
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Read))]
     public ActionResult<Task<TaskReadDto?>> Get(int id)
     {
         var result = taskManager.Get(id);
@@ -25,6 +30,7 @@ public class TasksController(ITaskManager taskManager) : ControllerBase
     }
     
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Add))]
     public ActionResult<Task> Add(TaskAddDto taskAddDto)
     {
         var result =taskManager.Add(taskAddDto);
@@ -33,6 +39,7 @@ public class TasksController(ITaskManager taskManager) : ControllerBase
     }
     
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Edit))]
     public ActionResult Update(TaskUpdateDto taskUpdateDto,int id)
     {
         var result = taskManager.Update(taskUpdateDto,id);
@@ -41,6 +48,7 @@ public class TasksController(ITaskManager taskManager) : ControllerBase
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Delete))]
     public ActionResult<Task> Delete(int id)
     {
         var result =taskManager.Delete(id);
@@ -62,18 +70,21 @@ public class TasksController(ITaskManager taskManager) : ControllerBase
     // }
     
     [HttpGet("getTaskWithProjectId/{projectId}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Read))]
     public Task<List<TaskDto>> GetTaskWithProjectId(int projectId)
     {
         return taskManager.GetTaskWithProjectId(projectId);
     }
     
     [HttpGet("getTaskByCompleted/{completed}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Read))]
     public Task<List<TaskDto>> GetTaskByCompleted(bool completed)
     {
         return taskManager.GetTaskByCompleted(completed);
     }
     
     [HttpGet("getCompletedTasks/{projectId}")]
+    [AuthorizeRole(nameof(Pages.Tasks), nameof(Roles.Read))]
     public Task<List<TaskDto>> GetTaskByCompleted(int projectId)
     {
         return taskManager.GetCompletedTasks(projectId);

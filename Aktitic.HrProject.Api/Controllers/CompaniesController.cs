@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Managers.Company;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -33,6 +32,7 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
          if (result.Result == 0) return BadRequest("Failed to add");
          return Ok(new {message ="Created Successfully",CompanyId = result.Result});
     }
+    
 
     [HttpPost("createAdmin")]
     public async Task<ActionResult> AddAdmin(CompanyAddDto companyAddDto)
@@ -46,6 +46,14 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
     public ActionResult Update( CompanyUpdateDto companyUpdateDto,int id)
     {
         var result  =companyManager.Update(companyUpdateDto,id);
+        if (result.Result == 0) return BadRequest("Failed to update");
+        return Ok("Updated Successfully!");
+    }
+    
+    [HttpPut("updateCompany/{id}")]
+    public ActionResult UpdateCompany( CompanyDto companyUpdateDto,int id)
+    {
+        var result  =companyManager.UpdateCompany(companyUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated Successfully!");
     }
@@ -70,5 +78,13 @@ public class CompaniesController(ICompanyManager companyManager) : ControllerBas
         
         return companyManager.GetFilteredCompaniesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
+  
     
+    [HttpPost("UploadLogo")]
+    public ActionResult UploadLogo( IFormFile file,int companyId)
+    {
+        var result =companyManager.UploadLogo(file,companyId);
+        if (result.Result == 0) return BadRequest("Failed to save logo");
+        return Ok("Uploaded Successfully");
+    }
 }

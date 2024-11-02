@@ -1,11 +1,14 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
+using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using static Aktitic.HrProject.DAL.Models.Pages;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.API.Controllers;
@@ -19,12 +22,15 @@ public class ProjectsController(IProjectManager projectManager) : ControllerBase
     // _userManager = userManager;
 
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Read))]
+    
     public async Task<List<ProjectReadDto>> GetAll()
     {
         return await projectManager.GetAll();
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Read))]
     public Task<ProjectReadDto?> Get(int id)
     {
         Task<ProjectReadDto?> result = projectManager.Get(id);
@@ -37,6 +43,7 @@ public class ProjectsController(IProjectManager projectManager) : ControllerBase
     // [ProjectEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Add))]
     public  ActionResult Create(ProjectAddDto projectAddDto)
     {
          var result =projectManager.Add(projectAddDto);
@@ -47,6 +54,7 @@ public class ProjectsController(IProjectManager projectManager) : ControllerBase
     // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Edit))]
     public ActionResult Update( ProjectUpdateDto projectUpdateDto,int id)
     {
         var result = projectManager.Update(projectUpdateDto,id);
@@ -55,6 +63,7 @@ public class ProjectsController(IProjectManager projectManager) : ControllerBase
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Delete))]
     public ActionResult Delete(int id)
     {
         var result =projectManager.Delete(id);
@@ -63,12 +72,14 @@ public class ProjectsController(IProjectManager projectManager) : ControllerBase
     }
     
     [HttpGet("GlobalSearch")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Read))]
     public async Task<IEnumerable<ProjectDto>> GlobalSearch(string search,string? column)
     {
         return await projectManager.GlobalSearch(search,column);
     }
     
     [HttpGet("getFilteredProjects")]
+    [AuthorizeRole(nameof(Pages.Projects), nameof(Roles.Read))]
     public OkObjectResult GetFilteredProjectsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         try

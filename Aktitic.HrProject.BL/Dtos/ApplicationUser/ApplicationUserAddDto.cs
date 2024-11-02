@@ -29,5 +29,21 @@ public class ApplicationUserAddDto
     public int? EmployeeId { get; set; }
     public DateTime Date { get; set; }
     public IFormFile? Image { get; set; }
+    public string? State { get; set; }
+    public string? Country { get; set; }
+    public string? PinCode { get; set; }
+    public DateTime? Birthday { get; set; }
+    public string? Address { get; set; } 
+    public bool? Gender { get; set; }
+    public string? PassportNumber { get; set; } 
+    public DateTime? PassportExpDate { get; set; }
+    public string? Tel { get; set; } 
+    public string? Nationality { get; set; } 
+    public string? Religion { get; set; } 
+    public string? MatritalStatus { get; set; } 
+    public string? EmploymentSpouse { get; set; } 
+    public int? ChildrenNumber { get; set; }
+    public int? ReportsTo { get; set; }
+    
     // public string Permissions { get; set; } = string.Empty;
 }

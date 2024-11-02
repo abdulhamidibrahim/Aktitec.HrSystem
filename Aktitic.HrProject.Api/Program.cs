@@ -33,8 +33,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddLogging();
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
@@ -153,7 +152,9 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new AutoMapperProfiles());
 });
-IMapper mapper = mapperConfig.CreateMapper();
+
+var mapper = mapperConfig.CreateMapper();
+
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddSingleton<HttpContextAccessor>();
@@ -164,6 +165,7 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddScoped<ChatHub>();
 
 #region resolving dependencies
+
 builder.Services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
 builder.Services.AddScoped<IAttendanceManager, AttendanceManager>();
 builder.Services.AddScoped<IDepartmentManager, DepartmentManager>();
@@ -239,6 +241,12 @@ builder.Services.AddScoped<IDocumentManager, DocumentManager>();
 builder.Services.AddScoped<IDocumentFileManager, DocumentFileManager>();
 builder.Services.AddScoped<IRevisorManager, RevisorManager>();
 builder.Services.AddScoped<IAppModulesManager, AppModulesManager>();
+builder.Services.AddScoped<INotificationSettingsManager, NotificationSettingsManager>();
+builder.Services.AddScoped<IFamilyInformationManager, FamilyInformationManager>();
+builder.Services.AddScoped<IEmergencyContactManager, EmergencyContactManager>();
+builder.Services.AddScoped<IEducationInformationManager, EducationInformationManager>();
+builder.Services.AddScoped<INotificationSettingsManager, NotificationSettingsManager>();
+builder.Services.AddScoped<IProfileExperienceManager, ProfileExperienceManager>();
 
 
 #endregion
@@ -299,7 +307,7 @@ builder.Services.Configure<FormOptions>(options =>
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("PermissionPolicy", policy =>
-            policy.Requirements.Add(new PermissionRequirement("Read", "PageCode")));
+            policy.Requirements.Add(new PermissionRequirement("Default")));       
     });
 
     builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();

@@ -1,5 +1,7 @@
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.SignalR;
+using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Aktitic.HrTaskList.BL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -11,6 +13,7 @@ namespace Aktitic.HrProject.API.Controllers;
 [Route("api/[controller]")]
 public class ChatController(IMessageManager messageService,IChatGroupManager chatGroupManager, IHubContext<ChatHub> hubContext) : ControllerBase
 {
+
     [HttpPost("sendPrivateMessage")]
     public async Task<IActionResult> SendPrivateMessage
         ( int receiverId, string message, 
@@ -69,6 +72,7 @@ public class ChatController(IMessageManager messageService,IChatGroupManager cha
         return Ok(groups);
     }
     
+    // [AuthorizeRole(nameof(Pages.Chat),nameof(Roles.Read))]
     [HttpGet("GetUserGroups")]
     public async Task<IActionResult> GetUserGroups(int userId, int page, int pageSize)
     {

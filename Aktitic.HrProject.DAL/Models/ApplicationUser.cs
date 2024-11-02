@@ -24,7 +24,36 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity
     public bool IsManager { get; set; }
         
     public bool IsAdmin { get; set; }
-    public bool HasAccess { get; set; } 
+    public bool HasAccess { get; set; }
+    
+    [ForeignKey(nameof(Models.Client))]
+    public int? ClientId { get; set; }
+    
+    public Client? Client { get; set; }
+
+    #region PersoInformation
+
+    public string? State { get; set; }
+    public string? Country { get; set; }
+    public string? PinCode { get; set; }
+    public DateTime? Birthday { get; set; }
+    public string? Address { get; set; } 
+    public bool? Gender { get; set; }
+    public string? PassportNumber { get; set; } 
+    public DateTime? PassportExpDate { get; set; }
+    public string? Tel { get; set; } 
+    public string? Nationality { get; set; } 
+    public string? Religion { get; set; } 
+    public string? MatritalStatus { get; set; } 
+    public string? EmploymentSpouse { get; set; } 
+    public int? ChildrenNumber { get; set; }
+    
+    [ForeignKey(nameof(ReportsTo))]
+    public int? ReportsToId { get; set; }
+    
+    #endregion    
+    
+
     public bool IsDeleted { get; set; }
     public string? ConnectionId { get; set; }
     public DateTime? DeletedAt { get; set; }
@@ -36,7 +65,7 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity
     
 
     #region NavigationProperties
-    
+    public ApplicationUser? ReportsTo { get; set; }
     public Company? ManagedCompany { get; set; }
     public Company? Company { get; set; }
 
@@ -48,6 +77,8 @@ public class ApplicationUser : IdentityUser<int> ,ISoftDelete , IBaseEntity
     public IEnumerable<Email>? SentEmails { get; set; }
     public IEnumerable<Email>? ReceivedEmails { get; set; }
     public IEnumerable<FamilyInformation>? FamilyInformations { get; set; }
+    public IEnumerable<EmergencyContact>? EmergencyContacts { get; set; }
+    public IEnumerable<EducationInformation>? EducationInformations { get; set; }
 
     #endregion
    

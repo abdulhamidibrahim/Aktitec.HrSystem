@@ -9,14 +9,15 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
 {
     private readonly HrSystemDbContext _context = context;
 
-    public IQueryable<Email> GlobalSearch(string? searchKey,string email)
+    public IQueryable<Email> GlobalSearch(string? searchKey, string email)
     {
         if (_context.Emails != null)
         {
             var query = _context.Emails
                 .Include(x=>x.Sender)
                 .Include(x=>x.Receiver)
-                .Where(x=>x.Receiver.Email == email)
+                .Where(x=>x.Receiver.Email == email
+                           && !x.Trash && !x.Draft && !x.Archive && !x.Starred)
                 .AsSplitQuery()
                 .OrderByDescending(x=>x.Date)
                 .AsQueryable();
@@ -54,24 +55,118 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
             }
             
             // get query for booleans
-            if (searchKey == "true" || searchKey == "false")
-            {
-                query = query
-                    .Where(x =>
-                        x.Read.ToString().ToLower().Contains(searchKey) ||
-                        x.Archive.ToString().ToLower().Contains(searchKey) ||
-                        x.Draft.ToString().ToLower().Contains(searchKey) ||
-                        x.Trash.ToString().ToLower().Contains(searchKey) ||
-                        x.Selected.ToString().ToLower().Contains(searchKey) ||
-                        x.Spam.ToString().ToLower().Contains(searchKey) ||
-                        x.Starred.ToString().ToLower().Contains(searchKey));
-                return query;
-            }
+            // if (searchKey == "true" || searchKey == "false")
+            // {
+            //     query = query
+            //         .Where(x =>
+            //             x.Read.ToString().ToLower().Contains(searchKey) ||
+            //             x.Archive.ToString().ToLower().Contains(searchKey) ||
+            //             x.Draft.ToString().ToLower().Contains(searchKey) ||
+            //             x.Trash.ToString().ToLower().Contains(searchKey) ||
+            //             x.Selected.ToString().ToLower().Contains(searchKey) ||
+            //             x.Spam.ToString().ToLower().Contains(searchKey) ||
+            //             x.Starred.ToString().ToLower().Contains(searchKey));
+            //     return query;
+            // }
            
         }
 
-        return _context.Emails!.AsQueryable();
+        return _context.Emails!
+            .Where(x=>x.Receiver.Email == email && !x.Trash && !x.Draft && !x.Archive && !x.Starred)
+            .AsQueryable();
     }
+
+   
+    public IQueryable<Email> SearchTrashedEmails(int receiver, string searchKey)
+    {
+        if (_context.Emails != null)
+        {
+             var queryable = _context.Emails.Where(x => x.ReceiverId == receiver && x.Trash == true);
+             return queryable 
+                 .Where(x =>
+                 x.Cc!.ToLower().Contains(searchKey) ||
+                 x.Bcc!.ToLower().Contains(searchKey) ||
+                 x.Subject!.ToLower().Contains(searchKey) ||
+                 x.Label!.ToLower().Contains(searchKey) ||
+                 x.Description!.ToLower().Contains(searchKey));
+        }
+
+        return _context.Emails!
+            .Where(x => x.ReceiverId == receiver && x.Trash == true);
+    }
+    public IQueryable<Email> SearchStarredEmails(int receiver, string searchKey)
+    {
+        if (_context.Emails != null)
+        {
+            var queryable = _context.Emails.Where(x => x.ReceiverId == receiver && x.Starred == true);
+            return queryable 
+                .Where(x =>
+                    x.Cc!.ToLower().Contains(searchKey) ||
+                    x.Bcc!.ToLower().Contains(searchKey) ||
+                    x.Subject!.ToLower().Contains(searchKey) ||
+                    x.Label!.ToLower().Contains(searchKey) ||
+                    x.Description!.ToLower().Contains(searchKey));
+        }
+
+        return _context.Emails!
+            .Where(x => x.ReceiverId == receiver && x.Starred == true);
+    } 
+    public IQueryable<Email> SearchDraftedEmails(int receiver, string searchKey)
+    {
+        if (_context.Emails != null)
+        {
+            var queryable = _context.Emails.Where(x => x.ReceiverId == receiver && x.Draft == true);
+            return queryable 
+                .Where(x =>
+                    x.Cc!.ToLower().Contains(searchKey) ||
+                    x.Bcc!.ToLower().Contains(searchKey) ||
+                    x.Subject!.ToLower().Contains(searchKey) ||
+                    x.Label!.ToLower().Contains(searchKey) ||
+                    x.Description!.ToLower().Contains(searchKey));
+        }
+
+        return _context.Emails!
+            .Where(x => x.ReceiverId == receiver && x.Draft == true);
+        
+    }
+    public IQueryable<Email> SearchArchivedEmails(int receiver, string searchKey)
+    {
+        if (_context.Emails != null)
+        {
+            var queryable = _context.Emails.Where(x => x.ReceiverId == receiver && x.Archive == true);
+            return queryable 
+                .Where(x =>
+                    x.Cc!.ToLower().Contains(searchKey) ||
+                    x.Bcc!.ToLower().Contains(searchKey) ||
+                    x.Subject!.ToLower().Contains(searchKey) ||
+                    x.Label!.ToLower().Contains(searchKey) ||
+                    x.Description!.ToLower().Contains(searchKey));
+        }
+
+        return _context.Emails!
+            .Where(x => x.ReceiverId == receiver && x.Archive == true);
+        
+    }
+    
+    public IQueryable<Email> SearchSentEmails(int sender, string searchKey)
+    {
+        if (_context.Emails != null)
+        {
+            var queryable = _context.Emails.Where(x => x.SenderId == sender && x.Archive == true);
+            return queryable 
+                .Where(x =>
+                    x.Cc!.ToLower().Contains(searchKey) ||
+                    x.Bcc!.ToLower().Contains(searchKey) ||
+                    x.Subject!.ToLower().Contains(searchKey) ||
+                    x.Label!.ToLower().Contains(searchKey) ||
+                    x.Description!.ToLower().Contains(searchKey));
+        }
+
+        return _context.Emails!
+            .Where(x => x.SenderId == sender && x.Archive == true);
+        
+    }
+    
 
     public Email GetEmail(int id)
     {
@@ -107,7 +202,7 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
 
     public async Task<IEnumerable<Email>> GetStarredEmails(int? page, int? pageSize,string email)
     {
-        return await context.Emails!
+        return await _context.Emails!
             .Include(x => x.Sender)
             .Include(x => x.Receiver)
             .Where(x => x.Receiver.Email == email)
@@ -121,7 +216,7 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
 
     public async Task<IEnumerable<Email>> GetArchivedEmails(int? page, int? pageSize,string email)
     {
-        return await context.Emails!
+        return await _context.Emails!
             .Include(x => x.Sender)
             .Include(x => x.Receiver)
             .Where(x => x.Receiver.Email == email)
@@ -135,7 +230,7 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
 
     public async Task<IEnumerable<Email>> GetDraftedEmails(int? page, int? pageSize,string email)
     {
-        return await context.Emails!
+        return await _context.Emails!
             .Include(x => x.Sender)
             .Include(x => x.Receiver)
             .Where(x => x.Receiver.Email == email)
@@ -149,7 +244,7 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
 
     public async Task<IEnumerable<Email>> GetTrashedEmails(int? page, int? pageSize,string email)
     {
-        return await context.Emails!
+        return await _context.Emails!
             .Include(x => x.Sender)
             .Include(x => x.Receiver)
             .Where(x => x.Receiver.Email == email)
@@ -165,5 +260,24 @@ public class EmailsRepo(HrSystemDbContext context) : GenericRepo<Email>(context)
     {
         return _context.Attachments!
             .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public Task DeleteRange(List<int> ids)
+    {
+        var emails = _context.Emails!
+            .Where(x => ids.Contains(x.Id));
+        _context.Emails!.RemoveRange(emails);
+        return Task.CompletedTask;
+    }
+
+    public Task TrashRange(List<int> ids, bool trash)
+    {
+        var emails = _context.Emails!
+            .Where(x => ids.Contains(x.Id));
+        foreach (var email in emails)
+        {
+            email.Trash = trash;
+        }
+        return Task.CompletedTask;
     }
 }

@@ -6,8 +6,6 @@ using Aktitic.HrProject.Api.Configuration;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
 using Aktitic.HrProject.DAL.Models;
-using Aktitic.HrProject.DAL.Pagination.Client;
-using Aktitic.HrProject.DAL.UnitOfWork;
 using Aktitic.HrTaskList.BL;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -29,8 +27,7 @@ public class UsersController(
     IConfiguration configuration,
     IEmailService emailService,
     IOptions<JwtOptions> jwtOptions,
-    IAppModulesManager appModulesManager,
-    IUnitOfWork unitOfWork)
+    IAppModulesManager appModulesManager)
     : ControllerBase
 {
 
@@ -49,7 +46,7 @@ public class UsersController(
                 new { token, email = userAddDto.Email },
                 Request.Scheme);
         
-        Message message = new Message(new [] {userAddDto.Email},"Confirm Email", confirmationLink);
+        var message = new Message(new [] {userAddDto.Email},"Confirm Email", confirmationLink);
         emailService.SendEmail(message);
         
         return Ok("Confirmation link sent Successfully, Please check your email");
@@ -60,7 +57,7 @@ public class UsersController(
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
         if (!ModelState.IsValid) return BadRequest("Enter valid Data");
-        var user = await userManager.FindByEmailAsync(loginDto.Email);
+        var user = await applicationUserManager.FindByEmailAsync(loginDto.Email);
         if (user == null) return BadRequest("User Not Found");
         var correct= await userManager.CheckPasswordAsync(user, loginDto.Password);
         if (!correct) return BadRequest("Wrong Password");
@@ -104,6 +101,22 @@ public class UsersController(
             Date = user.Date,
             IsAdmin = user.IsAdmin, 
             IsManager = user.IsManager,
+            State = user.State,
+            Country = user.Country,
+            PinCode = user.PinCode,
+            Birthday = user.Birthday,
+            Address = user.Address,
+            Gender = user.Gender,
+            PassportNumber = user.PassportNumber,
+            PassportExpDate = user.PassportExpDate,
+            Tel = user.Tel,
+            Nationality = user.Nationality,
+            Religion = user.Religion,
+            MatritalStatus = user.MatritalStatus,
+            EmploymentSpouse = user.EmploymentSpouse,
+            ChildrenNumber = user.ChildrenNumber,
+            ReportsTo = user.ReportsToId
+            
         };
         
         // return data in the header 
@@ -132,7 +145,50 @@ public class UsersController(
      
     }
 
-[HttpGet]
+    [HttpPost("forgotPassword")]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        var user = await applicationUserManager.FindByEmailAsync(email);
+        if (user is null) return BadRequest("user not found");
+        var token = await userManager.GenerateUserTokenAsync(user, "Default", "ResetPassword");
+        var resetLink = Url.Action(nameof(ResetPassword), "Users", new { token, email }, Request.Scheme);
+        var message = new Message(new [] {email}, "Reset Password", $"Click here to reset your password :\n {resetLink}");
+        emailService.SendEmail(message);
+        return Ok("Reset Link sent successfully, Please check your email");
+    }
+
+    [HttpGet("resetPassword")]
+    public async Task<IActionResult> ResetPassword(string email,string token)
+    {
+        var user = await applicationUserManager.FindByEmailAsync(email);
+        if (user is null) return BadRequest("user not found");
+        var result = await userManager.VerifyUserTokenAsync(user, "Default", "ResetPassword", token);
+        var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+        if (!result) return BadRequest("Invalid Token");
+        return Redirect($"http://localhost:4200/reset-password?token={resetToken}&email={email}");
+    }
+    
+    [HttpPost("resetPassword")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await applicationUserManager.FindByEmailAsync(resetPasswordDto.Email);
+        if (user is null) return BadRequest("user not found");
+        var result = await userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+        if (!result.Succeeded) return BadRequest("Failed to reset password");
+        return Ok("Password reset successfully");
+    }
+    
+    [HttpPost("changePassword")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+    {
+        var user = await applicationUserManager.FindByEmailAsync(changePasswordDto.Email);
+        if (user is null) return BadRequest("user not found");
+        var result = await userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+        if (!result.Succeeded) return BadRequest("Failed to change password");
+        return Ok("Password changed successfully");
+    }
+    
+    [HttpGet]
     public async Task<List<ApplicationUserReadDto>> GetAll()
     {
         return await applicationUserManager.GetAll();

@@ -1,7 +1,9 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.BL.Dtos.Employee;
+using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Employee;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Microsoft.AspNetCore.Mvc;
 using Task = System.Threading.Tasks.Task;
 
@@ -15,12 +17,14 @@ public class EmployeesController(
 {
 
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public async Task<List<EmployeeReadDto>> GetAll()
     {
         return await employeeManager.GetAll();
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public ActionResult<Task<EmployeeReadDto?>> Get(int id)
     {
         var result = employeeManager.Get(id);
@@ -31,12 +35,14 @@ public class EmployeesController(
     }
     
     [HttpGet("getEmployees")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public async Task<PagedEmployeeResult> GetEmployeesAsync(string? term, string? sort, int page, int limit)
     {
         return await employeeManager.GetEmployeesAsync(term, sort, page, limit);
     }
     
     [HttpPost("AddEmployees")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Add))]
     public async Task<ActionResult> AddEmployeesAsync(EmployeesAddDto employeeAddDtos)
     {
         var result = await employeeManager.AddEmployeesAsync(employeeAddDtos);
@@ -45,6 +51,7 @@ public class EmployeesController(
     }        
     
     [HttpGet("getFilteredEmployees")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public Task<FilteredEmployeeDto> GetFilteredEmployeesAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
@@ -56,6 +63,7 @@ public class EmployeesController(
     // [EmployeeEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Add))]
     public  ActionResult Create([FromForm] EmployeeAddDto employeeAddDto, IFormFile? image)
     {
         
@@ -71,6 +79,7 @@ public class EmployeesController(
     // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Edit))]
     public ActionResult Update([FromForm] EmployeeUpdateDto employeeUpdateDto,int id, IFormFile? image)
     {
         var result= employeeManager.Update(employeeUpdateDto,id,image);
@@ -79,6 +88,7 @@ public class EmployeesController(
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Delete))]
     public ActionResult Delete(int id)
     {
         var result =employeeManager.Delete(id);
@@ -87,12 +97,14 @@ public class EmployeesController(
     }
     
     [HttpGet("GlobalSearch")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public async Task<IEnumerable<EmployeeDto>> GlobalSearch(string search,string? column)
     {
         return await employeeManager.GlobalSearch(search,column);
     }
 
     [HttpGet("getManagerTree")]
+    [AuthorizeRole(nameof(Pages.AllEmployees),nameof(Roles.Read))]
     public async Task<List<ManagerTree>?> GetManagerTree()
     {
         return await employeeManager.GetManagersTreeAsync();

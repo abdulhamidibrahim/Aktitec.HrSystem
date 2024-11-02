@@ -2,13 +2,17 @@ using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.UnitOfWork;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL.Managers.Company;
 
 public class CompanyManager(IUnitOfWork unitOfWork,
                             UserUtility userUtility,
+                            IWebHostEnvironment webHostEnvironment,
                             UserManager<ApplicationUser> userManager) : ICompanyManager
 {
     public async Task<int> Add(CompanyAddDto companyAddDto)
@@ -16,7 +20,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         var managerDto = companyAddDto.Manager;
       
         var companyDto = companyAddDto.Company;
-        
+        await unitOfWork.BeginTransactionAsync();
         var company = new DAL.Models.Company()
         {
             CompanyName = companyDto.CompanyName,
@@ -30,6 +34,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             Contact = companyDto.Contact,
             State = companyDto.State,
             Postal = companyDto.Postal,
+            Logo = companyDto.Logo,
+            Language = companyDto.Language,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserId() ?? "",
         };
@@ -53,6 +59,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         var created = await userManager.CreateAsync(manager, managerDto.Password);
         if (!created.Succeeded)
         {
+            await unitOfWork.RollbackAsync();
             throw new Exception(created.Errors.FirstOrDefault()?.Description);
         }
 
@@ -68,7 +75,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         
         manager.TenantId = company.Id;
         // Commit the transaction
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.CommitAsync();
 
         return company.Id;
 
@@ -76,6 +83,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
     public async Task<int> AddAdmin(CompanyAddDto companyAddDto)
     {
         var managerDto = companyAddDto.Manager;
+        await unitOfWork.BeginTransactionAsync();
         var manager = new ApplicationUser()
         {
             UserName = managerDto.UserName,
@@ -90,7 +98,11 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             HasAccess = true,
         };
         var created= userManager.CreateAsync(manager,managerDto.Password).Result;
-        if (!created.Succeeded) throw new Exception(created.Errors.FirstOrDefault()?.Description);
+        if (!created.Succeeded)
+        {
+            await unitOfWork.RollbackAsync();
+            throw new Exception(created.Errors.FirstOrDefault()?.Description);
+        }
         
         var companyDto = companyAddDto.Company;
         var company = new DAL.Models.Company()
@@ -106,6 +118,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             Contact = companyDto.Contact,
             State = companyDto.State,
             Postal = companyDto.Postal,
+            Logo = companyDto.Logo,
+            Language = companyDto.Language,
             CreatedAt = DateTime.Now,
             CreatedBy = userUtility.GetUserId()??"",
         };
@@ -114,7 +128,7 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         
         manager.TenantId = companyId;
         
-        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.CommitAsync();
         
         return companyId;
     }
@@ -137,6 +151,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         company.Contact = companyDto.Contact;
         company.State = companyDto.State;
         company.Postal = companyDto.Postal;
+        company.Logo = companyDto.Logo;
+        company.Language = companyDto.Language;
         company.UpdatedAt = DateTime.Now;
         company.UpdatedBy = userUtility.GetUserId();
 
@@ -165,6 +181,44 @@ public class CompanyManager(IUnitOfWork unitOfWork,
             }
         }
         return await unitOfWork.SaveChangesAsync();
+    }
+
+    public Task<int> UpdateCompany(CompanyDto companyDto, int id)
+    {
+        var company = unitOfWork.Company.GetById(id);
+        if (company == null) return Task.FromResult(0);
+        
+        if(!companyDto.CompanyName.IsNullOrEmpty())
+            company.CompanyName = companyDto.CompanyName;
+        if(!companyDto.Email.IsNullOrEmpty())
+            company.Email = companyDto.Email;
+        if(!companyDto.Phone.IsNullOrEmpty())
+            company.Phone = companyDto.Phone;
+        if(!companyDto.Address.IsNullOrEmpty())
+            company.Address = companyDto.Address;
+        if(!companyDto.Website.IsNullOrEmpty())
+            company.Website = companyDto.Website;
+        if(!companyDto.Fax.IsNullOrEmpty())
+            company.Fax = companyDto.Fax;
+        if(!companyDto.Country.IsNullOrEmpty())
+            company.Country = companyDto.Country;
+        if(!companyDto.City.IsNullOrEmpty())
+            company.City = companyDto.City;
+        if(!companyDto.Contact.IsNullOrEmpty())
+           company.Contact = companyDto.Contact;
+        if(!companyDto.State.IsNullOrEmpty())
+            company.State = companyDto.State;
+        if(!companyDto.Postal.IsNullOrEmpty())
+            company.Postal = companyDto.Postal;      
+        if(!companyDto.Logo.IsNullOrEmpty())
+            company.Logo = companyDto.Logo;
+        if(!companyDto.Language.IsNullOrEmpty())
+           company.Language = companyDto.Language;
+
+        company.UpdatedAt = DateTime.Now;
+        company.UpdatedBy = userUtility.GetUserId();
+        unitOfWork.Company.Update(companyDto);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
@@ -199,6 +253,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 Contact = company.Contact,
                 State = company.State,
                 Postal = company.Postal,
+                Logo = company.Logo,
+                Language = company.Language,
                 CreatedAt = company.CreatedAt,
                 UpdatedAt = company.UpdatedAt
             },
@@ -238,6 +294,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 Contact = c.Contact,
                 State = c.State,
                 Postal = c.Postal,
+                Logo = c.Logo,
+                Language = c.Language,
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             },
@@ -294,6 +352,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                         Contact = c.Contact,
                         State = c.State,
                         Postal = c.Postal,
+                        Logo = c.Logo,
+                        Language = c.Language,
                         CreatedAt = c.CreatedAt,
                         CreatedBy = c.CreatedBy,
                         UpdatedAt = c.UpdatedAt,
@@ -358,6 +418,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                         Contact = company.Contact,
                         State = company.State,
                         Postal = company.Postal,
+                        Logo = company.Logo,
+                        Language = company.Language,
                         CreatedAt = company.CreatedAt,
                         CreatedBy = company.CreatedBy,
                         UpdatedAt = company.UpdatedAt,
@@ -444,6 +506,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                     City = company.City,
                     Contact = company.Contact,
                     State = company.State,
+                    Logo = company.Logo,
+                    Language = company.Language,
                     Postal = company.Postal,
                     CreatedAt = company.CreatedAt,
                     CreatedBy = company.CreatedBy,
@@ -485,6 +549,8 @@ public class CompanyManager(IUnitOfWork unitOfWork,
                 Contact = company.Contact,
                 State = company.State,
                 Postal = company.Postal,
+                Logo = company.Logo,
+                Language = company.Language,
                 CreatedAt = company.CreatedAt,
                 CreatedBy = company.CreatedBy,
                 UpdatedAt = company.UpdatedAt,
@@ -507,4 +573,26 @@ public class CompanyManager(IUnitOfWork unitOfWork,
         return (companys.ToList());
     }
 
+    public async Task<int> UploadLogo(IFormFile file,int companyId)
+    {
+        var company = unitOfWork.Company.GetCompany(companyId);
+            
+
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads", company.CompanyName,"Logo");
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            await using var fileStream = new FileStream(Path.Combine(path, file.FileName), FileMode.Create);
+       
+            await file.CopyToAsync(fileStream);
+
+            company.Logo = Path.Combine("uploads", company.CompanyName, "Logo", file.FileName);
+
+            unitOfWork.Company.Update(company);
+            return await unitOfWork.SaveChangesAsync();
+    }
+    
 }

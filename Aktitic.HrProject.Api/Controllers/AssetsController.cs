@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Models;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Aktitic.HrTaskList.BL;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +12,7 @@ namespace Aktitic.HrProject.API.Controllers;
 public class AssetsController(IAssetsManager assetsManager) : ControllerBase
 {
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Read))]
     public async Task<ActionResult<List<AssetsReadDto>>> GetAll()
     {
         var assets = await assetsManager.GetAll();
@@ -17,6 +20,7 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Read))]
     public async Task<ActionResult<AssetsReadDto?>> Get(int id)
     {
         var assets =await assetsManager.Get(id);
@@ -25,6 +29,7 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     }
     
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Add))]
     public ActionResult Add([FromBody] AssetsAddDto assetsAddDto)
     {
         var result =assetsManager.Add(assetsAddDto);
@@ -33,6 +38,7 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     }
     
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Edit))]
     public ActionResult Update([FromBody] AssetsUpdateDto assetsUpdateDto,int id)
     {
         var result =assetsManager.Update(assetsUpdateDto,id);
@@ -41,6 +47,7 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Delete))]
     public ActionResult Delete(int id)
     { 
         var result =assetsManager.Delete(id);
@@ -50,12 +57,14 @@ public class AssetsController(IAssetsManager assetsManager) : ControllerBase
     
      
     [HttpGet("GlobalSearch")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Read))]
     public async Task<IEnumerable<AssetsDto>> GlobalSearch(string search,string? column)
     {
         return await assetsManager.GlobalSearch(search,column);
     }
     
     [HttpGet("getFilteredAssets")]
+    [AuthorizeRole(nameof(Pages.Assets),nameof(Roles.Read))]
     public Task<FilteredAssetsDto> GetFilteredAssetsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         

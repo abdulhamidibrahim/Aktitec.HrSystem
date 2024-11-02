@@ -25,7 +25,10 @@ public class Client : BaseEntity
     public string? FileExtension { get; set; }=string.Empty;
     public string? Phone { get; set; } = string.Empty;
     public string? CompanyName { get; set; } = string.Empty;
-
+    
+    [ForeignKey(nameof(User))]
+    public int? UserId { get; set; }
+    public ApplicationUser? User { get; set; }
     public List<Ticket>? Tickets { get; set; }
     public bool? Status { get; set; }
     public List<Project>? Projects { get; set; }

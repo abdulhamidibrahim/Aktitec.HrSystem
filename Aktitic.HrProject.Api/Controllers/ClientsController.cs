@@ -1,8 +1,10 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
+using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
 using Aktitic.HrProject.DAL.Repos;
 using Aktitic.HrProject.DAL.Repos.AttendanceRepo;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +18,14 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
 {
 
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Read))]
     public async Task<List<ClientReadDto>> GetAll()
     {
         return await clientManager.GetAll();
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Read))]
     public Task<ClientReadDto?> Get(int id)
     {
         var result = clientManager.Get(id);
@@ -38,6 +42,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     // }
     //
     [HttpGet("getFilteredClients")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Read))]
     public Task<FilteredClientDto> GetFilteredClientsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
@@ -49,6 +54,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     // [ClientEmailAddressValidator]
     // [DisableFormValueModelBinding]
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Add))]
     public  ActionResult Create([FromForm] ClientAddDto clientAddDto)
     {
            var result = clientManager.Add(clientAddDto);
@@ -61,6 +67,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     // [Consumes("multipart/form-data")]
     // [DisableFormValueModelBinding]
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Edit))]
     public ActionResult Update([FromForm] ClientUpdateDto clientUpdateDto, int id)
     {
          var result = clientManager.Update(clientUpdateDto,id);
@@ -69,6 +76,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Delete))]
     public ActionResult Delete(int id)
     {
            var result =  clientManager.Delete(id);
@@ -79,6 +87,7 @@ public class ClientsController(IClientManager clientManager) : ControllerBase
     }
     
     [HttpGet("GlobalSearch")]
+    [AuthorizeRole(nameof(Pages.Clients),nameof(Roles.Read))]
     public async Task<IEnumerable<ClientDto>> GlobalSearch(string search,string? column)
     {
         return await clientManager.GlobalSearch(search,column);
