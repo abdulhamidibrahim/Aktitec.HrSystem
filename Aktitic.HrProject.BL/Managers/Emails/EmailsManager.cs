@@ -504,6 +504,54 @@ public class EmailsManager(
         return Task.FromResult(emailss.ToList());
     }
 
+    public  List<EmailsDto> EmailSearch(SearchEmailDto searchEmailDto)
+    {
+        IEnumerable<Email> emailsDtos = [];
+        if (searchEmailDto.Sender is not null)
+        {
+            emailsDtos = unitOfWork.Emails.SearchSentEmails((int)searchEmailDto.Sender,searchEmailDto.SearchKey).AsEnumerable();
+        }
+       
+        else if (searchEmailDto.Trash is not null && searchEmailDto.Receiver is not null)
+        {
+            emailsDtos = unitOfWork.Emails.SearchTrashedEmails((int)searchEmailDto.Receiver,searchEmailDto.SearchKey).AsEnumerable();
+        }
+        else if (searchEmailDto.Starred is not null && searchEmailDto.Receiver is not null)
+        {
+            emailsDtos = unitOfWork.Emails.SearchStarredEmails((int)searchEmailDto.Receiver,searchEmailDto.SearchKey).AsEnumerable();
+        }
+        else if (searchEmailDto.Archived is not null && searchEmailDto.Receiver is not null)
+        {
+            emailsDtos = unitOfWork.Emails.SearchArchivedEmails((int)searchEmailDto.Receiver,searchEmailDto.SearchKey).AsEnumerable();
+        }
+        else if (searchEmailDto.Draft is not null && searchEmailDto.Receiver is not null)
+        {
+            emailsDtos = unitOfWork.Emails.SearchDraftedEmails((int)searchEmailDto.Receiver,searchEmailDto.SearchKey).AsEnumerable();
+        }
+
+        return emailsDtos.Select(emails => new EmailsDto()
+        {
+            Id = emails.Id,
+            SenderId = emails.SenderId,
+            ReceiverId = emails.ReceiverId,
+            ReceiverEmail = emails.ReceiverEmail,
+            Cc = emails.Cc,
+            Bcc = emails.Bcc,
+            Subject = emails.Subject,
+            Date = emails.Date,
+            Label = emails.Label,
+            Read = emails.Read,
+            Archive = emails.Archive,
+            Starred = emails.Starred,
+            Trash = emails.Trash,
+            Spam = emails.Spam,
+            Draft = emails.Draft,
+            Sender = mapper.Map<ApplicationUserDto>(emails.Sender),
+            Selected = emails.Selected
+        }).ToList();
+
+    }
+
     public async Task<IEnumerable<EmailsDto>> GetStarredEmails(int? page, int? pageSize,string email)
     {
          var emails = await unitOfWork.Emails.GetStarredEmails(page, pageSize,email);
@@ -649,5 +697,18 @@ public class EmailsManager(
             Size = e.Size,
             Type = e.Type,
         };
+    }
+
+    public async Task<int> DeleteRange(List<int> ids)
+    {
+         await unitOfWork.Emails.DeleteRange(ids);
+        return await unitOfWork.SaveChangesAsync();
+    }
+
+
+    public async Task<int> TrashRange(List<int> ids, bool trash)
+    {
+        await unitOfWork.Emails.TrashRange(ids, trash);
+        return await unitOfWork.SaveChangesAsync();
     }
 }

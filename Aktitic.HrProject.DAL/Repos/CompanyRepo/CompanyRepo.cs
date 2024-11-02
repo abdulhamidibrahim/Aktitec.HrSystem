@@ -54,6 +54,8 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
                             x.State.ToLower().Contains(searchKey) ||
                             x.Postal.ToLower().Contains(searchKey) ||
                             x.Contact.ToLower().Contains(searchKey) ||
+                            x.Logo.ToLower().Contains(searchKey) ||
+                            x.Language.ToLower().Contains(searchKey) ||
                             x.CreatedBy.ToLower().Contains(searchKey) ) );
                 
                 return query;
@@ -69,6 +71,7 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
         if (_context.Companies != null)
             return await _context.Companies
                 .Include(x => x.Manager)
+                .IgnoreQueryFilters()
                 .AsQueryable()
                 .ToListAsync();
 
@@ -80,6 +83,7 @@ public class CompanyRepo :GenericRepo<Company>,ICompanyRepo
 
         var company = _context.Companies
             .Include(x=>x.Manager)
+            .IgnoreQueryFilters()
             .FirstOrDefault(x => x.Id == companyId);
         return company;
 

@@ -11,25 +11,18 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PayrollDeductionController: ControllerBase
+public class PayrollDeductionController(IPayrollDeductionManager payrollDeductionManager) : ControllerBase
 {
-    private readonly IPayrollDeductionManager _payrollDeductionManager;
-
-    public PayrollDeductionController(IPayrollDeductionManager payrollDeductionManager)
-    {
-        _payrollDeductionManager = payrollDeductionManager;
-    }
-    
     [HttpGet]
     public Task<List<PayrollDeductionReadDto>> GetAll()
     {
-        return _payrollDeductionManager.GetAll();
+        return payrollDeductionManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<PayrollDeductionReadDto?> Get(int id)
     {
-        var result = _payrollDeductionManager.Get(id);
+        var result = payrollDeductionManager.Get(id);
         if (result == null) return NotFound();
         return Ok(result);
     }
@@ -37,7 +30,7 @@ public class PayrollDeductionController: ControllerBase
     [HttpPost("create")]
     public ActionResult<Task> Add(PayrollDeductionAddDto payrollDeductionAddDto)
     {
-        var result = _payrollDeductionManager.Add(payrollDeductionAddDto);
+        var result = payrollDeductionManager.Add(payrollDeductionAddDto);
         if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Added Successfully");
     }
@@ -45,7 +38,7 @@ public class PayrollDeductionController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult<Task> Update(PayrollDeductionUpdateDto payrollDeductionUpdateDto,int id)
     {
-        var result= _payrollDeductionManager.Update(payrollDeductionUpdateDto,id);
+        var result= payrollDeductionManager.Update(payrollDeductionUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated successfully");
     }
@@ -53,7 +46,7 @@ public class PayrollDeductionController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        var result= _payrollDeductionManager.Delete(id);
+        var result= payrollDeductionManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
@@ -63,13 +56,13 @@ public class PayrollDeductionController: ControllerBase
     public Task<FilteredPayrollDeductionsDto> GetFilteredPayrollDeductionAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _payrollDeductionManager.GetFilteredPayrollDeductionsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return payrollDeductionManager.GetFilteredPayrollDeductionsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<PayrollDeductionDto>> GlobalSearch(string search,string? column)
     {
-        return await _payrollDeductionManager.GlobalSearch(search,column);
+        return await payrollDeductionManager.GlobalSearch(search,column);
     }
 
 

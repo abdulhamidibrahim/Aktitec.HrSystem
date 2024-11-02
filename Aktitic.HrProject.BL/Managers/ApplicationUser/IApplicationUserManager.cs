@@ -11,6 +11,7 @@ public interface IApplicationUserManager
     public Task<int> Update(ApplicationUserUpdateDto applicationUserUpdateDto, int id);
     public Task<int> Delete(int id);
     public ApplicationUserReadDto? Get(int id);
+    public Task<ApplicationUser?> FindByEmailAsync(string email);
     public Task<List<ApplicationUserReadDto>> GetAll();
     public Task<FilteredApplicationUserDto> GetFilteredApplicationUsersAsync(int companyId, string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize);
 

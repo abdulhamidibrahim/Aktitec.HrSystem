@@ -1,3 +1,5 @@
+using Aktitic.HrProject.BL.SignalR;
+using Aktitic.HrProject.BL.Utilities;
 using Aktitic.HrProject.DAL.Helpers;
 using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
@@ -7,17 +9,11 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.BL;
 
-public class HolidayManager:IHolidayManager
+public class HolidayManager(IMapper mapper, 
+                            IUnitOfWork unitOfWork,
+                            NotificationHub notification,
+                            UserUtility userUtility) : IHolidayManager
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-
-    public HolidayManager(IMapper mapper, IUnitOfWork unitOfWork)
-    {
-        _mapper = mapper;
-        _unitOfWork = unitOfWork;
-    }
-    
     public Task<int> Add(HolidayAddDto holidayAddDto)
     {
         var holiday = new Holiday()
@@ -25,37 +21,46 @@ public class HolidayManager:IHolidayManager
             Title = holidayAddDto.Title,
             Date = holidayAddDto.Date,
             CreatedAt = DateTime.Now,
-        }; 
-        _unitOfWork.Holiday.Add(holiday);
-        return _unitOfWork.SaveChangesAsync();
+        };
+        unitOfWork.Holiday.Add(holiday);
+        var notificationSettings = unitOfWork.NotificationSettings.GetById(holiday.NotificationId);
+        if (notificationSettings is not null && notificationSettings.Active)
+        {
+            var company = unitOfWork.Company.GetById(Convert.ToInt32(userUtility.GetUserId()));
+
+            if (company != null)
+                _ = notification.SendNotification(userUtility.GetUserName(), "New Holiday Added", company.CompanyName);
+        }
+        
+        return unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Update(HolidayUpdateDto holidayUpdateDto, int id)
     {
-        var holiday = _unitOfWork.Holiday.GetById(id);
+        var holiday = unitOfWork.Holiday.GetById(id);
 
         if (holiday == null) return Task.FromResult(0);
         if(holidayUpdateDto.Title != null) holiday.Title = holidayUpdateDto.Title;
         if(holidayUpdateDto.Date != null) holiday.Date = holidayUpdateDto.Date;
 
         holiday.UpdatedAt = DateTime.Now;
-        _unitOfWork.Holiday.Update(holiday);
-        return _unitOfWork.SaveChangesAsync();
+        unitOfWork.Holiday.Update(holiday);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public Task<int> Delete(int id)
     {
-        var holiday = _unitOfWork.Holiday.GetById(id);
+        var holiday = unitOfWork.Holiday.GetById(id);
         if (holiday==null) return Task.FromResult(0);
         holiday.IsDeleted = true;
         holiday.DeletedAt = DateTime.Now;
-        _unitOfWork.Holiday.Update(holiday);
-        return _unitOfWork.SaveChangesAsync();
+        unitOfWork.Holiday.Update(holiday);
+        return unitOfWork.SaveChangesAsync();
     }
 
     public HolidayReadDto? Get(int id)
     {
-        var holiday = _unitOfWork.Holiday.GetById(id);
+        var holiday = unitOfWork.Holiday.GetById(id);
         if (holiday == null) return null;
         return new HolidayReadDto()
         {
@@ -67,7 +72,7 @@ public class HolidayManager:IHolidayManager
 
     public List<HolidayReadDto> GetAll()
     {
-        var holidays = _unitOfWork.Holiday.GetAll();
+        var holidays = unitOfWork.Holiday.GetAll();
         return holidays.Result.Select(holiday => new HolidayReadDto()
         {
             Id = holiday.Id,
@@ -78,7 +83,7 @@ public class HolidayManager:IHolidayManager
     
      public async Task<FilteredHolidayDto> GetFilteredHolidaysAsync(string? column, string? value1, string? operator1, string? value2, string? operator2, int page, int pageSize)
     {
-        var holidays = await _unitOfWork.Holiday.GetAll();
+        var holidays = await unitOfWork.Holiday.GetAll();
         
 
         // Check if column, value1, and operator1 are all null or empty
@@ -92,7 +97,7 @@ public class HolidayManager:IHolidayManager
 
             var paginatedResults = holidayList.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var map = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(paginatedResults);
+            var map = mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(paginatedResults);
             FilteredHolidayDto result = new()
             {
                 HolidayDto = map,
@@ -120,7 +125,7 @@ public class HolidayManager:IHolidayManager
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             var paginatedResults = enumerable.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var mappedHoliday = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(paginatedResults);
+            var mappedHoliday = mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(paginatedResults);
 
             FilteredHolidayDto filteredHolidayDto = new()
             {
@@ -169,13 +174,13 @@ public class HolidayManager:IHolidayManager
         if(column!=null)
         {
             IEnumerable<Holiday> holidayDto;
-            holidayDto = _unitOfWork.Holiday.GetAll().Result.Where(e => e.GetPropertyValue(column).Contains(searchKey,StringComparison.OrdinalIgnoreCase));
-            var holiday = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidayDto);
+            holidayDto = unitOfWork.Holiday.GetAll().Result.Where(e => e.GetPropertyValue(column).Contains(searchKey,StringComparison.OrdinalIgnoreCase));
+            var holiday = mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidayDto);
             return Task.FromResult(holiday.ToList());
         }
 
-        var  holidaysDto = _unitOfWork.Holiday.GlobalSearch(searchKey);
-        var holidays = _mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidaysDto);
+        var  holidaysDto = unitOfWork.Holiday.GlobalSearch(searchKey);
+        var holidays = mapper.Map<IEnumerable<Holiday>, IEnumerable<HolidayDto>>(holidaysDto);
         return Task.FromResult(holidays.ToList());
     }
 

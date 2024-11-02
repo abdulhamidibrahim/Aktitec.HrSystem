@@ -97,4 +97,9 @@ public interface IUnitOfWork : IDisposable
     ICompanyModulesRepo CompanyModules { get; }
     ICompanyRolesRepo CompanyRoles { get; }
     IRolePermissionsRepo RolePermissions { get; }
+    INotificationSettingsRepo NotificationSettings { get; }
+    IFamilyInformantionRepo FamilyInformation { get; }
+    IEmergencyContactRepo EmergencyContact { get; }
+    IEducationInformationRepo EducationInformation { get; }
+    IProfileExperienceRepo ProfileExperience { get; }
 }

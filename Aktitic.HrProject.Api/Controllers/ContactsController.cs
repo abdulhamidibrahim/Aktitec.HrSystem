@@ -1,9 +1,12 @@
 using System.Runtime.InteropServices;
 using Aktitic.HrProject.BL;
 using Aktitic.HrProject.DAL.Dtos;
+using Aktitic.HrProject.DAL.Models;
 using Aktitic.HrProject.DAL.Pagination.Client;
+using Aktitic.HrProject.DAL.Services.PolicyServices;
 using Aktitic.HrTaskList.BL;
 using Microsoft.AspNetCore.Mvc;
+using Task = System.Threading.Tasks.Task;
 
 namespace Aktitic.HrProject.API.Controllers;
 
@@ -12,12 +15,14 @@ namespace Aktitic.HrProject.API.Controllers;
 public class ContactsController(IContactsManager contactManager) : ControllerBase
 {
     [HttpGet]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Read))]
     public Task<List<ContactReadDto>> GetAll()
     {
         return contactManager.GetAll();
     }
     
     [HttpGet("{id}")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Read))]
     public ActionResult<ContactReadDto?> Get(int id)
     {
         var result = contactManager.Get(id);
@@ -26,6 +31,7 @@ public class ContactsController(IContactsManager contactManager) : ControllerBas
     }
     
     [HttpPost("create")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Add))]
     public ActionResult<Task> Add([FromForm] ContactAddDto contactAddDto)
     {
         var result = contactManager.Add(contactAddDto);
@@ -34,6 +40,7 @@ public class ContactsController(IContactsManager contactManager) : ControllerBas
     }
     
     [HttpPut("update/{id}")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Edit))]
     public ActionResult<Task> Update([FromForm] ContactUpdateDto contactUpdateDto,int id)
     {
         var result= contactManager.Update(contactUpdateDto,id);
@@ -42,6 +49,7 @@ public class ContactsController(IContactsManager contactManager) : ControllerBas
     }
     
     [HttpDelete("delete/{id}")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Delete))]
     public ActionResult<Task> Delete(int id)
     {
         var result= contactManager.Delete(id);
@@ -51,12 +59,14 @@ public class ContactsController(IContactsManager contactManager) : ControllerBas
     
     
     [HttpGet("GlobalSearch")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Read))]
     public async Task<IEnumerable<ContactDto>> GlobalSearch(string search,string? column)
     {
         return await contactManager.GlobalSearch(search,column);
     }
 
     [HttpGet("getByType")]
+    [AuthorizeRole(nameof(Pages.Contacts),nameof(Roles.Read))]
     public async Task<List<ContactReadDto>> GetByType(string type)
     {
         return await contactManager.GetByType(type);

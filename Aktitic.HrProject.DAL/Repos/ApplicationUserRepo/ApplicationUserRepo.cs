@@ -160,6 +160,15 @@ public class ApplicationUserRepo(HrSystemDbContext context)
         return Task.FromResult<ApplicationUser?>(null);
     }
 
+    public async Task<ApplicationUser?> FindByEmailAsync(string email)
+    {
+        return await _context.Users
+            .Where(e=>e.IsDeleted == false)
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.NormalizedEmail != null 
+                                      && x.NormalizedEmail.Equals(email.ToUpper()));
+    }
+
     public Task<int> GetUserIdByEmail(string email)
     {
         return _context.Users!

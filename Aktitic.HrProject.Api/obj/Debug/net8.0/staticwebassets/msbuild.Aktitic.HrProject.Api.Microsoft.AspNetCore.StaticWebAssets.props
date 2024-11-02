@@ -448,6 +448,38 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\clients\sayed09335dc3-91ef-4aa0-9da2-7073cf7ebe71\WhatsApp Image 2024-03-17 at 9.45.25 PM.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\84b27043-d1d5-4da1-abdc-93d6157e108e\WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/contacts/84b27043-d1d5-4da1-abdc-93d6157e108e/WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\84b27043-d1d5-4da1-abdc-93d6157e108e\WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\c89995db-9be8-4c85-a406-260e293449c3\WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg))">
+      <SourceType>Package</SourceType>
+      <SourceId>Aktitic.HrProject.Api</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Aktitic.HrProject.Api</BasePath>
+      <RelativePath>uploads/contacts/c89995db-9be8-4c85-a406-260e293449c3/WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\c89995db-9be8-4c85-a406-260e293449c3\WhatsApp Image 2024-02-15 at 10.32.24 PM.jpeg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\contacts\cc3a2017-b322-49bb-86ed-92a4dd4dc869\WhatsApp Image 2024-02-20 at 9.19.05 PM.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>Aktitic.HrProject.Api</SourceId>

@@ -98,6 +98,24 @@ public class ApplicationUserManager(
             EmailConfirmed = true,
             CreatedBy = userUtility.GetUserName() ?? string.Empty,
             
+            
+            State = applicationUserAddDto.State,
+            Country = applicationUserAddDto.Country,
+            PinCode = applicationUserAddDto.PinCode,
+            Birthday = applicationUserAddDto.Birthday,
+            Address = applicationUserAddDto.Address,
+            Gender = applicationUserAddDto.Gender,
+            PassportNumber = applicationUserAddDto.PassportNumber,
+            PassportExpDate = applicationUserAddDto.PassportExpDate,
+            Tel = applicationUserAddDto.Tel,
+            Nationality = applicationUserAddDto.Nationality,
+            Religion = applicationUserAddDto.Religion,
+            MatritalStatus = applicationUserAddDto.MatritalStatus,
+            EmploymentSpouse = applicationUserAddDto.EmploymentSpouse,
+            ChildrenNumber = applicationUserAddDto.ChildrenNumber,
+            ReportsToId = applicationUserAddDto.ReportsTo,
+            
+    
             // UserName = applicationUserAddDto.Email?.Substring(0, applicationUserAddDto.Email.IndexOf('@'))
         };
 
@@ -153,6 +171,9 @@ public class ApplicationUserManager(
         if (applicationUserUpdateDto.Role != 0)
             applicationUser.RoleId = applicationUserUpdateDto.Role;
         
+        if (applicationUserUpdateDto.ClientId is not null && applicationUserUpdateDto.ClientId != 0)
+            applicationUser.ClientId = applicationUserUpdateDto.ClientId;
+        
         if (applicationUserUpdateDto.CompanyId != 0)
             if (applicationUserUpdateDto.CompanyId != null)
                 applicationUser.TenantId = (int)applicationUserUpdateDto.CompanyId;
@@ -185,46 +206,59 @@ public class ApplicationUserManager(
         applicationUser.UpdatedAt = DateTime.Now;
         applicationUser.UpdatedBy = userUtility.GetUserName();
         
-        // LogNote permissions
-        // if (permissions != null)
-        // {
-            // Clear existing permissions
-            // applicationUser.Permissions?.Clear();
-            // clear permissions from database
-            // var existingPermissions = permissionsRepo.GetByApplicationUserId(id);
-            
-                // unitOfWork.Permission.DeleteRange(applicationUser.Permissions?.ToList());
-
-                // Map and add new permissions
-                // var permissionEntities = mapper.Map<List<PermissionsDto>, List<Permission>>(permissions);
-                // applicationUser.Permissions = permissionEntities;
-                // applicationUser.Permissions.Select(x => x.UpdatedAt = DateTime.Now);
-            
-                // unitOfWork.Permission.AddRange(permissionEntities);
-        // }
-
-         // LogNote image
-    if (applicationUserUpdateDto?.Image != null)
-    {
+        if(!applicationUserUpdateDto.State.IsNullOrEmpty())
+            applicationUser.State = applicationUserUpdateDto.State;
+        if(!applicationUserUpdateDto.Country.IsNullOrEmpty())
+            applicationUser.Country = applicationUserUpdateDto.Country;
+        if(!applicationUserUpdateDto.PinCode.IsNullOrEmpty())
+            applicationUser.PinCode = applicationUserUpdateDto.PinCode;
+        if(!applicationUserUpdateDto.Birthday.Equals(DateTime.MinValue))
+            applicationUser.Birthday = applicationUserUpdateDto.Birthday;
+        if(!applicationUserUpdateDto.Address.IsNullOrEmpty())
+            applicationUser.Address = applicationUserUpdateDto.Address;
+        if(applicationUserUpdateDto.Gender != applicationUser.Gender)
+            applicationUser.Gender = applicationUserUpdateDto.Gender;
+        if(!applicationUserUpdateDto.PassportNumber.IsNullOrEmpty())
+            applicationUser.PassportNumber = applicationUserUpdateDto.PassportNumber;
+        if(!applicationUserUpdateDto.PassportExpDate.Equals(DateTime.MinValue))
+            applicationUser.PassportExpDate = applicationUserUpdateDto.PassportExpDate;
+        if(!applicationUserUpdateDto.Tel.IsNullOrEmpty())
+            applicationUser.Tel = applicationUserUpdateDto.Tel;
+        if(!applicationUserUpdateDto.Nationality.IsNullOrEmpty())
+            applicationUser.Nationality = applicationUserUpdateDto.Nationality;
+        if(!applicationUserUpdateDto.Religion.IsNullOrEmpty())
+            applicationUser.Religion = applicationUserUpdateDto.Religion;
+        if(!applicationUserUpdateDto.MatritalStatus.IsNullOrEmpty())
+            applicationUser.MatritalStatus = applicationUserUpdateDto.MatritalStatus;
+        if(!applicationUserUpdateDto.EmploymentSpouse.IsNullOrEmpty())
+            applicationUser.EmploymentSpouse = applicationUserUpdateDto.EmploymentSpouse;
+        if(applicationUserUpdateDto.ChildrenNumber != applicationUser.ChildrenNumber) 
+            applicationUser.ChildrenNumber = applicationUserUpdateDto.ChildrenNumber;
+        if(!applicationUserUpdateDto.ReportsTo.Equals(0))
+            applicationUser.ReportsToId = applicationUserUpdateDto.ReportsTo;
         
-        var unique = Guid.NewGuid();
-        var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/users", applicationUser.UserName + unique);
-        if (Directory.Exists(path))
+        
+        if (applicationUserUpdateDto?.Image != null)
         {
-            Directory.Delete(path, true);
-        }
-        else
-        {
-            Directory.CreateDirectory(path);
-        }
+        
+            var unique = Guid.NewGuid();
+            var path = Path.Combine(webHostEnvironment.WebRootPath, "uploads/users", applicationUser.UserName + unique);
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            }
+            else
+            {
+                Directory.CreateDirectory(path);
+            }
 
-        var imgPath = Path.Combine(path, applicationUserUpdateDto.Image.FileName);
-        await using FileStream fileStream = new(imgPath, FileMode.Create);
-        await applicationUserUpdateDto.Image.CopyToAsync(fileStream);
-        applicationUser.Image = Path.Combine("uploads/users", applicationUser.UserName + unique, applicationUserUpdateDto.Image.FileName);
-    }
-    unitOfWork.ApplicationUser.Update(applicationUser);
-    return await unitOfWork.SaveChangesAsync();
+            var imgPath = Path.Combine(path, applicationUserUpdateDto.Image.FileName);
+            await using FileStream fileStream = new(imgPath, FileMode.Create);
+            await applicationUserUpdateDto.Image.CopyToAsync(fileStream);
+            applicationUser.Image = Path.Combine("uploads/users", applicationUser.UserName + unique, applicationUserUpdateDto.Image.FileName);
+        }
+        unitOfWork.ApplicationUser.Update(applicationUser);
+        return await unitOfWork.SaveChangesAsync();
     }
 
 
@@ -264,6 +298,11 @@ public class ApplicationUserManager(
             Date = applicationUser.Date,
            
         };
+    }
+
+    public async Task<ApplicationUser?> FindByEmailAsync(string email)
+    {
+        return await unitOfWork.ApplicationUser.FindByEmailAsync(email);
     }
 
     public Task<List<ApplicationUserReadDto>> GetAll()

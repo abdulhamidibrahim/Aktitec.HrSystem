@@ -36,20 +36,24 @@ public class ContactsManager:IContactsManager
             // CreatedAt = DateTime.Now,
         };
 
-        var unique = Guid.NewGuid();
-
-        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/contacts", unique.ToString());
-
-        if (!Directory.Exists(path))
+        if (contactAddDto.Image is not null)
         {
-            Directory.CreateDirectory(path);
-        }
+            var unique = Guid.NewGuid();
 
-        using var fileStream = new FileStream(Path.Combine(path, contactAddDto.Image.FileName), FileMode.Create);
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads/contacts", unique.ToString());
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            using var fileStream = new FileStream(Path.Combine(path, contactAddDto.Image.FileName), FileMode.Create);
        
-        contactAddDto.Image.CopyTo(fileStream);
+            contactAddDto.Image.CopyTo(fileStream);
         
-        contact.Image = "uploads/contacts/"+ unique + "/" + contactAddDto.Image.FileName;
+            contact.Image = "uploads/contacts/"+ unique + "/" + contactAddDto.Image.FileName;
+        }
+      
         
         _unitOfWork.Contacts.Add(contact);
         return _unitOfWork.SaveChangesAsync();

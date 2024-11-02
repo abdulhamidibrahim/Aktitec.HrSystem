@@ -63,6 +63,8 @@ public class SeedDataService(
                         City = "City",
                         Contact = "Admin Contact",
                         State = "State",
+                        Logo = "",
+                        Language = "",
                         Postal = "12345",
                         CreatedAt = DateTime.Now,
                         CreatedBy = "admin",

@@ -151,6 +151,11 @@ public partial class HrSystemDbContext : IdentityDbContext<ApplicationUser, Iden
     public virtual DbSet<CompanyModule>? CompanyModules { get; set; }   
     public virtual DbSet<CompanyRole>? CompanyRoles { get; set; }   
     public virtual DbSet<RolePermissions>? RolePermissions { get; set; }   
+    public virtual DbSet<NotificationSettings>? NotificationSettings { get; set; }   
+    public virtual DbSet<FamilyInformation>? FamilyInformations { get; set; }   
+    public virtual DbSet<EmergencyContact>? EmergencyContacts { get; set; }   
+    public virtual DbSet<EducationInformation>? EducationInformations { get; set; }   
+    public virtual DbSet<ProfileExperience>? ProfileExperiences { get; set; }   
     
 
     #endregion

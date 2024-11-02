@@ -24,4 +24,6 @@ public interface IApplicationUserRepo :IGenericRepo<ApplicationUser>
     public Task<int> GetUserIdByEmail(string email);
     Task<ApplicationUser?> GetUser(Func<ApplicationUser?, bool> predicate);
     Task<ApplicationUser?> GetUser(int id);
+    Task<ApplicationUser?> FindByEmailAsync(string email);
+    
 }

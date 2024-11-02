@@ -11,25 +11,18 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PayrollOvertimeController: ControllerBase
+public class PayrollOvertimeController(IPayrollOvertimeManager payrollOvertimeManager) : ControllerBase
 {
-    private readonly IPayrollOvertimeManager _payrollOvertimeManager;
-
-    public PayrollOvertimeController(IPayrollOvertimeManager payrollOvertimeManager)
-    {
-        _payrollOvertimeManager = payrollOvertimeManager;
-    }
-    
     [HttpGet]
     public Task<List<PayrollOvertimeReadDto>> GetAll()
     {
-        return _payrollOvertimeManager.GetAll();
+        return payrollOvertimeManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public ActionResult<PayrollOvertimeReadDto?> Get(int id)
     {
-        var result = _payrollOvertimeManager.Get(id);
+        var result = payrollOvertimeManager.Get(id);
         if (result == null) return NotFound();
         return Ok(result);
     }
@@ -37,7 +30,7 @@ public class PayrollOvertimeController: ControllerBase
     [HttpPost("create")]
     public ActionResult<Task> Add(PayrollOvertimeAddDto payrollOvertimeAddDto)
     {
-        var result = _payrollOvertimeManager.Add(payrollOvertimeAddDto);
+        var result = payrollOvertimeManager.Add(payrollOvertimeAddDto);
         if (result.Result == 0) return BadRequest("Failed to create");
         return Ok("Added Successfully");
     }
@@ -45,7 +38,7 @@ public class PayrollOvertimeController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult<Task> Update(PayrollOvertimeUpdateDto payrollOvertimeUpdateDto,int id)
     {
-        var result= _payrollOvertimeManager.Update(payrollOvertimeUpdateDto,id);
+        var result= payrollOvertimeManager.Update(payrollOvertimeUpdateDto,id);
         if (result.Result == 0) return BadRequest("Failed to update");
         return Ok("Updated successfully");
     }
@@ -53,7 +46,7 @@ public class PayrollOvertimeController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult<Task> Delete(int id)
     {
-        var result= _payrollOvertimeManager.Delete(id);
+        var result= payrollOvertimeManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
@@ -63,13 +56,13 @@ public class PayrollOvertimeController: ControllerBase
     public Task<FilteredPayrollOvertimesDto> GetFilteredPayrollOvertimeAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _payrollOvertimeManager.GetFilteredPayrollOvertimesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return payrollOvertimeManager.GetFilteredPayrollOvertimesAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<PayrollOvertimeDto>> GlobalSearch(string search,string? column)
     {
-        return await _payrollOvertimeManager.GlobalSearch(search,column);
+        return await payrollOvertimeManager.GlobalSearch(search,column);
     }
 
 

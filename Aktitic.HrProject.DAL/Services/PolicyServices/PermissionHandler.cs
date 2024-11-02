@@ -14,37 +14,46 @@ public class PermissionHandler(HrSystemDbContext dbContext) : AuthorizationHandl
         {
             return Task.CompletedTask;
         }
-
-        // استرجاع دور المستخدم وصلاحياته بناءً على الـ pageCode
-        var userRole = dbContext.CompanyRoles.FirstOrDefault(u => u.UserId == Convert.ToInt32(userId));
-        if (userRole == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var permissions = dbContext.RolePermissions
-            .FirstOrDefault(rp => rp.CompanyRoleId == userRole.Id && rp.PageCode == requirement.PageCode);
-
-        if (permissions == null)
-        {
-            return Task.CompletedTask;
-        }
-
-       
-        // التحقق بناءً على نوع الإذن المطلوب
-        var hasPermission = requirement.PermissionType switch
-        {
-            "Read" => permissions.Read,
-            "Edit" => permissions.Edit,
-            "Delete" => permissions.Delete,
-            "Export" => permissions.Export,
-            "Import" => permissions.Import,
-            _ => false
-        };
-
-        if (hasPermission)
+        
+        var user = dbContext.Users.FirstOrDefault(u => u.Id == Convert.ToInt32(userId));
+        if(user != null && (user.IsAdmin || user.IsManager))
         {
             context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
+
+        if (user != null)
+        {
+            var userRole = dbContext.CompanyRoles?.Find(user.RoleId);
+            if (userRole == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            var permissions = dbContext.RolePermissions?
+                .FirstOrDefault(rp => rp.CompanyRoleId == userRole.Id && rp.PageCode == requirement.PageCode);
+
+            if (permissions == null)
+            {
+                return Task.CompletedTask;
+            }
+
+       
+            var hasPermission = requirement.PermissionType switch
+            {
+                "Read" => permissions.Read,
+                "Add" => permissions.Add,
+                "Edit" => permissions.Edit,
+                "Delete" => permissions.Delete,
+                "Export" => permissions.Export,
+                "Import" => permissions.Import,
+                _ => false
+            };
+
+            if (hasPermission)
+            {
+                context.Succeed(requirement);
+            }
         }
 
         return Task.CompletedTask;

@@ -9,25 +9,18 @@ namespace Aktitic.HrProject.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TimesheetsController: ControllerBase
+public class TimesheetsController(ITimesheetManager timesheetManager) : ControllerBase
 {
-    private readonly ITimesheetManager _timesheetManager;
-
-    public TimesheetsController(ITimesheetManager timesheetManager)
-    {
-        _timesheetManager = timesheetManager;
-    }
-    
     [HttpGet]
     public async Task<ActionResult<List<TimesheetReadDto>>> GetAll()
     {
-        return await _timesheetManager.GetAll();
+        return await timesheetManager.GetAll();
     }
     
     [HttpGet("{id}")]
     public async Task<ActionResult<TimesheetReadDto?>> Get(int id)
     {
-        var result = await _timesheetManager.Get(id);
+        var result = await timesheetManager.Get(id);
         if (result == null) return NotFound("TimeSheet not found");
         return Ok(result);
     }
@@ -35,7 +28,7 @@ public class TimesheetsController: ControllerBase
     [HttpPost("create")]
     public ActionResult Add([FromBody] TimesheetAddDto timesheetAddDto)
     {
-        var result = _timesheetManager.Add(timesheetAddDto);
+        var result = timesheetManager.Add(timesheetAddDto);
         if (result.Result == Task.FromResult(0)) return BadRequest("Failed to create");
         return Ok("Created successfully");
     }
@@ -43,7 +36,7 @@ public class TimesheetsController: ControllerBase
     [HttpPut("update/{id}")]
     public ActionResult Update([FromBody] TimesheetUpdateDto timesheetUpdateDto,int id)
     {
-        var result =_timesheetManager.Update(timesheetUpdateDto,id);
+        var result =timesheetManager.Update(timesheetUpdateDto,id);
         if (result.Result == Task.FromResult(0)) return BadRequest("Failed to update");
         return Ok("Updated successfully");
     }
@@ -51,7 +44,7 @@ public class TimesheetsController: ControllerBase
     [HttpDelete("delete/{id}")]
     public ActionResult Delete(int id)
     {
-        var result =_timesheetManager.Delete(id);
+        var result =timesheetManager.Delete(id);
         if (result.Result == 0) return BadRequest("Failed to delete");
         return Ok("Deleted successfully");
     }
@@ -59,13 +52,13 @@ public class TimesheetsController: ControllerBase
     public Task<FilteredTimeSheetDto> GetFilteredTimeSheetsAsync(string? column, string? value1,string? @operator1,[Optional] string? value2, string? @operator2, int page, int pageSize)
     {
         
-        return _timesheetManager.GetFilteredTimeSheetsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
+        return timesheetManager.GetFilteredTimeSheetsAsync(column, value1, operator1 , value2,operator2,page,pageSize);
     }
     
     [HttpGet("GlobalSearch")]
     public async Task<IEnumerable<TimeSheetDto>> GlobalSearch(string search,string? column)
     {
-        return await _timesheetManager.GlobalSearch(search,column);
+        return await timesheetManager.GlobalSearch(search,column);
     }
 
 }

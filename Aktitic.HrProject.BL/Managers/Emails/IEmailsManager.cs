@@ -15,10 +15,13 @@ public interface IEmailsManager
         string? operator2, int page, int pageSize, string email);
 
     public Task<List<EmailsDto>> GlobalSearch(string searchKey,string? column,string email);
+    public List<EmailsDto> EmailSearch(SearchEmailDto searchEmailDto);
     
     public Task<IEnumerable<EmailsDto>> GetStarredEmails(int? page, int? pageSize, string email);
     public Task<IEnumerable<EmailsDto>> GetTrashedEmails(int? page, int? pageSize, string email);
     public Task<IEnumerable<EmailsDto>> GetArchivedEmails(int? page, int? pageSize, string email);
    public Task<IEnumerable<EmailsDto>> GetDraftEmails(int? page, int? pageSize, string email);
    Task<AttachmentDto> GetAttachments(int id);
+    Task<int> DeleteRange(List<int> ids);
+    Task<int> TrashRange(List<int> ids , bool trash);
 }

@@ -12,4 +12,8 @@ public partial class Holiday : BaseEntity
 
     public DateOnly? Date { get; set; }
 
+    public NotificationSettings NotificationSettings { get; set; }
+    
+    [ForeignKey(nameof(NotificationSettings))]
+    public int NotificationId { get; set; }
 }
